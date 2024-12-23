@@ -8,11 +8,11 @@
 #include <concepts>
 #include <ostream>
 
-class divide_by_zero : public std::runtime_error
+class divide_by_zero : public std::domain_error
 {
 public:
     divide_by_zero()
-        : std::runtime_error("Divide by zero.") {};
+        : std::domain_error("Divide by zero.") {};
 };
 
 template <typename Type, unsigned int fraction>
@@ -91,11 +91,6 @@ public:
         return from_fixed_num_value<61>(0x6487ED5110B4611All);
     }
 
-    static constexpr fixed_num nearly_compare_epsilon()
-    {
-        return from_fixed_num_value<64>(0x3000000000000ll);
-    }
-
     static constexpr fixed_num pi_2()
     {
         // pi / 2 just need shift the inner value right 1 bit.
@@ -103,11 +98,23 @@ public:
         return from_fixed_num_value<62>(0x6487ED5110B4611All);
     }
 
+    static constexpr fixed_num pi_4()
+    {
+        // pi / 2 just need shift the inner value right 2 bit.
+        // so here just set the fraction to 2 less.
+        return from_fixed_num_value<63>(0x6487ED5110B4611All);
+    }
+
     static constexpr fixed_num double_pi()
     {
         // pi / 2 just need shift the inner value left 1 bit.
         // so here just set the fraction to 1 more.
         return from_fixed_num_value<60>(0x6487ED5110B4611All);
+    }
+
+    static constexpr fixed_num nearly_compare_epsilon()
+    {
+        return from_fixed_num_value<64>(0x5000000000000ll);
     }
 
     /* operator override functions */

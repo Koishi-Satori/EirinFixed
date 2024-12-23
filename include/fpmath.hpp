@@ -2,6 +2,7 @@
 #define FIXED_MATH_HPP
 
 #include <fixed.hpp>
+#include <stdexcept>
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> abs(fixed_num<T, I, f, r> fp) noexcept
@@ -127,6 +128,38 @@ constexpr inline fixed_num<T, I, f, r> cos(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     return sin(fp.inner_value() > 0 ? fp - (fixed::double_pi() - fixed::pi_2()) : fp + fixed::pi_2());
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
+{
+    using fixed = fixed_num<T, I, f, r>;
+    auto cosx = cos(fp);
+    if(cosx.inner_value() > 1)
+        return sin(fp) / cosx;
+    else
+        throw std::domain_error("error fp domain.");
+}
+
+/**
+ * @brief Arctangent function for fixed point number, using the fitting
+ *        method from the paper "Efficient Approximations for the Arctangent Function".
+ * @note reference paper: https://ieeexplore.ieee.org/document/1628884
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @param fp the x of atan(x)
+ * @return atan(x).
+ */
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr auto a = fixed::from_fixed_num_value<16>(0x3985); // 0.2247
+    constexpr auto b = fixed::from_fixed_num_value<16>(0x10F9); // 0.0663
+    return fixed::pi_4() * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
 }
 
 #endif // FIXED_MATH_HPP
