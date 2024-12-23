@@ -103,7 +103,7 @@ constexpr inline fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp) noexcept
 
     // we reconginzed the sin(x) = x when x is small enough.
     // sin(0.00015) = 0.000149999999437, so we use 0.0001 as the threshold.
-    if(fp < fixed(0.00015))
+    if(abs(fp) < fixed(0.00015))
         return negative ? -fp : fp;
 
     // reduce the range to [0, 1] due to sin is
@@ -114,13 +114,19 @@ constexpr inline fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp) noexcept
     // we use tyler series to calculate sin(x).
     // n = 4 has enough precision.
     const auto x2 = x * x;
-    const auto a = fixed::pi() * fixed::pi() / 24;
-    const auto b = fixed::pi() * fixed::pi() / 80;
-    const auto c = fixed::pi() * fixed::pi() / 168;
-    const auto d = fixed::pi() * fixed::pi() / 288;
-    printf("%f, %f, %f, %f\n", (float) a, (float) b, (float) c, (float) d);
+    constexpr auto a = fixed::pi() * fixed::pi() / 24;
+    constexpr auto b = fixed::pi() * fixed::pi() / 80;
+    constexpr auto c = fixed::pi() * fixed::pi() / 168;
+    constexpr auto d = fixed::pi() * fixed::pi() / 288;
     auto res = fixed::pi() * x * (fp1 - a * x2 * (fp1 - b * x2 * (fp1 - c * x2 * (fp1 - d * x2)))) / 2;
     return negative ? -res : res;
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> cos(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    return sin(fp.inner_value() > 0 ? fp - (fixed::double_pi() - fixed::pi_2()) : fp + fixed::pi_2());
 }
 
 #endif // FIXED_MATH_HPP
