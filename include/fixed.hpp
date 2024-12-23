@@ -3,9 +3,17 @@
 
 #include <cassert>
 #include <cstdint>
+#include <stdexcept>
 #include <type_traits>
 #include <concepts>
 #include <ostream>
+
+class divide_by_zero : public std::runtime_error
+{
+public:
+    divide_by_zero()
+        : std::runtime_error("Divide by zero.") {};
+};
 
 template <typename Type, unsigned int fraction>
 concept fixed_num_fraction = fraction > 0 && fraction <= sizeof(Type) * 8 - 1;
@@ -184,8 +192,11 @@ public:
         return *this;
     }
 
-    constexpr inline fixed_num operator/(const fixed_num& other) const noexcept
+    constexpr inline fixed_num operator/(const fixed_num& other) const
     {
+        if(other.value == 0)
+            throw divide_by_zero();
+
         if(rounding)
         {
             auto _value = ((static_cast<IntermediateType>(value) << fraction) * 2) / other.value;
@@ -197,8 +208,11 @@ public:
         }
     }
 
-    constexpr inline fixed_num operator/=(const fixed_num& other) noexcept
+    constexpr inline fixed_num operator/=(const fixed_num& other)
     {
+        if(other.value == 0)
+            throw divide_by_zero();
+
         if(rounding)
         {
             auto _value = ((static_cast<IntermediateType>(value) << fraction) * 2) / other.value;
@@ -211,8 +225,11 @@ public:
         return *this;
     }
 
-    constexpr inline fixed_num operator/=(const std::integral auto& val) noexcept
+    constexpr inline fixed_num operator/=(const std::integral auto& val)
     {
+        if(val == 0)
+            throw divide_by_zero();
+
         value /= val;
         return *this;
     }
@@ -387,13 +404,13 @@ constexpr inline fixed_num<T, I, f, r> operator*(const std::integral auto& val, 
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-constexpr inline fixed_num<T, I, f, r> operator/(const fixed_num<T, I, f, r>& fp, const std::integral auto& val) noexcept
+constexpr inline fixed_num<T, I, f, r> operator/(const fixed_num<T, I, f, r>& fp, const std::integral auto& val)
 {
     return fixed_num<T, I, f, r>(fp) /= val;
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-constexpr inline fixed_num<T, I, f, r> operator/(const std::integral auto& val, const fixed_num<T, I, f, r>& fp) noexcept
+constexpr inline fixed_num<T, I, f, r> operator/(const std::integral auto& val, const fixed_num<T, I, f, r>& fp)
 {
     return fixed_num<T, I, f, r>(fp) /= val;
 }
