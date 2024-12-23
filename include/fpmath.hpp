@@ -157,8 +157,8 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    constexpr auto a = fixed::from_fixed_num_value<16>(0x3985); // 0.2247
-    constexpr auto b = fixed::from_fixed_num_value<16>(0x10F9); // 0.0663
+    constexpr auto a = fixed::template from_fixed_num_value<16>(0x3985); // 0.2247
+    constexpr auto b = fixed::template from_fixed_num_value<16>(0x10F9); // 0.0663
     return fixed::pi_4() * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
 }
 
