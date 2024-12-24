@@ -17,13 +17,10 @@ bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
     {
         return pos < len;
     };
-    if(has_next())
+    if(has_next() && peek() == '-')
     {
-        if(peek() == '-')
-        {
-            negative = true;
-            ++pos;
-        }
+        negative = true;
+        next();
     }
 
     int32_t int_part = 0, dec_part = 0;
@@ -67,21 +64,6 @@ bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
     return true;
 }
 
-template <typename CharT, class Traits>
-std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed32& fp) noexcept
-{
-    auto peek = [&]() -> CharT
-    {
-        return is.peek();
-    };
-    auto next = [&]() -> CharT
-    {
-        return is.get();
-    };
-    std::basic_string<CharT, Traits> str;
-    is >> str;
-}
-
 const char* parse(const char* start, const char* stop, fixed32& out)
 {
     size_t pos = 0;
@@ -100,13 +82,10 @@ const char* parse(const char* start, const char* stop, fixed32& out)
         return *start != *stop;
     };
 
-    if(has_next())
+    if(has_next() && peek() == '-')
     {
-        if(peek() == '-')
-        {
-            negative = true;
-            next();
-        }
+        negative = true;
+        next();
     }
 
     int32_t int_part = 0, dec_part = 0;

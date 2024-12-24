@@ -5,10 +5,9 @@
 #include <cstdint>
 #include <istream>
 #include <stdexcept>
-#include <string>
 #include <type_traits>
 #include <concepts>
-#include <ostream>
+#include <iostream>
 
 class divide_by_zero : public std::domain_error
 {
@@ -441,7 +440,70 @@ constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, 
 bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept;
 
 template <typename CharT, class Traits>
-std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed32& fp) noexcept;
+std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed32& fp) noexcept
+{
+    bool negative = false;
+    auto peek = [&]() -> CharT
+    {
+        return is.peek();
+    };
+    auto next = [&]() -> CharT
+    {
+        return is.get();
+    };
+    auto has_next = [&]() -> bool
+    {
+        auto ch = is.peek();
+        return !is.eof();
+    };
+
+    if(!has_next())
+    {
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
+    else if(peek() == '-')
+    {
+        negative = true;
+        next();
+    }
+    int32_t int_part = 0, dec_part = 0;
+    // parse the integer part.
+    while(has_next() && peek() != '.')
+    {
+        if(!isdigit(peek()))
+        {
+            is.setstate(std::ios_base::failbit);
+            return is;
+        }
+        int_part = int_part * 10 + (next() - '0');
+    }
+    // parse the decimal part.
+    if(has_next() && peek() == '.')
+    {
+        next();
+        constexpr auto max_fraction = (1 << fixed32::precision) - 1;
+        int32_t scale = 1, divisor = 1;
+        while(has_next())
+        {
+            if(dec_part > max_fraction / 10 || !isdigit(peek()))
+            {
+                break;
+            }
+            auto digit = next() - '0';
+            dec_part = dec_part * 10 + digit;
+            divisor *= 10;
+        }
+        fp = fixed32::from_inner_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
+    }
+    else
+    {
+        fp = fixed32::from_inner_value(int_part << fixed32::precision);
+    }
+    if(negative)
+        fp = -fp;
+    return is;
+}
 
 /**
  * @brief Parse fixed point number from string, for angel script.

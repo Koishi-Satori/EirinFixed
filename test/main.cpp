@@ -1,5 +1,4 @@
 #include <cmath>
-#include <cstdint>
 #include <cstdlib>
 #include <fixed.hpp>
 #include <fpmath.hpp>
@@ -33,4 +32,7 @@ int main()
     printf("test parse: %s, %f, %f\n", parse("114b.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114a.514a", "a", fp),(float) fp, (float) 114.514_f32);
+    fp = 0_f32;
+    std::cin >> fp;
+    printf("test cin: %f\n", (float) fp);
 }
