@@ -438,6 +438,11 @@ constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, 
     return fixed_num<T, I, f, r>(val) %= fp;
 }
 
+bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept;
+
+template <typename CharT, class Traits>
+std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed32& fp) noexcept;
+
 /**
  * @brief Parse fixed point number from string, for angel script.
  *

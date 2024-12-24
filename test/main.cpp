@@ -26,4 +26,7 @@ int main()
     printf("log10(114.514) = %f, %f\n", (float)log10(114.514_f32), std::log10(114.514));
     printf("exp(4) = %f, %f\n", (float)exp(4_f32), std::exp(4));
     printf("pow(1.14, 5.14) = %f, %f\n", (float)pow(1.14_f32, 5.14_f32), std::pow(1.14, 5.14));
+    auto fp = fixed32(0);
+    if(f32_from_cstring("114.514", 7, fp))
+        printf("test from_cstring: %f, %f\n", (float) fp, (float) 114.514_f32);
 }
