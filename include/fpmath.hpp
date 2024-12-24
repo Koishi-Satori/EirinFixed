@@ -4,6 +4,9 @@
 #include <fixed.hpp>
 #include <stdexcept>
 
+constexpr inline fixed32 f32_max = fixed32::from_inner_value(0x7FFFFFFF);
+constexpr inline fixed32 f32_min = fixed32::from_inner_value(0x80000000);
+
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> abs(fixed_num<T, I, f, r> fp) noexcept
 {
@@ -160,6 +163,74 @@ constexpr inline fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
     constexpr auto a = fixed::template from_fixed_num_value<16>(0x3985); // 0.2247
     constexpr auto b = fixed::template from_fixed_num_value<16>(0x10F9); // 0.0663
     return fixed::pi_4() * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    auto x = (fixed(fp) + 2) / 3;
+    auto iter_count = 0;
+    constexpr auto precision = fixed::nearly_compare_epsilon() * 2;
+
+    while(abs(fp - (x * x * x)).strict_gt_eq(precision) && iter_count <= 200)
+    {
+        x = (fp / (x * x) + x * 2) / 3;
+        ++iter_count;
+    }
+    return x;
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp) {
+    using fixed = fixed_num<T, I, f, r>;
+
+    // This implementation is based on Clay. S. Turner's fast binary logarithm[1].
+    T b = 1u << (f - 1), y = 0, x = fp.inner_value();
+    if(fp.strict_lt_eq(fixed(0)))
+        throw std::domain_error("error fp domain.");
+
+    while(x < (1u << f))
+    {
+        x <<= 1;
+        y -= (1u << f);
+    }
+
+    while(x >= (2u << f))
+    {
+        x >>= 1;
+        y += (1u << f);
+    }
+
+    I z = x;
+    for(size_t i = 0; i < f; ++i)
+    {
+        z = (z * z) >> f;
+        if(z >= (2u << f))
+        {
+            z >>= 1;
+            y += b;
+        }
+        b >>= 1;
+    }
+
+    return fixed::from_inner_value(y);
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> log(fixed_num<T, I, f, r> fp)
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr auto log2_e = fixed::template from_fixed_num_value<30>(0x5C551D80ll); // 1.442695041
+    return log2(fp) * log2_e;
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> log10(fixed_num<T, I, f, r> fp)
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr auto log2_10 = fixed::template from_fixed_num_value<30>(0x4D104D42ll); // 3.321928095
+    return log2(fp) * log2_10;
 }
 
 #endif // FIXED_MATH_HPP

@@ -419,7 +419,7 @@ constexpr inline fixed_num<T, I, f, r> operator/(const fixed_num<T, I, f, r>& fp
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> operator/(const std::integral auto& val, const fixed_num<T, I, f, r>& fp)
 {
-    return fixed_num<T, I, f, r>(fp) /= val;
+    return fixed_num<T, I, f, r>(val) /= fp;
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -431,7 +431,7 @@ constexpr inline fixed_num<T, I, f, r> operator%(const fixed_num<T, I, f, r>& fp
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, const fixed_num<T, I, f, r>& fp) noexcept
 {
-    return fixed_num<T, I, f, r>(fp) %= val;
+    return fixed_num<T, I, f, r>(val) %= fp;
 }
 
 /**
