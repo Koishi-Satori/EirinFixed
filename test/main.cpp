@@ -25,4 +25,5 @@ int main()
     printf("ln(114.514) = %f, %f\n", (float)log(114.514_f32), std::log(114.514));
     printf("log10(114.514) = %f, %f\n", (float)log10(114.514_f32), std::log10(114.514));
     printf("exp(4) = %f, %f\n", (float)exp(4_f32), std::exp(4));
+    printf("pow(1.14, 5.14) = %f, %f\n", (float)pow(1.14_f32, 5.14_f32), std::pow(1.14, 5.14));
 }

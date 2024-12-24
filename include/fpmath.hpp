@@ -285,4 +285,22 @@ constexpr inline fixed_num<T, I, f, r> exp(fixed_num<T, I, f, r> fp) noexcept
     return pow(fixed::e(), x_int) * (_f + fp * (e + fp * (d + fp * (c + fp * (b + fp * a)))));
 }
 
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, fixed_num<T, I, f, r> e) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    if(b.strict_eq(fixed(0)))
+    {
+        if(e.strict_eq(fixed(0)))
+            return fixed(1);
+        return fixed(0);
+    }
+
+    // the integer part of the input exponent.
+    const T e_int = e.inner_value() / (I(1) << f);
+    e -= e_int;
+
+    return pow(b, e_int) * exp(e * log(b));
+}
+
 #endif // FIXED_MATH_HPP
