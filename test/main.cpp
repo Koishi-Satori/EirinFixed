@@ -27,6 +27,10 @@ int main()
     printf("exp(4) = %f, %f\n", (float)exp(4_f32), std::exp(4));
     printf("pow(1.14, 5.14) = %f, %f\n", (float)pow(1.14_f32, 5.14_f32), std::pow(1.14, 5.14));
     auto fp = fixed32(0);
-    if(f32_from_cstring("114.514", 7, fp))
-        printf("test from_cstring: %f, %f\n", (float) fp, (float) 114.514_f32);
+    if(f32_from_cstring("-114.514", 8, fp))
+        printf("test from_cstring: %f, %f\n", (float) fp, (float) -114.514_f32);
+    fp = 0_f32;
+    printf("test parse: %s, %f, %f\n", parse("114b.514a", "a", fp),(float) fp, (float) 114.514_f32);
+    printf("test parse: %s, %f, %f\n", parse("114.514a", "a", fp),(float) fp, (float) 114.514_f32);
+    printf("test parse: %s, %f, %f\n", parse("114a.514a", "a", fp),(float) fp, (float) 114.514_f32);
 }

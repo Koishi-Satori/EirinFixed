@@ -17,7 +17,8 @@ bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
     {
         return pos < len;
     };
-    if (has_next()) {
+    if(has_next())
+    {
         if(peek() == '-')
         {
             negative = true;
@@ -36,7 +37,7 @@ bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
         int_part = int_part * 10 + (next() - '0');
     }
     // parse the decimal part.
-    if(has_next())
+    if(has_next() && peek() == '.')
     {
         ++pos;
         constexpr auto max_fraction = (1 << fixed32::precision) - 1;
@@ -63,41 +64,88 @@ bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
     }
     if(negative)
         fp = -fp;
-    printf("parts: %d, %d\n", int_part, dec_part);
     return true;
 }
 
 template <typename CharT, class Traits>
 std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed32& fp) noexcept
 {
+    auto peek = [&]() -> CharT
+    {
+        return is.peek();
+    };
+    auto next = [&]() -> CharT
+    {
+        return is.get();
+    };
+    std::basic_string<CharT, Traits> str;
+    is >> str;
 }
 
 const char* parse(const char* start, const char* stop, fixed32& out)
 {
-    size_t pos;
+    size_t pos = 0;
+    bool negative = false;
     auto peek = [&]() -> char
     {
-        return start[pos];
+        return *start;
     };
     auto next = [&]() -> char
     {
-        return start[pos++];
+        ++pos;
+        return *(start++);
     };
     auto has_next = [&]() -> bool
     {
-        return pos < stop - start;
+        return *start != *stop;
     };
 
-    int32_t int_part, dec_part;
-    bool negative = false;
-
-    if(!has_next())
-        return start;
-    if(peek() == '-')
+    if(has_next())
     {
-        negative = true;
-        ++pos;
+        if(peek() == '-')
+        {
+            negative = true;
+            next();
+        }
     }
-    // not finish yet.
-    return stop;
+
+    int32_t int_part = 0, dec_part = 0;
+    // parse the integer part.
+    while(has_next() && peek() != '.')
+    {
+        if(!isdigit(peek()))
+        {
+            return start -= pos;
+        }
+        int_part = int_part * 10 + (next() - '0');
+    }
+    // parse the decimal part.
+    if(has_next() && peek() == '.')
+    {
+        next();
+        constexpr auto max_fraction = (1 << fixed32::precision) - 1;
+        int32_t scale = 1, divisor = 1;
+        while(has_next())
+        {
+            if(!isdigit(peek()))
+            {
+                return start -= pos;
+            }
+            if(dec_part > max_fraction / 10)
+            {
+                break;
+            }
+            auto digit = next() - '0';
+            dec_part = dec_part * 10 + digit;
+            divisor *= 10;
+        }
+        out = fixed32::from_inner_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
+    }
+    else
+    {
+        out = fixed32::from_inner_value(int_part << fixed32::precision);
+    }
+    if(negative)
+        out = -out;
+    return start;
 }

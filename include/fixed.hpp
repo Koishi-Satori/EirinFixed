@@ -447,7 +447,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
  * @brief Parse fixed point number from string, for angel script.
  *
  * @param start the beginning pos of the pointer.
- * @param stop the beginning pos of the pointer.
+ * @param stop the end pos of the pointer.
  * @param out tge output fixed point number
  * @return the pos of the pointer.
  */
