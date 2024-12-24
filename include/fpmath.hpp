@@ -182,7 +182,8 @@ constexpr inline fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> fp) noexcept
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp) {
+constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
+{
     using fixed = fixed_num<T, I, f, r>;
 
     // This implementation is based on Clay. S. Turner's fast binary logarithm[1].
@@ -221,16 +222,67 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> log(fixed_num<T, I, f, r> fp)
 {
     using fixed = fixed_num<T, I, f, r>;
-    constexpr auto log2_e = fixed::template from_fixed_num_value<30>(0x5C551D80ll); // 1.442695041
-    return log2(fp) * log2_e;
+    constexpr auto log2_e = fixed::template from_fixed_num_value<60>(0x171547652B82FE00ll);
+    return log2(fp) / log2_e;
 }
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> log10(fixed_num<T, I, f, r> fp)
 {
     using fixed = fixed_num<T, I, f, r>;
-    constexpr auto log2_10 = fixed::template from_fixed_num_value<30>(0x4D104D42ll); // 3.321928095
-    return log2(fp) * log2_10;
+    constexpr auto log2_10 = fixed::template from_fixed_num_value<60>(0x35269E12F346E200ll);
+    return log2(fp) / log2_10;
+}
+
+template <typename T, typename I, unsigned int f, bool r, std::integral E>
+constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, E e) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    if(b.strict_eq(fixed(0)))
+    {
+        if(e == 0)
+            return fixed(1);
+        return fixed(0);
+    }
+
+    auto res = fixed(1);
+    if(e < 0)
+    {
+        for(auto i = b; e != 0; e /= 2, i *= i)
+        {
+            if(e % 2 != 0)
+                res /= i;
+        }
+    }
+    else
+    {
+        for(auto i = b; e != 0; e /= 2, i *= i)
+        {
+            if(e % 2 != 0)
+                res *= i;
+        }
+    }
+    return res;
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> exp(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    if(fp.strict_lt(fixed(0)))
+        return fixed(1) / exp(-fp);
+
+    // the integer part of the input fixed point number.
+    const T x_int = fp.inner_value() / (I(1) << f);
+    fp -= x_int;
+
+    constexpr auto a = fixed::template from_fixed_num_value<63>(0x01C798ECC0CBC856ll); // 1.3903728105644451e-2
+    constexpr auto b = fixed::template from_fixed_num_value<63>(0x04745859810836DAll); // 3.4800571158543038e-2
+    constexpr auto c = fixed::template from_fixed_num_value<63>(0x15CFBB5C306F85F3ll); // 1.7040197373796334e-1
+    constexpr auto d = fixed::template from_fixed_num_value<63>(0x3FE26186C531F98Ell); // 4.9909609871464493e-1
+    constexpr auto e = fixed::template from_fixed_num_value<63>(0x40014D4407008BB0ll); // 1.0000794567422495
+    constexpr auto _f = fixed::template from_fixed_num_value<63>(0x7FFFF686446F1B43ll); // 9.9999887043019773e-1
+    return pow(fixed::e(), x_int) * (_f + fp * (e + fp * (d + fp * (c + fp * (b + fp * a)))));
 }
 
 #endif // FIXED_MATH_HPP
