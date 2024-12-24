@@ -3,7 +3,9 @@
 
 #include <cassert>
 #include <cstdint>
+#include <istream>
 #include <stdexcept>
+#include <string>
 #include <type_traits>
 #include <concepts>
 #include <ostream>
@@ -116,6 +118,8 @@ public:
     {
         return from_fixed_num_value<64>(0x5000000000000ll);
     }
+
+    static constexpr inline auto precision = fraction;
 
     /* operator override functions */
 
@@ -395,7 +399,7 @@ constexpr inline fixed_num<T, I, f, r> operator-(const fixed_num<T, I, f, r>& fp
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> operator-(const std::integral auto& val, const fixed_num<T, I, f, r>& fp) noexcept
 {
-    return fixed_num<T, I, f, r>(fp) -= val;
+    return fixed_num<T, I, f, r>(val) -= fp;
 }
 
 template <typename T, typename I, unsigned int f, bool r>
