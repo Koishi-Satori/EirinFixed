@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <fixed.hpp>
 #include <fpmath.hpp>
@@ -25,6 +26,20 @@ int main()
     printf("log10(114.514) = %f, %f\n", (float)log10(114.514_f32), std::log10(114.514));
     printf("exp(4) = %f, %f\n", (float)exp(4_f32), std::exp(4));
     printf("pow(1.14, 5.14) = %f, %f\n", (float)pow(1.14_f32, 5.14_f32), std::pow(1.14, 5.14));
+    printf("ceil(114.514) = %f, %f\n", (float)ceil(114.514_f32), std::ceil(114.514));
+    printf("ceil(32767.5) = %f, %f\n", (float)ceil(32767.5_f32), std::ceil(32767.5));
+    printf("floor(-114.514) = %f, %f\n", (float)floor(-114.514_f32), std::floor(-114.514));
+    printf("floor(-32767.5) = %f, %f\n", (float)floor(-32767.5_f32), std::floor(-32767.5));
+    printf("round(-114.514) = %f, %f\n", (float)round(-114.514_f32), std::round(-114.514));
+    printf("round(-114.414) = %f, %f\n", (float)round(-114.414_f32), std::round(-114.414));
+    printf("round(-32767.5) = %f, %f\n", (float)round(-32767.5_f32), std::round(-32767.5));
+    printf("round(-32767.4) = %f, %f\n", (float)round(-32767.4_f32), std::round(-32767.4));
+    printf("round(114.514) = %f, %f\n", (float)round(114.514_f32), std::round(114.514));
+    printf("round(114.414) = %f, %f\n", (float)round(114.414_f32), std::round(114.414));
+    printf("round(32767.5) = %f, %f\n", (float)round(32767.5_f32), std::round(32767.5));
+    printf("round(32767.4) = %f, %f\n", (float)round(32767.4_f32), std::round(32767.4));
+    auto modf_b = 1.15;
+    printf("5.14 mod 1.14 = %f, %f\n", (float)(5.14_f32 % 1.14_f32), std::fmod(5.14, 1.14));
     auto fp = fixed32(0);
     if(f32_from_cstring("-114.514", 8, fp))
         printf("test from_cstring: %f, %f\n", (float) fp, (float) -114.514_f32);

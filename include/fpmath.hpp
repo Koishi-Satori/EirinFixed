@@ -8,6 +8,52 @@ constexpr inline fixed32 f32_max = fixed32::from_inner_value(0x7FFFFFFF);
 constexpr inline fixed32 f32_min = fixed32::from_inner_value(0x80000000);
 
 template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> ceil(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr auto frac_mult = T(1) << f;
+    auto value = fp.inner_value();
+    if(value > 0)
+        value += frac_mult - 1;
+    // overflow check.
+    if(value < 0)
+        return fixed::from_inner_value(fp.inner_value() / frac_mult * frac_mult + frac_mult - 1);
+    return fixed::from_inner_value(value / frac_mult * frac_mult);
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> floor(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr auto frac_mult = T(1) << f;
+    auto value = fp.inner_value();
+    auto neg = value < 0;
+    if(value < 0)
+        value -= frac_mult - 1;
+    // underflow check.
+    if(neg && value > 0)
+        return fixed::from_inner_value(fp.inner_value() / frac_mult * frac_mult - frac_mult + 1);
+    return fixed::from_inner_value(value / frac_mult * frac_mult);
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> trunc(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr auto frac_mult = T(1) << f;
+    return fixed::from_inner_value(fp.inner_value() / frac_mult * frac_mult);
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> round(fixed_num<T, I, f, r> fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    auto frac_mult = T(1) << f;
+    auto value = fp.inner_value() / (frac_mult / 2);
+    return fixed::from_inner_value((value / 2 + (value % 2)) << f);
+}
+
+template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> abs(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;

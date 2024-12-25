@@ -439,8 +439,8 @@ constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, 
 
 bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept;
 
-template <typename CharT, class Traits>
-std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed32& fp) noexcept
+template <typename CharT, class Traits, typename T, typename I, unsigned int f, bool r>
+std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed_num<T, I, f, r>& fp) noexcept
 {
     bool negative = false;
     auto peek = [&]() -> CharT
@@ -456,10 +456,8 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
         auto ch = is.peek();
         return !is.eof();
     };
-
     if(!has_next())
     {
-        is.setstate(std::ios_base::failbit);
         return is;
     }
     else if(peek() == '-')
@@ -467,7 +465,8 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
         negative = true;
         next();
     }
-    int32_t int_part = 0, dec_part = 0;
+
+    T int_part = T(0), dec_part = T(0);
     // parse the integer part.
     while(has_next() && peek() != '.')
     {
@@ -482,8 +481,8 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     if(has_next() && peek() == '.')
     {
         next();
-        constexpr auto max_fraction = (1 << fixed32::precision) - 1;
-        int32_t scale = 1, divisor = 1;
+        constexpr auto max_fraction = (T(1) << f) - T(1);
+        T scale = T(1), divisor = T(1);
         while(has_next())
         {
             if(dec_part > max_fraction / 10 || !isdigit(peek()))
@@ -494,11 +493,11 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed32::from_inner_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
+        fp = fixed32::from_inner_value((int_part << f) + (dec_part << f) / divisor);
     }
     else
     {
-        fp = fixed32::from_inner_value(int_part << fixed32::precision);
+        fp = fixed32::from_inner_value(int_part << f);
     }
     if(negative)
         fp = -fp;
