@@ -1,8 +1,11 @@
 #ifndef FIXED32_FIXED_HPP
 #define FIXED32_FIXED_HPP
 
+#include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstdint>
+#include <ios>
 #include <istream>
 #include <stdexcept>
 #include <type_traits>
@@ -356,6 +359,78 @@ public:
     static constexpr inline fixed_num from_inner_value(Type inner_value) noexcept
     {
         return fixed_num(inner_value, raw_value_construct_tag{});
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const fixed_num& fp) noexcept
+    {
+        bool uppercase = os.flags() & std::ios_base::uppercase;
+        auto digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
+        auto put_char = [&](const char c)
+        {
+            os.put(c);
+        };
+
+        Type divisor = Type(1) << fraction;
+        Type base = Type(10);
+        auto value = fp.inner_value();
+        auto int_part = value >> fraction;
+        value %= divisor;
+        std::array<char, 512> buffer;
+        auto p = buffer.begin();
+
+        if(int_part == 0)
+        {
+            put_char('0');
+        }
+        else
+        {
+            while(int_part > 0)
+            {
+                auto digit = int_part % base;
+                *p++ = digits[digit];
+                int_part /= base;
+                if(p == buffer.end())
+                {
+                    while(p-- != buffer.begin())
+                    {
+                        put_char(*p);
+                    }
+                    put_char(*p);
+                }
+            }
+        }
+        while(p-- != buffer.begin())
+        {
+            put_char(*p);
+        }
+        put_char(*p);
+
+        if(value != 0)
+        {
+            put_char('.');
+            for(unsigned int i = 0; i < fraction; ++i)
+            {
+                if(value == 0)
+                {
+                    break;
+                }
+                if(divisor % base == 0)
+                {
+                    divisor /= base;
+                }
+                else
+                {
+                    value *= base;
+                }
+
+                auto digit = (value / divisor) % base;
+                put_char(digits[digit]);
+                value %= divisor;
+            }
+        }
+
+        os.flush();
+        return os;
     }
 
 private:

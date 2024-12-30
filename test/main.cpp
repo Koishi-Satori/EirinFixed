@@ -1,9 +1,11 @@
 #include <cmath>
-#include <cstdint>
 #include <cstdlib>
 #include <fixed.hpp>
 #include <fpmath.hpp>
 #include <numbers>
+#include <fixed_formatter.hpp>
+#include <papilio/format.hpp>
+#include <papilio/print.hpp>
 
 int main()
 {
@@ -47,7 +49,10 @@ int main()
     printf("test parse: %s, %f, %f\n", parse("114b.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114a.514a", "a", fp),(float) fp, (float) 114.514_f32);
-    fp = 0_f32;
-    std::cin >> fp;
-    printf("test cin: %f\n", (float) fp);
+    // fp = 0_f32;
+    // std::cin >> fp;
+    // printf("test cin: %f(%d)\n", (float) fp, fp.inner_value());
+    std::cout << 114.5625_f32 << std::endl;
+
+    papilio::println("papilio format: {s}", 114.5625_f32);
 }
