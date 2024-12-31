@@ -373,6 +373,12 @@ public:
         Type divisor = Type(1) << fraction;
         Type base = Type(10);
         auto value = fp.inner_value();
+        if(value < 0)
+        {
+            put_char('-'); 
+            value = -value;  
+        }
+
         auto int_part = value >> fraction;
         value %= divisor;
         std::array<char, 512> buffer;

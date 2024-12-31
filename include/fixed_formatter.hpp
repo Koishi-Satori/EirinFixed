@@ -27,18 +27,23 @@ public:
         -> typename FormatContext::iterator
     {
         using context_t = format_context_traits<FormatContext>;
-        auto digits = m_lower ? "0123456789ABCDEF" : "0123456789abcdef";
-        T divisor = T(1) << f;
-        T base = m_scale == scale_dec ? T(10) : (m_scale == scale_hex ? T(16) : (m_scale == scale_oct ? T(8) : T(2)));
-        auto value = fp.inner_value();
-        auto int_part = value >> f;
-        value %= divisor;
-        std::array<char, 512> buffer;
-        auto p = buffer.begin();
         auto put_char = [&](const char c)
         {
             context_t::append(ctx, c);
         };
+        auto digits = m_lower ? "0123456789ABCDEF" : "0123456789abcdef";
+        T divisor = T(1) << f;
+        T base = m_scale == scale_dec ? T(10) : (m_scale == scale_hex ? T(16) : (m_scale == scale_oct ? T(8) : T(2)));
+        auto value = fp.inner_value();
+        if(value < 0)
+        {
+            put_char('-');
+            value = -value;
+        }
+        auto int_part = value >> f;
+        value %= divisor;
+        std::array<char, 512> buffer;
+        auto p = buffer.begin();
 
         // outout inner value
         if(m_data.type == U'i')

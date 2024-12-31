@@ -53,6 +53,7 @@ int main()
     // std::cin >> fp;
     // printf("test cin: %f(%d)\n", (float) fp, fp.inner_value());
     std::cout << 114.5625_f32 << std::endl;
+    std::cout << -114.5625_f32 << std::endl;
 
-    papilio::println("papilio format: {s}", 114.5625_f32);
+    papilio::println("papilio format: {}", 114.5625_f32);
 }
