@@ -4,6 +4,7 @@
 #include <fpmath.hpp>
 #include <numbers>
 #include <fixed_formatter.hpp>
+#include <papilio/core.hpp>
 #include <papilio/format.hpp>
 #include <papilio/print.hpp>
 
@@ -55,5 +56,6 @@ int main()
     std::cout << 114.5625_f32 << std::endl;
     std::cout << -114.5625_f32 << std::endl;
 
-    papilio::println("papilio format: {}", 114.5625_f32);
+    static_assert(papilio::formattable<fixed32>);
+    papilio::println("{:s}", 114.5625_f32);
 }

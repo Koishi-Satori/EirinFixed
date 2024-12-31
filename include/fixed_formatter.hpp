@@ -7,8 +7,8 @@
 
 namespace papilio
 {
-template <typename T, typename I, unsigned int f, bool r, typename CharT>
-class formatter<fixed_num<T, I, f, r>, CharT>
+template <typename T, typename I, unsigned int f, bool r>
+class formatter<fixed_num<T, I, f, r>>
 {
 public:
     template <typename ParseContext>
@@ -50,7 +50,7 @@ public:
         {
             context_t::format_to(
                 ctx,
-                PAPILIO_TSTRING_VIEW(CharT, "{}"),
+                PAPILIO_TSTRING_VIEW(char, "{}"),
                 fp.inner_value()
             );
             return ctx.out();
@@ -128,10 +128,10 @@ private:
     bool m_inner = false;
     bool m_lower = false;
     int m_scale = 0;
-    const int scale_dec = 0;
-    const int scale_hex = 1;
-    const int scale_oct = 2;
-    const int scale_bin = 3;
+    int scale_dec = 0;
+    int scale_hex = 1;
+    int scale_oct = 2;
+    int scale_bin = 3;
     std_formatter_data m_data;
 };
 } // namespace papilio
