@@ -18,7 +18,7 @@ public:
         using namespace std::literals;
         using parser_t = std_formatter_parser<ParseContext, false>;
         parser_t parser;
-        auto [data, it] = parser.parse(ctx, U"sdfi"sv);
+        auto [data, it] = parser.parse(ctx, U"sdfil"sv);
         return it;
     }
 
@@ -31,7 +31,7 @@ public:
         {
             context_t::append(ctx, c);
         };
-        auto digits = m_lower ? "0123456789ABCDEF" : "0123456789abcdef";
+        auto digits = m_data.type == U'l' ? "0123456789ABCDEF" : "0123456789abcdef";
         T divisor = T(1) << f;
         T base = m_scale == scale_dec ? T(10) : (m_scale == scale_hex ? T(16) : (m_scale == scale_oct ? T(8) : T(2)));
         auto value = fp.inner_value();
@@ -76,7 +76,6 @@ public:
                         {
                             put_char(*p);
                         }
-                        put_char(*p);
                     }
                 }
             }
@@ -84,7 +83,6 @@ public:
             {
                 put_char(*p);
             }
-            put_char(*p);
         }
 
         // if only output integral part, just return.
@@ -122,11 +120,6 @@ public:
     }
 
 private:
-    bool m_string = false;
-    bool m_integral = false;
-    bool m_decimal = false;
-    bool m_inner = false;
-    bool m_lower = false;
     int m_scale = 0;
     int scale_dec = 0;
     int scale_hex = 1;

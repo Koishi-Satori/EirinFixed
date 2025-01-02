@@ -1,7 +1,6 @@
 #ifndef FIXED32_FIXED_HPP
 #define FIXED32_FIXED_HPP
 
-#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstdint>
@@ -30,6 +29,11 @@ concept fixed_num_signness = std::is_signed<IntermediateType>::value == std::is_
 
 template <typename Type, typename IntermediateType, unsigned int fraction>
 concept fixed_num_check = std::is_integral_v<Type> && fixed_num_fraction<Type, fraction> && fixed_num_size<Type, IntermediateType> && fixed_num_signness<Type, IntermediateType>;
+
+template <int scale>
+concept fixed_format_check_scale = requires {
+    scale == 2 || scale == 8 || scale == 10 || scale == 16;
+};
 
 /**
  * @brief The fixed number.
@@ -594,5 +598,12 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
  * @return the pos of the pointer.
  */
 const char* parse(const char* start, const char* stop, fixed32& out);
+
+template <typename T, typename I, unsigned int f, bool r, typename CharT, class Traits, int scale = 10>
+requires fixed_format_check_scale<scale>
+constexpr inline std::basic_string<CharT, Traits> fixed_to_string(const fixed_num<T, I, f, r>& fp, const char* format) noexcept
+{
+
+}
 
 #endif // FIXED32_FIXED_HPP
