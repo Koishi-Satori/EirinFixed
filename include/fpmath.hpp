@@ -80,7 +80,7 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    uint32_t t, q = 0, b = 0x40000000UL, v;
+    uint64_t t, q = 0, b = 0x40000000UL, v;
     if constexpr(f > 16)
     {
         constexpr auto move = f - 16;

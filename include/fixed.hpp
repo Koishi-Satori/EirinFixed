@@ -3,7 +3,9 @@
 
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <ios>
 #include <istream>
 #include <stdexcept>
@@ -379,8 +381,8 @@ public:
         auto value = fp.inner_value();
         if(value < 0)
         {
-            put_char('-'); 
-            value = -value;  
+            put_char('-');
+            value = -value;
         }
 
         auto int_part = value >> fraction;
@@ -524,6 +526,24 @@ constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, 
 
 bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept;
 
+inline fixed32 operator""_f32(const char* str)
+{
+    fixed32 fp;
+    if (f32_from_cstring(str, std::strlen(str), fp))
+        return fp;
+    else
+        throw std::runtime_error("failed converting string to fixed32");
+}
+
+inline fixed32 operator""_f32(const char* str, size_t len)
+{
+    fixed32 fp;
+    if (f32_from_cstring(str, len, fp))
+        return fp;
+    else
+        throw std::runtime_error("failed converting string to fixed32");
+}
+
 template <typename CharT, class Traits, typename T, typename I, unsigned int f, bool r>
 std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed_num<T, I, f, r>& fp) noexcept
 {
@@ -603,7 +623,6 @@ template <typename T, typename I, unsigned int f, bool r, typename CharT, class 
 requires fixed_format_check_scale<scale>
 constexpr inline std::basic_string<CharT, Traits> fixed_to_string(const fixed_num<T, I, f, r>& fp, const char* format) noexcept
 {
-
 }
 
 #endif // FIXED32_FIXED_HPP
