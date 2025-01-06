@@ -155,3 +155,6 @@ Requires at least C++20.
 - GCC 12+
 - Clang 15+ with libc++
 - Clang 16+ with libstdc++
+
+## License
+[MIT](LICENSE) License
