@@ -3,8 +3,10 @@
 
 #include <array>
 #include <cassert>
+#include <cctype>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <ios>
 #include <istream>
@@ -526,6 +528,63 @@ constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, 
 
 bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept;
 
+template <typename T, typename I, unsigned int f, bool r>
+bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    size_t pos = 0;
+    bool negative = false;
+    auto peek = [&]() -> char
+    {
+        return str[pos];
+    };
+    auto next = [&]() -> char
+    {
+        return str[pos++];
+    };
+    auto has_next = [&]() -> bool
+    {
+        return pos < len;
+    };
+    if(has_next() && peek() == '-')
+    {
+        negative = true;
+        next();
+    }
+
+    T int_part = T(0), dec_part = T(0);
+    // parse the integer part.
+    while(has_next() && peek() != '.')
+    {
+        if(!isdigit(peek()))
+            break;
+        int_part = int_part * 10 + (next() - '0');
+    }
+    // parse the decimal part.
+    if(has_next() && peek() == '.')
+    {
+        next();
+        constexpr auto max_fraction = (T(1) << f) - T(1);
+        T scale = T(1), divisor = T(1);
+        while(has_next())
+        {
+            if(dec_part > max_fraction / 10 || !isdigit(peek()))
+                break;
+            auto digit = next() - '0';
+            dec_part = dec_part * 10 + digit;
+            divisor *= 10;
+        }
+        fp = fixed::from_inner_value((int_part << f) + (dec_part << f) / divisor);
+    }
+    else
+    {
+        fp = fixed::from_inner_value(int_part << f);
+    }
+    if(negative)
+        fp = -fp;
+    return true;
+}
+
 inline fixed32 operator""_f32(const char* str)
 {
     fixed32 fp;
@@ -547,6 +606,7 @@ inline fixed32 operator""_f32(const char* str, size_t len)
 template <typename CharT, class Traits, typename T, typename I, unsigned int f, bool r>
 std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed_num<T, I, f, r>& fp) noexcept
 {
+    using fixed = fixed_num<T, I, f, r>;
     bool negative = false;
     auto peek = [&]() -> CharT
     {
@@ -576,10 +636,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     while(has_next() && peek() != '.')
     {
         if(!isdigit(peek()))
-        {
-            is.setstate(std::ios_base::failbit);
-            return is;
-        }
+            break;
         int_part = int_part * 10 + (next() - '0');
     }
     // parse the decimal part.
@@ -591,18 +648,16 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
         while(has_next())
         {
             if(dec_part > max_fraction / 10 || !isdigit(peek()))
-            {
                 break;
-            }
             auto digit = next() - '0';
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed32::from_inner_value((int_part << f) + (dec_part << f) / divisor);
+        fp = fixed::from_inner_value((int_part << f) + (dec_part << f) / divisor);
     }
     else
     {
-        fp = fixed32::from_inner_value(int_part << f);
+        fp = fixed::from_inner_value(int_part << f);
     }
     if(negative)
         fp = -fp;
@@ -618,11 +673,5 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
  * @return the pos of the pointer.
  */
 const char* parse(const char* start, const char* stop, fixed32& out);
-
-template <typename T, typename I, unsigned int f, bool r, typename CharT, class Traits, int scale = 10>
-requires fixed_format_check_scale<scale>
-constexpr inline std::basic_string<CharT, Traits> fixed_to_string(const fixed_num<T, I, f, r>& fp, const char* format) noexcept
-{
-}
 
 #endif // FIXED32_FIXED_HPP

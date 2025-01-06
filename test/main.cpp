@@ -46,13 +46,15 @@ int main()
     auto fp = fixed32(0);
     if(f32_from_cstring("-114.514", 8, fp))
         printf("test from_cstring: %f, %f\n", (float) fp, (float) -114.514_f32);
+    if(fixed_from_cstring("495.625", 8, fp))
+        printf("test from_cstring: %f, %f\n", (float) fp, (float) -"495.625"_f32);
     fp = 0_f32;
     printf("test parse: %s, %f, %f\n", parse("114b.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114a.514a", "a", fp),(float) fp, (float) 114.514_f32);
-    // fp = 0_f32;
-    // std::cin >> fp;
-    // printf("test cin: %f(%d)\n", (float) fp, fp.inner_value());
+    fp = 0_f32;
+    std::cin >> fp;
+    printf("test cin: %f(%d)\n", (float) fp, fp.inner_value());
     std::cout << 114.5625_f32 << std::endl;
     std::cout << -114.5625_f32 << std::endl;
 
