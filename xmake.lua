@@ -14,3 +14,4 @@ target("fixed32")
     add_packages("papilio", {public = true})
 
 includes("test")
+includes("benchmark")
