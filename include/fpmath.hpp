@@ -80,48 +80,26 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    uint64_t t, q = 0, b = 0x40000000UL, v;
-    if constexpr(f > 16)
+    // test if T is int32_t, if so, we can use the fast sqrt algorithm.
+    // if not, using newton method.
+    if constexpr(std::is_same_v<T, int32_t>)
     {
-        constexpr auto move = f - 16;
-        v = fp.inner_value() >> move;
-    }
-    else
-    {
-        constexpr auto move = 16 - f;
-        v = fp.inner_value() << move;
-    }
+        uint64_t t, q = 0, b = 0x40000000UL, v;
+        if constexpr(f > 16)
+        {
+            constexpr auto move = f - 16;
+            v = fp.inner_value() >> move;
+        }
+        else
+        {
+            constexpr auto move = 16 - f;
+            v = fp.inner_value() << move;
+        }
 
-    // fix number sqrt using bit hack.
-    if(v < 0x40000200)
-    {
-        while(b != 0x40)
+        // fix number sqrt using bit hack.
+        if(v < 0x40000200)
         {
-            t = q + b;
-            if(v >= t)
-            {
-                v -= t;
-                q = t + b;
-            }
-            v <<= 1;
-            b >>= 1;
-        }
-        return fixed::from_inner_value(static_cast<T>(q >> 8));
-    }
-    while(b > 0x40)
-    {
-        t = q + b;
-        if(v >= t)
-        {
-            v -= t;
-            q = t + b;
-        }
-        if((r & 0x80000000) != 0)
-        {
-            q >>= 1;
-            b >>= 1;
-            v >>= 1;
-            while(b > 0x20)
+            while(b != 0x40)
             {
                 t = q + b;
                 if(v >= t)
@@ -132,12 +110,60 @@ constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
                 v <<= 1;
                 b >>= 1;
             }
-            return fixed::from_inner_value(static_cast<T>(q >> 7));
+            return fixed::from_inner_value(static_cast<T>(q >> 8));
         }
-        v <<= 1;
-        b >>= 1;
+        while(b > 0x40)
+        {
+            t = q + b;
+            if(v >= t)
+            {
+                v -= t;
+                q = t + b;
+            }
+            if((r & 0x80000000) != 0)
+            {
+                q >>= 1;
+                b >>= 1;
+                v >>= 1;
+                while(b > 0x20)
+                {
+                    t = q + b;
+                    if(v >= t)
+                    {
+                        v -= t;
+                        q = t + b;
+                    }
+                    v <<= 1;
+                    b >>= 1;
+                }
+                return fixed::from_inner_value(static_cast<T>(q >> 7));
+            }
+            v <<= 1;
+            b >>= 1;
+        }
+        return fixed::from_inner_value(static_cast<T>(q >> 8));
     }
-    return fixed::from_inner_value(static_cast<T>(q >> 8));
+    else
+    {
+        if(fp < fixed(0))
+            return fixed(-1);
+        if(fp == fixed(0))
+            return fixed(0);
+        const T val = fp.internal_value();
+        const auto exponent = detail::find_msb(val);
+
+        const auto init_value = fixed::get_sqrt_init_value(exponent);
+        auto x = fixed::from_inner_value(init_value);
+
+        auto eps = fixed::epsilon();
+        for(int i = 0; i < 5; ++i)
+        {
+            x = (x + fp / x) / 2;
+            if(abs(fp - x * x) < eps)
+                break;
+        }
+        return x;
+    }
 }
 
 template <typename T, typename I, unsigned int f, bool r>

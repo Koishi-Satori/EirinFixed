@@ -14,6 +14,23 @@
 #include <type_traits>
 #include <concepts>
 #include <iostream>
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/cpp_int/cpp_int_config.hpp>
+#include <boost/multiprecision/detail/standalone_config.hpp>
+#include <boost/multiprecision/traits/std_integer_traits.hpp>
+#include <papilio/format.hpp>
+
+namespace std
+{
+/**
+ * @brief Template specialization for int128_type.
+ *
+ * @tparam T int128_type
+ */
+template <>
+struct is_signed<boost::multiprecision::int128_type> : public std::true_type
+{};
+} // namespace std
 
 class divide_by_zero : public std::domain_error
 {
@@ -38,6 +55,56 @@ template <int scale>
 concept fixed_format_check_scale = requires {
     scale == 2 || scale == 8 || scale == 10 || scale == 16;
 };
+
+namespace detail
+{
+template <typename T, unsigned int F, int E>
+struct sqrt_init_value
+{
+    static constexpr T value() noexcept
+    {
+        constexpr int half_exp = E / 2;
+        constexpr bool adjust = (E % 2) != 0;
+
+        constexpr T base = static_cast<T>(1) << half_exp;
+        constexpr T value = adjust ? (base | (base >> 1)) : base;
+
+        return value << (F / 2 + F % 2);
+    }
+};
+
+template <typename T, unsigned int F, typename S = std::make_index_sequence<sizeof(T) * 8>>
+struct sqrt_lookup_table;
+
+template <typename T, unsigned int F, size_t... I>
+struct sqrt_lookup_table<T, F, std::index_sequence<I...>>
+{
+    static constexpr std::array<T, sizeof...(I)> generate() noexcept
+    {
+        return {{sqrt_init_value<T, F, I>::value()...}};
+    }
+};
+
+template <typename T>
+constexpr int find_msb(T value) noexcept
+{
+    if(value == 0)
+        return -1;
+    if constexpr(std::is_signed_v<T>)
+    {
+        using U = std::make_unsigned_t<T>;
+        auto abs_v = value < 0 ? -value : value;
+        return find_msb(static_cast<U>(abs_v));
+    }
+    else
+    {
+        int bits = 0;
+        while(value >>= 1)
+            ++bits;
+        return bits;
+    }
+}
+} // namespace detail
 
 /**
  * @brief The fixed number.
@@ -133,6 +200,8 @@ public:
 
     /* operator override functions */
 
+    fixed_num& operator=(const fixed_num&) noexcept = default;
+
     template <std::integral T>
     constexpr inline explicit operator T() const noexcept
     {
@@ -150,15 +219,15 @@ public:
         return fixed_num(value + other.value, raw_value_construct_tag{});
     }
 
-    constexpr inline fixed_num operator+=(const fixed_num& other) noexcept
+    constexpr inline fixed_num& operator+=(const fixed_num& other) noexcept
     {
         value += other.value;
         return *this;
     }
 
-    constexpr inline fixed_num operator+=(const std::integral auto& val) noexcept
+    constexpr inline fixed_num& operator+=(const std::integral auto& val) noexcept
     {
-        value += val << fraction;
+        value += static_cast<Type>(val) << fraction;
         return *this;
     }
 
@@ -167,15 +236,15 @@ public:
         return fixed_num(value - other.value, raw_value_construct_tag{});
     }
 
-    constexpr inline fixed_num operator-=(const fixed_num& other) noexcept
+    constexpr inline fixed_num& operator-=(const fixed_num& other) noexcept
     {
         value -= other.value;
         return *this;
     }
 
-    constexpr inline fixed_num operator-=(const std::integral auto& val) noexcept
+    constexpr inline fixed_num& operator-=(const std::integral auto& val) noexcept
     {
-        value -= val << fraction;
+        value -= static_cast<Type>(val) << fraction;
         return *this;
     }
 
@@ -192,7 +261,7 @@ public:
         }
     }
 
-    constexpr inline fixed_num operator*=(const fixed_num& other) noexcept
+    constexpr inline fixed_num& operator*=(const fixed_num& other) noexcept
     {
         if(rounding)
         {
@@ -207,7 +276,7 @@ public:
         return *this;
     }
 
-    constexpr inline fixed_num operator*=(const std::integral auto& val) noexcept
+    constexpr inline fixed_num& operator*=(const std::integral auto& val) noexcept
     {
         value *= val;
         return *this;
@@ -229,7 +298,7 @@ public:
         }
     }
 
-    constexpr inline fixed_num operator/=(const fixed_num& other)
+    constexpr inline fixed_num& operator/=(const fixed_num& other)
     {
         if(other.value == 0)
             throw divide_by_zero();
@@ -246,7 +315,7 @@ public:
         return *this;
     }
 
-    constexpr inline fixed_num operator/=(const std::integral auto& val)
+    constexpr inline fixed_num& operator/=(const std::integral auto& val)
     {
         if(val == 0)
             throw divide_by_zero();
@@ -260,7 +329,7 @@ public:
         return fixed_num(value % other.value, raw_value_construct_tag{});
     }
 
-    constexpr inline fixed_num operator%=(const fixed_num& other) noexcept
+    constexpr inline fixed_num& operator%=(const fixed_num& other) noexcept
     {
         value %= other.value;
         return *this;
@@ -369,6 +438,16 @@ public:
         return fixed_num(inner_value, raw_value_construct_tag{});
     }
 
+    // generate lookup table for sqrt calc.
+    static constexpr auto sqrt_init_table = detail::sqrt_lookup_table<Type, fraction>::generate();
+
+    static constexpr Type get_sqrt_init_value(int exponent) noexcept
+    {
+        constexpr int max_exponent = sizeof(Type) * 8 - 1;
+        const int clamped = std::clamp(exponent, 0, max_exponent);
+        return sqrt_init_table[clamped];
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const fixed_num& fp) noexcept
     {
         bool uppercase = os.flags() & std::ios_base::uppercase;
@@ -455,6 +534,7 @@ private:
 };
 
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
+using fixed64 = fixed_num<int64_t, boost::multiprecision::int128_type, 32, false>;
 
 inline fixed32 operator""_f32(unsigned long long val)
 {
@@ -464,6 +544,129 @@ inline fixed32 operator""_f32(unsigned long long val)
 inline fixed32 operator""_f32(long double val)
 {
     return fixed32(val);
+}
+
+constexpr fixed64 operator""_f64(const char* str, size_t len)
+{
+    fixed64 fp;
+    size_t pos = 0;
+    bool negative = false;
+    auto peek = [&]() -> char
+    {
+        return str[pos];
+    };
+    auto next = [&]() -> char
+    {
+        return str[pos++];
+    };
+    auto has_next = [&]() -> bool
+    {
+        return pos < len;
+    };
+    if(has_next() && peek() == '-')
+    {
+        negative = true;
+        next();
+    }
+
+    int64_t int_part = 0, dec_part = 0;
+    // parse the integer part.
+    while(has_next() && peek() != '.')
+    {
+        if(!isdigit(peek()))
+            return fp;
+        int_part = int_part * 10 + (next() - '0');
+    }
+    // parse the decimal part.
+    if(has_next() && peek() == '.')
+    {
+        ++pos;
+        constexpr auto max_fraction = ((int64_t)1 << fixed64::precision) - 1;
+        int64_t scale = 1, divisor = 1;
+        while(has_next())
+        {
+            if(!isdigit(peek()))
+                return fp;
+            if(dec_part > max_fraction / 10)
+            {
+                break;
+            }
+            auto digit = next() - '0';
+            dec_part = dec_part * 10 + digit;
+            divisor *= 10;
+        }
+        fp = fixed64::from_inner_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
+    }
+    else
+    {
+        fp = fixed64::from_inner_value(int_part << fixed64::precision);
+    }
+    if(negative)
+        fp = -fp;
+    return fp;
+}
+
+template <char... chars>
+constexpr fixed64 operator""_f64()
+{
+    auto len = sizeof...(chars);
+    const char str[] = {chars...};
+    fixed64 fp;
+    size_t pos = 0;
+    bool negative = false;
+    auto peek = [&]() -> char
+    {
+        return str[pos];
+    };
+    auto next = [&]() -> char
+    {
+        return str[pos++];
+    };
+    auto has_next = [&]() -> bool
+    {
+        return pos < len;
+    };
+    if(has_next() && peek() == '-')
+    {
+        negative = true;
+        next();
+    }
+
+    int64_t int_part = 0, dec_part = 0;
+    // parse the integer part.
+    while(has_next() && peek() != '.')
+    {
+        if(!isdigit(peek()))
+            return fp;
+        int_part = int_part * 10 + (next() - '0');
+    }
+    // parse the decimal part.
+    if(has_next() && peek() == '.')
+    {
+        ++pos;
+        constexpr auto max_fraction = ((int64_t)1 << fixed64::precision) - 1;
+        int64_t scale = 1, divisor = 1;
+        while(has_next())
+        {
+            if(!isdigit(peek()))
+                return fp;
+            if(dec_part > max_fraction / 10)
+            {
+                break;
+            }
+            auto digit = next() - '0';
+            dec_part = dec_part * 10 + digit;
+            divisor *= 10;
+        }
+        fp = fixed64::from_inner_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
+    }
+    else
+    {
+        fp = fixed64::from_inner_value(int_part << fixed64::precision);
+    }
+    if(negative)
+        fp = -fp;
+    return fp;
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -524,6 +727,12 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, const fixed_num<T, I, f, r>& fp) noexcept
 {
     return fixed_num<T, I, f, r>(val) %= fp;
+}
+
+template <typename CharT, class Traits, typename T, typename I, unsigned int F, bool R>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const fixed_num<T, I, F, R>& fp) noexcept
+{
+    return os << papilio::format("{}", fp);
 }
 
 bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept;
@@ -588,7 +797,7 @@ bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) 
 inline fixed32 operator""_f32(const char* str)
 {
     fixed32 fp;
-    if (f32_from_cstring(str, std::strlen(str), fp))
+    if(f32_from_cstring(str, std::strlen(str), fp))
         return fp;
     else
         throw std::runtime_error("failed converting string to fixed32");
@@ -597,7 +806,7 @@ inline fixed32 operator""_f32(const char* str)
 inline fixed32 operator""_f32(const char* str, size_t len)
 {
     fixed32 fp;
-    if (f32_from_cstring(str, len, fp))
+    if(f32_from_cstring(str, len, fp))
         return fp;
     else
         throw std::runtime_error("failed converting string to fixed32");
