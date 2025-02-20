@@ -131,22 +131,22 @@ class fixed_num
     static constexpr IntermediateType fraction_multiplier = IntermediateType(1) << fraction;
 
     constexpr inline fixed_num(Type val, raw_value_construct_tag) noexcept
-        : value(val) {};
+        : m_value(val) {};
 
 public:
     inline fixed_num() noexcept = default;
 
     template <std::integral T>
     constexpr inline explicit fixed_num(T val) noexcept
-        : value(static_cast<Type>(val << fraction)){};
+        : m_value(static_cast<Type>(val << fraction)){};
 
     template <std::floating_point T>
     constexpr inline explicit fixed_num(T val) noexcept
-        : value(static_cast<Type>(rounding ? (val >= 0.0) ? (val * fraction_multiplier * T{0.5}) : (val * fraction_multiplier - T{0.5}) : (val * fraction_multiplier))){};
+        : m_value(static_cast<Type>(rounding ? (val >= 0.0) ? (val * fraction_multiplier * T{0.5}) : (val * fraction_multiplier - T{0.5}) : (val * fraction_multiplier))){};
 
     template <typename T, typename I, unsigned int f, bool r>
     constexpr inline explicit fixed_num(fixed_num<T, I, f, r> fp) noexcept
-        : value(from_fixed_num_value<f>(fp.inner_value()).inner_value())
+        : m_value(from_fixed_num_value<f>(fp.inner_value()).inner_value())
     {}
 
     /**
@@ -155,7 +155,7 @@ public:
     */
     constexpr inline Type inner_value() const noexcept
     {
-        return value;
+        return m_value;
     }
 
     /* constant defines */
@@ -198,6 +198,45 @@ public:
 
     static constexpr inline auto precision = fraction;
 
+    static constexpr Type signbit_mask() noexcept
+    {
+        return static_cast<Type>(1) << (sizeof(Type) * 8 - 1);
+    }
+
+    friend constexpr bool signbit(const fixed_num& f) noexcept
+    {
+        if constexpr(std::is_signed_v<Type>)
+            return f.m_value & signbit_mask();
+        else // unsigned value
+            return false;
+    }
+
+    constexpr Type raw_integral_part() const noexcept
+    {
+        Type result = m_value;
+        result &= ~signbit_mask(); // Remove signbit
+        result >>= fraction; // Drop fractional part
+        return result;
+    }
+
+    constexpr Type integral_part() const noexcept
+    {
+        Type result = m_value;
+        if(signbit(*this))
+        {
+            result = ~result;
+            result += static_cast<Type>(1) << fraction;
+        }
+        result >>= fraction; // Drop fractional part
+
+        return result;
+    }
+
+    constexpr Type fractional_part() const noexcept
+    {
+        return m_value % (static_cast<Type>(1) << fraction);
+    }
+
     /* operator override functions */
 
     fixed_num& operator=(const fixed_num&) noexcept = default;
@@ -205,46 +244,46 @@ public:
     template <std::integral T>
     constexpr inline explicit operator T() const noexcept
     {
-        return static_cast<T>(value >> fraction);
+        return static_cast<T>(m_value >> fraction);
     }
 
     template <std::floating_point T>
     constexpr inline explicit operator T() const noexcept
     {
-        return static_cast<T>(value) / fraction_multiplier;
+        return static_cast<T>(m_value) / fraction_multiplier;
     }
 
     constexpr inline fixed_num operator+(const fixed_num& other) const noexcept
     {
-        return fixed_num(value + other.value, raw_value_construct_tag{});
+        return fixed_num(m_value + other.m_value, raw_value_construct_tag{});
     }
 
     constexpr inline fixed_num& operator+=(const fixed_num& other) noexcept
     {
-        value += other.value;
+        m_value += other.m_value;
         return *this;
     }
 
     constexpr inline fixed_num& operator+=(const std::integral auto& val) noexcept
     {
-        value += static_cast<Type>(val) << fraction;
+        m_value += static_cast<Type>(val) << fraction;
         return *this;
     }
 
     constexpr inline fixed_num operator-(const fixed_num& other) const noexcept
     {
-        return fixed_num(value - other.value, raw_value_construct_tag{});
+        return fixed_num(m_value - other.m_value, raw_value_construct_tag{});
     }
 
     constexpr inline fixed_num& operator-=(const fixed_num& other) noexcept
     {
-        value -= other.value;
+        m_value -= other.m_value;
         return *this;
     }
 
     constexpr inline fixed_num& operator-=(const std::integral auto& val) noexcept
     {
-        value -= static_cast<Type>(val) << fraction;
+        m_value -= static_cast<Type>(val) << fraction;
         return *this;
     }
 
@@ -252,12 +291,12 @@ public:
     {
         if(rounding)
         {
-            auto _value = (static_cast<IntermediateType>(value) * other.value) / (fraction_multiplier / 2);
+            auto _value = (static_cast<IntermediateType>(m_value) * other.m_value) / (fraction_multiplier / 2);
             return fixed_num(static_cast<Type>(_value + (_value % 2)), raw_value_construct_tag{});
         }
         else
         {
-            return fixed_num(static_cast<Type>((static_cast<IntermediateType>(value) * other.value) >> fraction), raw_value_construct_tag{});
+            return fixed_num(static_cast<Type>((static_cast<IntermediateType>(m_value) * other.m_value) >> fraction), raw_value_construct_tag{});
         }
     }
 
@@ -265,52 +304,52 @@ public:
     {
         if(rounding)
         {
-            auto _value = (static_cast<IntermediateType>(value) * other.value) / (fraction_multiplier / 2);
-            value = static_cast<Type>(_value + (_value % 2));
+            auto _value = (static_cast<IntermediateType>(m_value) * other.m_value) / (fraction_multiplier / 2);
+            m_value = static_cast<Type>(_value + (_value % 2));
         }
         else
         {
-            auto _value = (static_cast<IntermediateType>(value) * other.value) >> fraction;
-            value = static_cast<Type>(_value);
+            auto _value = (static_cast<IntermediateType>(m_value) * other.m_value) >> fraction;
+            m_value = static_cast<Type>(_value);
         }
         return *this;
     }
 
     constexpr inline fixed_num& operator*=(const std::integral auto& val) noexcept
     {
-        value *= val;
+        m_value *= val;
         return *this;
     }
 
     constexpr inline fixed_num operator/(const fixed_num& other) const
     {
-        if(other.value == 0)
+        if(other.m_value == 0)
             throw divide_by_zero();
 
         if(rounding)
         {
-            auto _value = ((static_cast<IntermediateType>(value) << fraction) * 2) / other.value;
+            auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
             return fixed_num(static_cast<Type>(_value + (_value % 2)), raw_value_construct_tag{});
         }
         else
         {
-            return fixed_num(static_cast<Type>((static_cast<IntermediateType>(value) << fraction) / other.value), raw_value_construct_tag{});
+            return fixed_num(static_cast<Type>((static_cast<IntermediateType>(m_value) << fraction) / other.m_value), raw_value_construct_tag{});
         }
     }
 
     constexpr inline fixed_num& operator/=(const fixed_num& other)
     {
-        if(other.value == 0)
+        if(other.m_value == 0)
             throw divide_by_zero();
 
         if(rounding)
         {
-            auto _value = ((static_cast<IntermediateType>(value) << fraction) * 2) / other.value;
-            value = static_cast<Type>(_value + (_value % 2));
+            auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
+            m_value = static_cast<Type>(_value + (_value % 2));
         }
         else
         {
-            value = static_cast<Type>((static_cast<IntermediateType>(value) << fraction) / other.value);
+            m_value = static_cast<Type>((static_cast<IntermediateType>(m_value) << fraction) / other.m_value);
         }
         return *this;
     }
@@ -320,41 +359,41 @@ public:
         if(val == 0)
             throw divide_by_zero();
 
-        value /= val;
+        m_value /= val;
         return *this;
     }
 
     constexpr inline fixed_num operator%(const fixed_num& other) const noexcept
     {
-        return fixed_num(value % other.value, raw_value_construct_tag{});
+        return fixed_num(m_value % other.m_value, raw_value_construct_tag{});
     }
 
     constexpr inline fixed_num& operator%=(const fixed_num& other) noexcept
     {
-        value %= other.value;
+        m_value %= other.m_value;
         return *this;
     }
 
     constexpr inline fixed_num operator-() const noexcept
     {
-        return fixed_num(-value, raw_value_construct_tag{});
+        return fixed_num(-m_value, raw_value_construct_tag{});
     }
 
     inline fixed_num operator++() noexcept
     {
-        value += self_add_value;
+        m_value += self_add_value;
         return *this;
     }
 
     inline fixed_num operator--() noexcept
     {
-        value -= self_add_value;
+        m_value -= self_add_value;
         return *this;
     }
 
     constexpr inline bool operator==(const fixed_num& other) const noexcept
     {
-        auto div = value - other.value;
+        auto div = m_value - other.m_value;
         return div <= compare_epsilon_v && div >= -compare_epsilon_v;
     }
 
@@ -365,13 +404,13 @@ public:
 
     constexpr inline bool operator<(const fixed_num& other) const noexcept
     {
-        auto div = value - other.value;
+        auto div = m_value - other.m_value;
         return div < -compare_epsilon_v;
     }
 
     constexpr inline bool operator>(const fixed_num& other) const noexcept
     {
-        auto div = value - other.value;
+        auto div = m_value - other.m_value;
         return div > compare_epsilon_v;
     }
 
@@ -389,32 +428,32 @@ public:
 
     constexpr inline bool strict_eq(const fixed_num& other) const noexcept
     {
-        return value == other.value;
+        return m_value == other.m_value;
     }
 
     constexpr inline bool strict_ne(const fixed_num& other) const noexcept
     {
-        return value != other.value;
+        return m_value != other.m_value;
     }
 
     constexpr inline bool strict_gt(const fixed_num& other) const noexcept
     {
-        return value > other.value;
+        return m_value > other.m_value;
     }
 
     constexpr inline bool strict_lt(const fixed_num& other) const noexcept
     {
-        return value < other.value;
+        return m_value < other.m_value;
     }
 
     constexpr inline bool strict_gt_eq(const fixed_num& other) const noexcept
     {
-        return value >= other.value;
+        return m_value >= other.m_value;
     }
 
     constexpr inline bool strict_lt_eq(const fixed_num& other) const noexcept
     {
-        return value <= other.value;
+        return m_value <= other.m_value;
     }
 
     /* convert functions */
@@ -527,10 +566,10 @@ public:
     }
 
 private:
-    Type value;
+    Type m_value;
 
     static constexpr Type self_add_value = Type(1) << fraction;
-    static constexpr Type compare_epsilon_v = nearly_compare_epsilon().value;
+    static constexpr Type compare_epsilon_v = nearly_compare_epsilon().m_value;
 };
 
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
