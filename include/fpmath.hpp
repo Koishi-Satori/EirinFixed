@@ -149,7 +149,7 @@ constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
             return fixed(-1);
         if(fp == fixed(0))
             return fixed(0);
-        const T val = fp.internal_value();
+        const T val = fp.inner_value();
         const auto exponent = detail::find_msb(val);
 
         const auto init_value = fixed::get_sqrt_init_value(exponent);
@@ -219,7 +219,7 @@ constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
 {
     using fixed = fixed_num<T, I, f, r>;
     auto cosx = cos(fp);
-    if(cosx.inner_value() > 1)
+    if(abs(cosx).inner_value() > 1)
         return sin(fp) / cosx;
     else
         throw std::domain_error("error fp domain.");
@@ -269,26 +269,26 @@ constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
 
     // This implementation is based on Clay. S. Turner's fast binary logarithm[1].
     T b = 1u << (f - 1), y = 0, x = fp.inner_value();
-    if(fp.strict_lt_eq(fixed(0)))
+    if(fp <= fixed(0))
         throw std::domain_error("error fp domain.");
 
-    while(x < (1u << f))
+    while(x < (static_cast<T>(1u) << f))
     {
         x <<= 1;
-        y -= (1u << f);
+        y -= (static_cast<T>(1u) << f);
     }
 
-    while(x >= (2u << f))
+    while(x >= (static_cast<T>(2u) << f))
     {
         x >>= 1;
-        y += (1u << f);
+        y += (static_cast<T>(1u) << f);
     }
 
     I z = x;
     for(size_t i = 0; i < f; ++i)
     {
         z = (z * z) >> f;
-        if(z >= (2u << f))
+        if(z >= (static_cast<T>(2u) << f))
         {
             z >>= 1;
             y += b;

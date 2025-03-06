@@ -138,7 +138,7 @@ public:
 
     template <std::integral T>
     constexpr inline explicit fixed_num(T val) noexcept
-        : m_value(static_cast<Type>(val << fraction)){};
+    : m_value(static_cast<Type>(val) << fraction){};
 
     template <std::floating_point T>
     constexpr inline explicit fixed_num(T val) noexcept
@@ -159,6 +159,11 @@ public:
     }
 
     /* constant defines */
+
+    static constexpr fixed_num epsilon()
+    {
+        return from_fixed_num_value<64>(0x5000000000000ll);
+    }
 
     static constexpr fixed_num e()
     {
