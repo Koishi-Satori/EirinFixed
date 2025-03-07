@@ -3,8 +3,9 @@
 A flexible and high-performance C++ fixed point number library, provides fixed point template class, high precision mathematical operations and basic input and output functions.
 The output functions support the formatter provided by [Papilio Charontis](https://github.com/HenryAWE/PapilioCharontis).
 
-It also provides a pre-defined 32bit-width fixed point, with 16bit precision(```fixed32```).
+It also provides a pre-defined 32bit-width fixed point, with 16bit precision(```fixed32```), and 64bit-width fixed point, with 32bit precision(```fixed64```).
 The fixed points require same calculation result in different platforms, devices, operator systems and compilers, and this library fulfills this requirement.
+Notice that the fixed64 uses ```boost::multiprecision::int128_type``` (aka int128_t) as its calculation intermediate type. The int128_t implementation in GCC is ```__int128``` and boost::multiprecision::int128_type for other compilers.
 
 
 ### Create Fixed Point
