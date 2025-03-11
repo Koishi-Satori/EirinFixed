@@ -146,14 +146,14 @@ public:
 
     template <typename T, typename I, unsigned int f, bool r>
     constexpr inline explicit fixed_num(fixed_num<T, I, f, r> fp) noexcept
-        : m_value(from_fixed_num_value<f>(fp.inner_value()).inner_value())
+        : m_value(from_fixed_num_value<f>(fp.internal_value()).internal_value())
     {}
 
     /**
     * @brief Get the inner value of the fixed number.
     * @note do not use unless you know what this function is and what are u doing.
     */
-    constexpr inline Type inner_value() const noexcept
+    constexpr inline Type internal_value() const noexcept
     {
         return m_value;
     }
@@ -396,69 +396,47 @@ public:
         return *this;
     }
 
-    constexpr inline bool operator==(const fixed_num& other) const noexcept
+    constexpr friend bool operator==(const fixed_num& lhs, const fixed_num& rhs) noexcept = default;
+
+    constexpr std::strong_ordering operator<=>(const fixed_num& rhs) const noexcept
+    {
+        return m_value <=> rhs.m_value;
+    }
+
+    /* nearly compare */
+
+    constexpr inline bool nearly_eq(const fixed_num& other) const noexcept
     {
         auto div = m_value - other.m_value;
-        return div <= compare_epsilon_v && div >= -compare_epsilon_v;
+        return div >= -compare_epsilon_v && div <= compare_epsilon_v;
     }
 
-    constexpr inline bool operator!=(const fixed_num& other) const noexcept
-    {
-        return !(*this == other);
-    }
-
-    constexpr inline bool operator<(const fixed_num& other) const noexcept
+    constexpr inline bool nearly_ne(const fixed_num& other) const noexcept
     {
         auto div = m_value - other.m_value;
-        return div < -compare_epsilon_v;
+        return div < -compare_epsilon_v || div > compare_epsilon_v;
     }
 
-    constexpr inline bool operator>(const fixed_num& other) const noexcept
+    constexpr inline bool nearly_gt(const fixed_num& other) const noexcept
     {
         auto div = m_value - other.m_value;
         return div > compare_epsilon_v;
     }
 
-    constexpr inline bool operator>=(const fixed_num& other) const noexcept
+    constexpr inline bool nearly_lt(const fixed_num& other) const noexcept
     {
-        return !(*this < other);
+        auto div = m_value - other.m_value;
+        return div < -compare_epsilon_v;
     }
 
-    constexpr inline bool operator<=(const fixed_num& other) const noexcept
+    constexpr inline bool nearly_gt_eq(const fixed_num& other) const noexcept
     {
-        return !(*this > other);
+        return !(nearly_lt(other));
     }
 
-    /* strict compare */
-
-    constexpr inline bool strict_eq(const fixed_num& other) const noexcept
+    constexpr inline bool nearly_lt_eq(const fixed_num& other) const noexcept
     {
-        return m_value == other.m_value;
-    }
-
-    constexpr inline bool strict_ne(const fixed_num& other) const noexcept
-    {
-        return m_value != other.m_value;
-    }
-
-    constexpr inline bool strict_gt(const fixed_num& other) const noexcept
-    {
-        return m_value > other.m_value;
-    }
-
-    constexpr inline bool strict_lt(const fixed_num& other) const noexcept
-    {
-        return m_value < other.m_value;
-    }
-
-    constexpr inline bool strict_gt_eq(const fixed_num& other) const noexcept
-    {
-        return m_value >= other.m_value;
-    }
-
-    constexpr inline bool strict_lt_eq(const fixed_num& other) const noexcept
-    {
-        return m_value <= other.m_value;
+        return !(nearly_gt(other));
     }
 
     /* convert functions */
@@ -477,9 +455,9 @@ public:
         return fixed_num(static_cast<Type>(inner_value * (T(1) << (fraction - _fraction))), raw_value_construct_tag{});
     }
 
-    static constexpr inline fixed_num from_inner_value(Type inner_value) noexcept
+    static constexpr fixed_num from_internal_value(Type internal_value) noexcept
     {
-        return fixed_num(inner_value, raw_value_construct_tag{});
+        return fixed_num(internal_value, raw_value_construct_tag{});
     }
 
     // generate lookup table for sqrt calc.
@@ -503,7 +481,7 @@ public:
 
         Type divisor = Type(1) << fraction;
         Type base = Type(10);
-        auto value = fp.inner_value();
+        auto value = fp.internal_value();
         if(value < 0)
         {
             put_char('-');
@@ -639,11 +617,11 @@ constexpr fixed64 operator""_f64(const char* str, size_t len)
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed64::from_inner_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
+        fp = fixed64::from_internal_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
     }
     else
     {
-        fp = fixed64::from_inner_value(int_part << fixed64::precision);
+        fp = fixed64::from_internal_value(int_part << fixed64::precision);
     }
     if(negative)
         fp = -fp;
@@ -702,11 +680,11 @@ constexpr fixed64 operator""_f64()
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed64::from_inner_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
+        fp = fixed64::from_internal_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
     }
     else
     {
-        fp = fixed64::from_inner_value(int_part << fixed64::precision);
+        fp = fixed64::from_internal_value(int_part << fixed64::precision);
     }
     if(negative)
         fp = -fp;
@@ -827,11 +805,11 @@ bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) 
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed::from_inner_value((int_part << f) + (dec_part << f) / divisor);
+        fp = fixed::from_internal_value((int_part << f) + (dec_part << f) / divisor);
     }
     else
     {
-        fp = fixed::from_inner_value(int_part << f);
+        fp = fixed::from_internal_value(int_part << f);
     }
     if(negative)
         fp = -fp;
@@ -906,11 +884,11 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed::from_inner_value((int_part << f) + (dec_part << f) / divisor);
+        fp = fixed::from_internal_value((int_part << f) + (dec_part << f) / divisor);
     }
     else
     {
-        fp = fixed::from_inner_value(int_part << f);
+        fp = fixed::from_internal_value(int_part << f);
     }
     if(negative)
         fp = -fp;

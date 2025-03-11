@@ -53,11 +53,11 @@ bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed32::from_inner_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
+        fp = fixed32::from_internal_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
     }
     else
     {
-        fp = fixed32::from_inner_value(int_part << fixed32::precision);
+        fp = fixed32::from_internal_value(int_part << fixed32::precision);
     }
     if(negative)
         fp = -fp;
@@ -118,11 +118,11 @@ const char* parse(const char* start, const char* stop, fixed32& out)
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        out = fixed32::from_inner_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
+        out = fixed32::from_internal_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
     }
     else
     {
-        out = fixed32::from_inner_value(int_part << fixed32::precision);
+        out = fixed32::from_internal_value(int_part << fixed32::precision);
     }
     if(negative)
         out = -out;

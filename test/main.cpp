@@ -7,8 +7,54 @@
 #include <papilio/core.hpp>
 #include <papilio/format.hpp>
 #include <papilio/print.hpp>
+#include <gtest/gtest.h>
 
-int main()
+TEST(fixed_num, construct)
+{
+    auto fp1 = 0_f32;
+    EXPECT_EQ((int)fp1, 0);
+    parse("-114.514a", "a", fp1);
+    EXPECT_EQ(fp1, -114.514_f32);
+
+    auto fp2 = 0_f64;
+    EXPECT_EQ((int)fp2, 0);
+    EXPECT_EQ("-114.514"_f64, -114.514_f64);
+}
+
+TEST(fixed32, operator)
+{
+    auto fp1 = 0_f32;
+    EXPECT_EQ(++fp1, 1_f32);
+    fp1 = 1.14_f32;
+    EXPECT_EQ(fp1 + 5.14_f32, 6.28_f32);
+    EXPECT_EQ(fp1 * 2, 2.28_f32);
+    EXPECT_EQ(514_f32 / 2, 257_f32);
+    EXPECT_EQ(515_f32 % 2_f32, 1_f32);
+    EXPECT_EQ(--fp1, 0.14_f32);
+}
+
+TEST(fixed64, operator)
+{
+    auto fp1 = 0_f64;
+    EXPECT_EQ(++fp1, 1_f64);
+    fp1 = 1.14_f64;
+    EXPECT_EQ(fp1 + 5.14_f64, 6.28_f64);
+    EXPECT_EQ(fp1 * 2, 2.28_f64);
+    EXPECT_EQ(514_f64 / 2, 257_f64);
+    EXPECT_EQ(515_f64 % 2_f64, 1_f64);
+    EXPECT_EQ(--fp1, 0.14_f64);
+}
+
+TEST(fixed_num, constants)
+{
+    GTEST_LOG_(INFO) << "fixed32 max value: " << f32_max << ", min value: " << f32_min;
+    GTEST_LOG_(INFO) << "fixed64 max value: " << f64_max << ", min value: " << f64_min;
+
+    GTEST_LOG_(INFO) << "fixed32 e value: " << fixed32::e() << ", pi value: " << fixed32::pi();
+    GTEST_LOG_(INFO) << "fixed64 e value: " << fixed64::e() << ", pi value: " << fixed64::pi();
+}
+
+int main(int argc, char* argv[])
 {
     auto fp1 = fixed32(1);
     auto fp2 = fixed32(3);
@@ -52,12 +98,14 @@ int main()
     printf("test parse: %s, %f, %f\n", parse("114b.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114.514a", "a", fp),(float) fp, (float) 114.514_f32);
     printf("test parse: %s, %f, %f\n", parse("114a.514a", "a", fp),(float) fp, (float) 114.514_f32);
-    fp = 0_f32;
-    std::cin >> fp;
-    printf("test cin: %f(%d)\n", (float) fp, fp.inner_value());
+    // fp = 0_f32;
+    // std::cin >> fp;
+    // printf("test cin: %f(%d)\n", (float) fp, fp.internal_value());
     std::cout << 114.5625_f32 << std::endl;
     std::cout << -114.5625_f32 << std::endl;
 
     static_assert(papilio::formattable<fixed32>);
     papilio::println("{:f}", 114.5625_f32);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

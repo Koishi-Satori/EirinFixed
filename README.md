@@ -1,18 +1,20 @@
-# Fixed32
+# EirinFixed
 
-A flexible and high-performance C++ fixed point number library, provides fixed point template class, high precision mathematical operations and basic input and output functions.
+- Other language: [中文](README.zh-CN.md)
+
+A flexible and high-performance C++ fixed point number library, provides fixed point template class, high precision mathematical operations and basic input and output functions. You can run the benchmarks ```fixed.benchmark``` and ```double.benchmark``` to test for performance differences between the fixed types and the C++ double. Also the benchmark results have been provided in the benchmark directory, running in AMD laptop CPU R7-7735H, with [-O3](benchmark/fixed_benchmark_O3.txt) and [-O2](benchmark/fixed_benchmark_O2.txt) optimization.
 The output functions support the formatter provided by [Papilio Charontis](https://github.com/HenryAWE/PapilioCharontis).
 
 It also provides a pre-defined 32bit-width fixed point, with 16bit precision(```fixed32```), and 64bit-width fixed point, with 32bit precision(```fixed64```).
 The fixed points require same calculation result in different platforms, devices, operator systems and compilers, and this library fulfills this requirement.
-Notice that the fixed64 uses ```boost::multiprecision::int128_type``` (aka int128_t) as its calculation intermediate type. The int128_t implementation in GCC is ```__int128``` and boost::multiprecision::int128_type for other compilers.
+Notice that the fixed64 uses ```boost::multiprecision::int128_type``` (aka int128_t) as its calculation intermediate type. The int128_t implementation in GCC is builtin ```__int128``` and ```boost::multiprecision::int128_type``` for other compilers.
 
 
 ### Create Fixed Point
 
 You can create a fixed point number with integral or floating types using constructor and literals.
 
-- The literals now only provides for fixed32.
+- The literals now only provides for fixed32 and fixed64.
 - The way of constructing from floating type is not that recommended.
     - Reason: Floating point error in different platforms, devices, operator systems and compilers.
     - The fixed point needs to make sure same result in different situations.
@@ -88,7 +90,7 @@ int main(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-    auto fp = fixed32::from_inner_value(7504789);
+    auto fp = fixed32::from_internal_value(7504789);
     auto log2_10 = fixed32::template from_fixed_num_value<60>(0x35269E12F346E200ll);
     return 0;
 }

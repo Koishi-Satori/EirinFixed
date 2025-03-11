@@ -47,7 +47,7 @@ public:
 
             int_formatter<T, CharT> fmt;
             fmt.set_data(fmt_data);
-            return fmt.format(fp.inner_value(), ctx);
+            return fmt.format(fp.internal_value(), ctx);
         }
 
         bool int_only = false;
@@ -83,7 +83,7 @@ public:
             break;
         }
 
-        T value = fp.inner_value();
+        T value = fp.internal_value();
         bool neg = signbit(fp);
 
         const T int_part = fp.integral_part();

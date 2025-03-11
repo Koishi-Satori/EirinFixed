@@ -4,21 +4,24 @@
 #include <fixed.hpp>
 #include <stdexcept>
 
-constexpr inline fixed32 f32_max = fixed32::from_inner_value(0x7FFFFFFF);
-constexpr inline fixed32 f32_min = fixed32::from_inner_value(0x80000000);
+constexpr inline fixed32 f32_max = fixed32::from_internal_value(0x7FFFFFFF);
+constexpr inline fixed32 f32_min = fixed32::from_internal_value(0x80000000);
+constexpr inline fixed64 f64_max = fixed64::from_internal_value(0x7FFFFFFFFFFFFFFF);
+constexpr inline fixed64 f64_min = fixed64::from_internal_value(0x8000000000000000);
+
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> ceil(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto frac_mult = T(1) << f;
-    auto value = fp.inner_value();
+    auto value = fp.internal_value();
     if(value > 0)
         value += frac_mult - 1;
     // overflow check.
     if(value < 0)
-        return fixed::from_inner_value(fp.inner_value() / frac_mult * frac_mult + frac_mult - 1);
-    return fixed::from_inner_value(value / frac_mult * frac_mult);
+        return fixed::from_internal_value(fp.internal_value() / frac_mult * frac_mult + frac_mult - 1);
+    return fixed::from_internal_value(value / frac_mult * frac_mult);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -26,14 +29,14 @@ constexpr inline fixed_num<T, I, f, r> floor(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto frac_mult = T(1) << f;
-    auto value = fp.inner_value();
+    auto value = fp.internal_value();
     auto neg = value < 0;
     if(value < 0)
         value -= frac_mult - 1;
     // underflow check.
     if(neg && value > 0)
-        return fixed::from_inner_value(fp.inner_value() / frac_mult * frac_mult - frac_mult + 1);
-    return fixed::from_inner_value(value / frac_mult * frac_mult);
+        return fixed::from_internal_value(fp.internal_value() / frac_mult * frac_mult - frac_mult + 1);
+    return fixed::from_internal_value(value / frac_mult * frac_mult);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -41,7 +44,7 @@ constexpr inline fixed_num<T, I, f, r> trunc(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto frac_mult = T(1) << f;
-    return fixed::from_inner_value(fp.inner_value() / frac_mult * frac_mult);
+    return fixed::from_internal_value(fp.internal_value() / frac_mult * frac_mult);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -49,30 +52,30 @@ constexpr inline fixed_num<T, I, f, r> round(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     auto frac_mult = T(1) << f;
-    auto value = fp.inner_value() / (frac_mult / 2);
-    return fixed::from_inner_value((value / 2 + (value % 2)) << f);
+    auto value = fp.internal_value() / (frac_mult / 2);
+    return fixed::from_internal_value((value / 2 + (value % 2)) << f);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> abs(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    return fixed::from_inner_value(abs(fp.inner_value()));
+    return fixed::from_internal_value(abs(fp.internal_value()));
 }
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> min(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
 {
-    auto a_i = a.inner_value();
-    auto b_i = b.inner_value();
+    auto a_i = a.internal_value();
+    auto b_i = b.internal_value();
     return a_i < b_i ? a : b;
 }
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> max(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
 {
-    auto a_i = a.inner_value();
-    auto b_i = b.inner_value();
+    auto a_i = a.internal_value();
+    auto b_i = b.internal_value();
     return a_i > b_i ? a : b;
 }
 
@@ -88,12 +91,12 @@ constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
         if constexpr(f > 16)
         {
             constexpr auto move = f - 16;
-            v = fp.inner_value() >> move;
+            v = fp.internal_value() >> move;
         }
         else
         {
             constexpr auto move = 16 - f;
-            v = fp.inner_value() << move;
+            v = fp.internal_value() << move;
         }
 
         // fix number sqrt using bit hack.
@@ -110,7 +113,7 @@ constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
                 v <<= 1;
                 b >>= 1;
             }
-            return fixed::from_inner_value(static_cast<T>(q >> 8));
+            return fixed::from_internal_value(static_cast<T>(q >> 8));
         }
         while(b > 0x40)
         {
@@ -136,12 +139,12 @@ constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
                     v <<= 1;
                     b >>= 1;
                 }
-                return fixed::from_inner_value(static_cast<T>(q >> 7));
+                return fixed::from_internal_value(static_cast<T>(q >> 7));
             }
             v <<= 1;
             b >>= 1;
         }
-        return fixed::from_inner_value(static_cast<T>(q >> 8));
+        return fixed::from_internal_value(static_cast<T>(q >> 8));
     }
     else
     {
@@ -149,11 +152,11 @@ constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
             return fixed(-1);
         if(fp == fixed(0))
             return fixed(0);
-        const T val = fp.inner_value();
+        const T val = fp.internal_value();
         const auto exponent = detail::find_msb(val);
 
         const auto init_value = fixed::get_sqrt_init_value(exponent);
-        auto x = fixed::from_inner_value(init_value);
+        auto x = fixed::from_internal_value(init_value);
 
         auto eps = fixed::epsilon();
         for(int i = 0; i < 5; ++i)
@@ -176,11 +179,11 @@ constexpr inline fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp) noexcept
     constexpr auto fp1 = fixed(1);
     constexpr auto fp2 = fixed(2);
 
-    if(x.strict_lt(fixed(0)))
+    if(x < fixed(0))
         x += fixed(4);
 
     auto negative = false;
-    if(x.strict_gt(fp2))
+    if(x > fp2)
     {
         negative = true;
         x -= fp2;
@@ -193,7 +196,7 @@ constexpr inline fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp) noexcept
 
     // reduce the range to [0, 1] due to sin is
     // symmetrical around PI / 2 in the domain [0, PI].
-    if(x.strict_gt(fp1))
+    if(x > fp1)
         x = fp2 - x;
 
     // we use tyler series to calculate sin(x).
@@ -211,7 +214,7 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> cos(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    return sin(fp.inner_value() > 0 ? fp - (fixed::double_pi() - fixed::pi_2()) : fp + fixed::pi_2());
+    return sin(fp.internal_value() > 0 ? fp - (fixed::double_pi() - fixed::pi_2()) : fp + fixed::pi_2());
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -219,7 +222,7 @@ constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
 {
     using fixed = fixed_num<T, I, f, r>;
     auto cosx = cos(fp);
-    if(abs(cosx).inner_value() > 1)
+    if(abs(cosx).internal_value() > 1)
         return sin(fp) / cosx;
     else
         throw std::domain_error("error fp domain.");
@@ -254,7 +257,7 @@ constexpr inline fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> fp) noexcept
     auto iter_count = 0;
     constexpr auto precision = fixed::nearly_compare_epsilon() * 2;
 
-    while(abs(fp - (x * x * x)).strict_gt_eq(precision) && iter_count <= 200)
+    while(abs(fp - (x * x * x)) >= precision && iter_count <= 200)
     {
         x = (fp / (x * x) + x * 2) / 3;
         ++iter_count;
@@ -268,7 +271,7 @@ constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
     using fixed = fixed_num<T, I, f, r>;
 
     // This implementation is based on Clay. S. Turner's fast binary logarithm[1].
-    T b = 1u << (f - 1), y = 0, x = fp.inner_value();
+    T b = 1u << (f - 1), y = 0, x = fp.internal_value();
     if(fp <= fixed(0))
         throw std::domain_error("error fp domain.");
 
@@ -296,7 +299,7 @@ constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
         b >>= 1;
     }
 
-    return fixed::from_inner_value(y);
+    return fixed::from_internal_value(y);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -319,7 +322,7 @@ template <typename T, typename I, unsigned int f, bool r, std::integral E>
 constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, E e) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    if(b.strict_eq(fixed(0)))
+    if(b == fixed(0))
     {
         if(e == 0)
             return fixed(1);
@@ -350,11 +353,11 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> exp(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    if(fp.strict_lt(fixed(0)))
+    if(fp < fixed(0))
         return fixed(1) / exp(-fp);
 
     // the integer part of the input fixed point number.
-    const T x_int = fp.inner_value() / (I(1) << f);
+    const T x_int = fp.internal_value() / (I(1) << f);
     fp -= x_int;
 
     constexpr auto a = fixed::template from_fixed_num_value<63>(0x01C798ECC0CBC856ll); // 1.3903728105644451e-2
@@ -370,15 +373,15 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, fixed_num<T, I, f, r> e) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    if(b.strict_eq(fixed(0)))
+    if(b == fixed(0))
     {
-        if(e.strict_eq(fixed(0)))
+        if(e == fixed(0))
             return fixed(1);
         return fixed(0);
     }
 
     // the integer part of the input exponent.
-    const T e_int = e.inner_value() / (I(1) << f);
+    const T e_int = e.internal_value() / (I(1) << f);
     e -= e_int;
 
     return pow(b, e_int) * exp(e * log(b));
