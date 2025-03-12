@@ -1,6 +1,8 @@
 #include <cstdint>
 #include <fixed.hpp>
 
+namespace eirin
+{
 bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
 {
     size_t pos = 0;
@@ -128,3 +130,4 @@ const char* parse(const char* start, const char* stop, fixed32& out)
         out = -out;
     return start;
 }
+} // namespace eirin

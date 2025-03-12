@@ -3,6 +3,8 @@
 #include <benchmark/benchmark.h>
 #include "bench.hpp"
 
+using namespace eirin;
+
 static void f32_create(benchmark::State& state)
 {
     for(auto _ : state)

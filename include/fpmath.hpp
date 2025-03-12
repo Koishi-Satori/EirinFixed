@@ -4,11 +4,12 @@
 #include <fixed.hpp>
 #include <stdexcept>
 
+namespace eirin
+{
 constexpr inline fixed32 f32_max = fixed32::from_internal_value(0x7FFFFFFF);
 constexpr inline fixed32 f32_min = fixed32::from_internal_value(0x80000000);
 constexpr inline fixed64 f64_max = fixed64::from_internal_value(0x7FFFFFFFFFFFFFFF);
 constexpr inline fixed64 f64_min = fixed64::from_internal_value(0x8000000000000000);
-
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> ceil(fixed_num<T, I, f, r> fp) noexcept
@@ -60,7 +61,8 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> abs(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    return fixed::from_internal_value(abs(fp.internal_value()));
+    auto value = fp.internal_value();
+    return fixed::from_internal_value(value < 0 ? -value : value);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -229,17 +231,17 @@ constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
 }
 
 /**
- * @brief Arctangent function for fixed point number, using the fitting
- *        method from the paper "Efficient Approximations for the Arctangent Function".
- * @note reference paper: https://ieeexplore.ieee.org/document/1628884
- * 
- * @tparam T @see fixed_num
- * @tparam I @see fixed_num
- * @tparam f @see fixed_num
- * @tparam r @see fixed_num
- * @param fp the x of atan(x)
- * @return atan(x).
- */
+     * @brief Arctangent function for fixed point number, using the fitting
+     *        method from the paper "Efficient Approximations for the Arctangent Function".
+     * @note reference paper: https://ieeexplore.ieee.org/document/1628884
+     * 
+     * @tparam T @see fixed_num
+     * @tparam I @see fixed_num
+     * @tparam f @see fixed_num
+     * @tparam r @see fixed_num
+     * @param fp the x of atan(x)
+     * @return atan(x).
+     */
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
 {
@@ -271,6 +273,27 @@ constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
     using fixed = fixed_num<T, I, f, r>;
 
     // This implementation is based on Clay. S. Turner's fast binary logarithm[1].
+    // For some unknown reason, the GCC/Clang optimize this code to a very fast implementation,
+    // when using '-O2' optimization and the fixed point number is a constant or literal,
+    // it is even faster than the standard library's floating-point log2 function.
+    // However, '-O3' optimization will not optimize this code to a fast implementation in the
+    // same situation.
+    // To be specific, the third loop(the for loop) will be optimized to the next assembly code:
+    // ```
+    // .L4:
+    //         imul    rax, rax
+    //         mov     rdi, rax
+    //         shr     rax, 16
+    //         cmp     rax, 131071
+    //         jbe     .L3
+    //         mov     rax, rdi
+    //         add     rsi, rcx
+    //         shr     rax, 17
+    // ```
+    // The .L3 code segments is the main function code, and the .L4 code segments is the for loop code.
+    // The assembly code of '-O3' optimization is to expand the for loop code into tons of code segments,
+    // which makes the performance of the code much slower than '-O2' optimization.
+    // I prefer this situation is abnormal, but I don't know why.
     T b = 1u << (f - 1), y = 0, x = fp.internal_value();
     if(fp <= fixed(0))
         throw std::domain_error("error fp domain.");
@@ -386,5 +409,6 @@ constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, fixed_num<T,
 
     return pow(b, e_int) * exp(e * log(b));
 }
+} // namespace eirin
 
 #endif // FIXED_MATH_HPP

@@ -8,7 +8,7 @@
 namespace papilio
 {
 template <typename T, typename I, unsigned int F, bool R, typename CharT>
-class formatter<fixed_num<T, I, F, R>, CharT> : public std_formatter_base
+class formatter<eirin::fixed_num<T, I, F, R>, CharT> : public std_formatter_base
 {
     using my_base = std_formatter_base;
 
@@ -31,7 +31,7 @@ public:
     }
 
     template <typename FormatContext>
-    auto format(const fixed_num<T, I, F, R>& fp, FormatContext& ctx) const
+    auto format(const eirin::fixed_num<T, I, F, R>& fp, FormatContext& ctx) const
         -> typename FormatContext::iterator
     {
         using context_t = format_context_traits<FormatContext>;

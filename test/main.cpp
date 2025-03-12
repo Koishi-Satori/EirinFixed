@@ -9,6 +9,8 @@
 #include <papilio/print.hpp>
 #include <gtest/gtest.h>
 
+using namespace eirin;
+
 TEST(fixed_num, construct)
 {
     auto fp1 = 0_f32;

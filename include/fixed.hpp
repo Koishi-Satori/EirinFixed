@@ -32,6 +32,9 @@ struct is_signed<boost::multiprecision::int128_type> : public std::true_type
 {};
 } // namespace std
 
+namespace eirin
+{
+
 class divide_by_zero : public std::domain_error
 {
 public:
@@ -58,62 +61,62 @@ concept fixed_format_check_scale = requires {
 
 namespace detail
 {
-template <typename T, unsigned int F, int E>
-struct sqrt_init_value
-{
-    static constexpr T value() noexcept
+    template <typename T, unsigned int F, int E>
+    struct sqrt_init_value
     {
-        constexpr int half_exp = E / 2;
-        constexpr bool adjust = (E % 2) != 0;
+        static constexpr T value() noexcept
+        {
+            constexpr int half_exp = E / 2;
+            constexpr bool adjust = (E % 2) != 0;
 
-        constexpr T base = static_cast<T>(1) << half_exp;
-        constexpr T value = adjust ? (base | (base >> 1)) : base;
+            constexpr T base = static_cast<T>(1) << half_exp;
+            constexpr T value = adjust ? (base | (base >> 1)) : base;
 
-        return value << (F / 2 + F % 2);
-    }
-};
+            return value << (F / 2 + F % 2);
+        }
+    };
 
-template <typename T, unsigned int F, typename S = std::make_index_sequence<sizeof(T) * 8>>
-struct sqrt_lookup_table;
+    template <typename T, unsigned int F, typename S = std::make_index_sequence<sizeof(T) * 8>>
+    struct sqrt_lookup_table;
 
-template <typename T, unsigned int F, size_t... I>
-struct sqrt_lookup_table<T, F, std::index_sequence<I...>>
-{
-    static constexpr std::array<T, sizeof...(I)> generate() noexcept
+    template <typename T, unsigned int F, size_t... I>
+    struct sqrt_lookup_table<T, F, std::index_sequence<I...>>
     {
-        return {{sqrt_init_value<T, F, I>::value()...}};
-    }
-};
+        static constexpr std::array<T, sizeof...(I)> generate() noexcept
+        {
+            return {{sqrt_init_value<T, F, I>::value()...}};
+        }
+    };
 
-template <typename T>
-constexpr int find_msb(T value) noexcept
-{
-    if(value == 0)
-        return -1;
-    if constexpr(std::is_signed_v<T>)
+    template <typename T>
+    constexpr int find_msb(T value) noexcept
     {
-        using U = std::make_unsigned_t<T>;
-        auto abs_v = value < 0 ? -value : value;
-        return find_msb(static_cast<U>(abs_v));
+        if(value == 0)
+            return -1;
+        if constexpr(std::is_signed_v<T>)
+        {
+            using U = std::make_unsigned_t<T>;
+            auto abs_v = value < 0 ? -value : value;
+            return find_msb(static_cast<U>(abs_v));
+        }
+        else
+        {
+            int bits = 0;
+            while(value >>= 1)
+                ++bits;
+            return bits;
+        }
     }
-    else
-    {
-        int bits = 0;
-        while(value >>= 1)
-            ++bits;
-        return bits;
-    }
-}
 } // namespace detail
 
 /**
- * @brief The fixed number.
- * 
- * @tparam Type the store type.
- * @tparam IntermediateType used for calculation, must be larger than the store type.
- * @tparam fraction the fraction part of the fixed number.
- * @tparam rounding should round the fixed number, default false.
- */
+     * @brief The fixed number.
+     * 
+     * @tparam Type the store type.
+     * @tparam IntermediateType used for calculation, must be larger than the store type.
+     * @tparam fraction the fraction part of the fixed number.
+     * @tparam rounding should round the fixed number, default false.
+     */
 template <typename Type, typename IntermediateType, unsigned int fraction, bool rounding = false>
 requires fixed_num_check<Type, IntermediateType, fraction>
 class fixed_num
@@ -138,7 +141,7 @@ public:
 
     template <std::integral T>
     constexpr inline explicit fixed_num(T val) noexcept
-    : m_value(static_cast<Type>(val) << fraction){};
+        : m_value(static_cast<Type>(val) << fraction){};
 
     template <std::floating_point T>
     constexpr inline explicit fixed_num(T val) noexcept
@@ -150,9 +153,9 @@ public:
     {}
 
     /**
-    * @brief Get the inner value of the fixed number.
-    * @note do not use unless you know what this function is and what are u doing.
-    */
+        * @brief Get the inner value of the fixed number.
+        * @note do not use unless you know what this function is and what are u doing.
+        */
     constexpr inline Type internal_value() const noexcept
     {
         return m_value;
@@ -896,13 +899,15 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
 }
 
 /**
- * @brief Parse fixed point number from string, for angel script.
- *
- * @param start the beginning pos of the pointer.
- * @param stop the end pos of the pointer.
- * @param out tge output fixed point number
- * @return the pos of the pointer.
- */
+     * @brief Parse fixed point number from string, for angel script.
+     *
+     * @param start the beginning pos of the pointer.
+     * @param stop the end pos of the pointer.
+     * @param out tge output fixed point number
+     * @return the pos of the pointer.
+     */
 const char* parse(const char* start, const char* stop, fixed32& out);
+} // namespace eirin
+
 
 #endif // FIXED32_FIXED_HPP
