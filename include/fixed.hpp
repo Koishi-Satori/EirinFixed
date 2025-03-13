@@ -297,7 +297,7 @@ public:
 
     constexpr inline fixed_num operator*(const fixed_num& other) const noexcept
     {
-        if(rounding)
+        if constexpr(rounding)
         {
             auto _value = (static_cast<IntermediateType>(m_value) * other.m_value) / (fraction_multiplier / 2);
             return fixed_num(static_cast<Type>(_value + (_value % 2)), raw_value_construct_tag{});
@@ -310,7 +310,7 @@ public:
 
     constexpr inline fixed_num& operator*=(const fixed_num& other) noexcept
     {
-        if(rounding)
+        if constexpr(rounding)
         {
             auto _value = (static_cast<IntermediateType>(m_value) * other.m_value) / (fraction_multiplier / 2);
             m_value = static_cast<Type>(_value + (_value % 2));
@@ -334,7 +334,7 @@ public:
         if(other.m_value == 0)
             throw divide_by_zero();
 
-        if(rounding)
+        if constexpr(rounding)
         {
             auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
             return fixed_num(static_cast<Type>(_value + (_value % 2)), raw_value_construct_tag{});
@@ -350,7 +350,7 @@ public:
         if(other.m_value == 0)
             throw divide_by_zero();
 
-        if(rounding)
+        if constexpr(rounding)
         {
             auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
             m_value = static_cast<Type>(_value + (_value % 2));
@@ -473,28 +473,28 @@ public:
         return sqrt_init_table[clamped];
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const fixed_num& fp) noexcept
+    template <typename CharT, class Traits>
+    inline std::basic_ostream<CharT, Traits>& print(std::basic_ostream<CharT, Traits>& os) const noexcept
     {
-        bool uppercase = os.flags() & std::ios_base::uppercase;
+        auto uppercase = os.flags() & std::ios_base::uppercase;
+        auto hex = os.flags() & std::ios_base::hex, dec = os.flags() & std::ios_base::dec, oct = os.flags() & std::ios_base::oct;
         auto digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
+        Type divisor = static_cast<Type>(1) << fraction, base = static_cast<Type>(hex ? 16 : (dec ? 10 : (oct ? 8 : 2)));
         auto put_char = [&](const char c)
         {
             os.put(c);
         };
 
-        Type divisor = Type(1) << fraction;
-        Type base = Type(10);
-        auto value = fp.internal_value();
+        auto value = m_value;
         if(value < 0)
         {
             put_char('-');
             value = -value;
         }
-
         auto int_part = value >> fraction;
         value %= divisor;
-        std::array<char, 512> buffer;
-        auto p = buffer.begin();
+        std::array<char, 514> buffer;
+        auto koishi = buffer.begin();
 
         if(int_part == 0)
         {
@@ -505,23 +505,18 @@ public:
             while(int_part > 0)
             {
                 auto digit = int_part % base;
-                *p++ = digits[digit];
+                *koishi++ = digits[digit];
                 int_part /= base;
-                if(p == buffer.end())
+                if(koishi == buffer.end())
                 {
-                    while(p-- != buffer.begin())
-                    {
-                        put_char(*p);
-                    }
-                    put_char(*p);
+                    while(koishi-- != buffer.begin())
+                        put_char(*koishi);
+                    koishi = buffer.begin();
                 }
             }
         }
-        while(p-- != buffer.begin())
-        {
-            put_char(*p);
-        }
-        put_char(*p);
+        while(koishi-- != buffer.begin())
+            put_char(*koishi);
 
         if(value != 0)
         {
@@ -551,12 +546,34 @@ public:
         return os;
     }
 
+    friend std::ostream& operator<<(std::ostream& os, const fixed_num& fp) noexcept
+    {
+        return fp.print(os);
+    }
+
 private:
     Type m_value;
 
     static constexpr Type self_add_value = Type(1) << fraction;
     static constexpr Type compare_epsilon_v = nearly_compare_epsilon().m_value;
 };
+
+namespace detail
+{
+    template <typename T>
+    struct is_fixed_point : std::false_type
+    {};
+
+    template <typename T, typename I, unsigned int f, bool r>
+    struct is_fixed_point<fixed_num<T, I, f, r>> : public std::true_type
+    {};
+} // namespace detail
+
+template <typename T>
+inline constexpr bool is_fixed_point_v = detail::is_fixed_point<std::remove_cv_t<T>>::value;
+
+template <typename T>
+concept fixed_point = detail::is_fixed_point<std::remove_cv_t<T>>::value;
 
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
 using fixed64 = fixed_num<int64_t, boost::multiprecision::int128_type, 32, false>;
@@ -757,7 +774,7 @@ constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, 
 template <typename CharT, class Traits, typename T, typename I, unsigned int F, bool R>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const fixed_num<T, I, F, R>& fp) noexcept
 {
-    return os << papilio::format("{}", fp);
+    return fp.print(os);
 }
 
 bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept;

@@ -5,6 +5,7 @@ add_repositories("fixed32_repo fixed32_repo")
 add_requires("papilio")
 add_requires("boost 1.86.0")
 
+set_warnings("all")
 set_languages("cxx20")
 add_cxxflags("-O3")
 
