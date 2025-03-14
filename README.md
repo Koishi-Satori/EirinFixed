@@ -21,6 +21,8 @@ You can create a fixed point number with integral or floating types using constr
 ```c++
 #include <fixed.hpp>
 
+using namespace eirin;
+
 int main(int argc, char** argv)
 {
     auto fp32_1 = fixed32(495);
@@ -47,6 +49,8 @@ You can also create a fixed point from std::basic_istream or strings.
 ```c++
 #include <fixed.hpp>
 
+using namespace eirin;
+
 int main(int argc, char** argv)
 {
     fp1 = 0_f32;
@@ -70,6 +74,8 @@ You can use std::ostream or format functions provided by [Papilio Charontis](htt
 #include <fixed.hpp>
 #include <fixed_formatter.hpp>
 
+using namespace eirin;
+
 int main(int argc, char** argv)
 {
     std::cout << "114.5625"_f32 << std::endl;
@@ -88,6 +94,8 @@ int main(int argc, char** argv)
 ```c++
 #include <fixed.hpp>
 
+using namespace eirin;
+
 int main(int argc, char** argv)
 {
     auto fp = fixed32::from_internal_value(7504789);
@@ -103,6 +111,8 @@ You can convert fixed point to integral or floating types.
 ```c++
 #include <fixed.hpp>
 
+using namespace eirin;
+
 (int) "114.5"_f32;
 (float) "114.5"_f32;
 ```
@@ -112,6 +122,8 @@ The output will always be fixed point.
 
 ```c++
 #include <fixed.hpp>
+
+using namespace eirin;
 
 fp1 = "114.5"_f32;
 fp2 = "514"_f32;
