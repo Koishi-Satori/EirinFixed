@@ -19,6 +19,7 @@
 #include <boost/multiprecision/detail/standalone_config.hpp>
 #include <boost/multiprecision/traits/std_integer_traits.hpp>
 #include <papilio/format.hpp>
+#include <macro.hpp>
 
 namespace std
 {
@@ -140,15 +141,15 @@ public:
     inline fixed_num() noexcept = default;
 
     template <std::integral T>
-    constexpr inline explicit fixed_num(T val) noexcept
+    EIRIN_ALWAYS_INLINE constexpr inline explicit fixed_num(T val) noexcept
         : m_value(static_cast<Type>(val) << fraction){};
 
     template <std::floating_point T>
-    constexpr inline explicit fixed_num(T val) noexcept
+    EIRIN_ALWAYS_INLINE constexpr inline explicit fixed_num(T val) noexcept
         : m_value(static_cast<Type>(rounding ? (val >= 0.0) ? (val * fraction_multiplier * T{0.5}) : (val * fraction_multiplier - T{0.5}) : (val * fraction_multiplier))){};
 
     template <typename T, typename I, unsigned int f, bool r>
-    constexpr inline explicit fixed_num(fixed_num<T, I, f, r> fp) noexcept
+    EIRIN_ALWAYS_INLINE constexpr inline explicit fixed_num(fixed_num<T, I, f, r> fp) noexcept
         : m_value(from_fixed_num_value<f>(fp.internal_value()).internal_value())
     {}
 
@@ -156,7 +157,7 @@ public:
         * @brief Get the inner value of the fixed number.
         * @note do not use unless you know what this function is and what are u doing.
         */
-    constexpr inline Type internal_value() const noexcept
+    EIRIN_ALWAYS_INLINE constexpr inline Type internal_value() const noexcept
     {
         return m_value;
     }
@@ -206,12 +207,12 @@ public:
 
     static constexpr inline auto precision = fraction;
 
-    static constexpr Type signbit_mask() noexcept
+    EIRIN_ALWAYS_INLINE static constexpr inline Type signbit_mask() noexcept
     {
         return static_cast<Type>(1) << (sizeof(Type) * 8 - 1);
     }
 
-    friend constexpr bool signbit(const fixed_num& f) noexcept
+    EIRIN_ALWAYS_INLINE friend constexpr inline bool signbit(const fixed_num& f) noexcept
     {
         if constexpr(std::is_signed_v<Type>)
             return f.m_value & signbit_mask();
@@ -219,7 +220,7 @@ public:
             return false;
     }
 
-    constexpr Type raw_integral_part() const noexcept
+    EIRIN_ALWAYS_INLINE constexpr inline Type raw_integral_part() const noexcept
     {
         Type result = m_value;
         result &= ~signbit_mask(); // Remove signbit
@@ -227,7 +228,7 @@ public:
         return result;
     }
 
-    constexpr Type integral_part() const noexcept
+    EIRIN_ALWAYS_INLINE constexpr inline Type integral_part() const noexcept
     {
         Type result = m_value;
         if(signbit(*this))
@@ -240,7 +241,7 @@ public:
         return result;
     }
 
-    constexpr Type fractional_part() const noexcept
+    EIRIN_ALWAYS_INLINE constexpr inline Type fractional_part() const noexcept
     {
         return m_value % (static_cast<Type>(1) << fraction);
     }
@@ -445,7 +446,7 @@ public:
     /* convert functions */
 
     template <unsigned int _fraction, typename T, typename std::enable_if_t<(_fraction > fraction), T*> = nullptr>
-    static constexpr inline fixed_num from_fixed_num_value(T inner_value) noexcept
+    EIRIN_ALWAYS_INLINE static constexpr inline fixed_num from_fixed_num_value(T inner_value) noexcept
     {
         return rounding ?
                    fixed_num(static_cast<Type>(inner_value / (T(1) << (_fraction - fraction)) + (inner_value / (T(1) << (_fraction - fraction - 1)) % 2)), raw_value_construct_tag{}) :
@@ -453,7 +454,7 @@ public:
     }
 
     template <unsigned int _fraction, typename T, typename std::enable_if_t<(_fraction <= fraction), T*> = nullptr>
-    static constexpr inline fixed_num from_fixed_num_value(T inner_value) noexcept
+    EIRIN_ALWAYS_INLINE static constexpr inline fixed_num from_fixed_num_value(T inner_value) noexcept
     {
         return fixed_num(static_cast<Type>(inner_value * (T(1) << (fraction - _fraction))), raw_value_construct_tag{});
     }
@@ -474,7 +475,7 @@ public:
     }
 
     template <typename CharT, class Traits>
-    inline std::basic_ostream<CharT, Traits>& print(std::basic_ostream<CharT, Traits>& os) const noexcept
+    EIRIN_ALWAYS_INLINE inline std::basic_ostream<CharT, Traits>& print(std::basic_ostream<CharT, Traits>& os) const noexcept
     {
         auto uppercase = os.flags() & std::ios_base::uppercase;
         auto digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
