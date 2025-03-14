@@ -1,5 +1,5 @@
-#ifndef FIXED32_FIXED_HPP
-#define FIXED32_FIXED_HPP
+#ifndef EIRIN_FIXED_FIXED_HPP
+#define EIRIN_FIXED_FIXED_HPP
 
 #include <array>
 #include <cassert>
@@ -477,8 +477,8 @@ public:
     inline std::basic_ostream<CharT, Traits>& print(std::basic_ostream<CharT, Traits>& os) const noexcept
     {
         auto uppercase = os.flags() & std::ios_base::uppercase;
-        auto hex = os.flags() & std::ios_base::hex, dec = os.flags() & std::ios_base::dec, oct = os.flags() & std::ios_base::oct;
         auto digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
+        auto hex = os.flags() & std::ios_base::hex, dec = os.flags() & std::ios_base::dec, oct = os.flags() & std::ios_base::oct;
         Type divisor = static_cast<Type>(1) << fraction, base = static_cast<Type>(hex ? 16 : (dec ? 10 : (oct ? 8 : 2)));
         auto put_char = [&](const char c)
         {
@@ -567,6 +567,68 @@ namespace detail
     template <typename T, typename I, unsigned int f, bool r>
     struct is_fixed_point<fixed_num<T, I, f, r>> : public std::true_type
     {};
+
+    template <typename CharT, typename T, typename I, unsigned int f, bool r>
+    constexpr inline bool parse(const CharT* str, size_t len, fixed_num<T, I, f, r>& fp) noexcept
+    {
+        using fixed = fixed_num<T, I, f, r>;
+        size_t pos = 0;
+        bool negative = false;
+        auto peek = [&]() -> CharT
+        {
+            return str[pos];
+        };
+        auto next = [&]() -> CharT
+        {
+            return str[pos++];
+        };
+        auto has_next = [&]() -> bool
+        {
+            return pos < len;
+        };
+
+        if(has_next() && peek() == '-')
+        {
+            negative = true;
+            next();
+        }
+
+        int64_t int_part = 0, dec_part = 0;
+        // parse the integer part.
+        while(has_next() && peek() != '.')
+        {
+            if(!isdigit(peek()))
+                return false;
+            int_part = int_part * 10 + (next() - '0');
+        }
+        // parse the decimal part.
+        if(has_next() && peek() == '.')
+        {
+            ++pos;
+            constexpr auto max_fraction = ((int64_t)1 << fixed::precision) - 1;
+            int64_t scale = 1, divisor = 1;
+            while(has_next())
+            {
+                if(!isdigit(peek()))
+                    return false;
+                if(dec_part > max_fraction / 10)
+                {
+                    break;
+                }
+                auto digit = next() - '0';
+                dec_part = dec_part * 10 + digit;
+                divisor *= 10;
+            }
+            fp = fixed::from_internal_value((int_part << fixed::precision) + (dec_part << fixed::precision) / divisor);
+        }
+        else
+        {
+            fp = fixed::from_internal_value(int_part << fixed::precision);
+        }
+        if(negative)
+            fp = -fp;
+        return true;
+    }
 } // namespace detail
 
 template <typename T>
@@ -591,60 +653,7 @@ inline fixed32 operator""_f32(long double val)
 constexpr fixed64 operator""_f64(const char* str, size_t len)
 {
     fixed64 fp;
-    size_t pos = 0;
-    bool negative = false;
-    auto peek = [&]() -> char
-    {
-        return str[pos];
-    };
-    auto next = [&]() -> char
-    {
-        return str[pos++];
-    };
-    auto has_next = [&]() -> bool
-    {
-        return pos < len;
-    };
-    if(has_next() && peek() == '-')
-    {
-        negative = true;
-        next();
-    }
-
-    int64_t int_part = 0, dec_part = 0;
-    // parse the integer part.
-    while(has_next() && peek() != '.')
-    {
-        if(!isdigit(peek()))
-            return fp;
-        int_part = int_part * 10 + (next() - '0');
-    }
-    // parse the decimal part.
-    if(has_next() && peek() == '.')
-    {
-        ++pos;
-        constexpr auto max_fraction = ((int64_t)1 << fixed64::precision) - 1;
-        int64_t scale = 1, divisor = 1;
-        while(has_next())
-        {
-            if(!isdigit(peek()))
-                return fp;
-            if(dec_part > max_fraction / 10)
-            {
-                break;
-            }
-            auto digit = next() - '0';
-            dec_part = dec_part * 10 + digit;
-            divisor *= 10;
-        }
-        fp = fixed64::from_internal_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
-    }
-    else
-    {
-        fp = fixed64::from_internal_value(int_part << fixed64::precision);
-    }
-    if(negative)
-        fp = -fp;
+    detail::parse(str, len, fp);
     return fp;
 }
 
@@ -654,60 +663,7 @@ constexpr fixed64 operator""_f64()
     auto len = sizeof...(chars);
     const char str[] = {chars...};
     fixed64 fp;
-    size_t pos = 0;
-    bool negative = false;
-    auto peek = [&]() -> char
-    {
-        return str[pos];
-    };
-    auto next = [&]() -> char
-    {
-        return str[pos++];
-    };
-    auto has_next = [&]() -> bool
-    {
-        return pos < len;
-    };
-    if(has_next() && peek() == '-')
-    {
-        negative = true;
-        next();
-    }
-
-    int64_t int_part = 0, dec_part = 0;
-    // parse the integer part.
-    while(has_next() && peek() != '.')
-    {
-        if(!isdigit(peek()))
-            return fp;
-        int_part = int_part * 10 + (next() - '0');
-    }
-    // parse the decimal part.
-    if(has_next() && peek() == '.')
-    {
-        ++pos;
-        constexpr auto max_fraction = ((int64_t)1 << fixed64::precision) - 1;
-        int64_t scale = 1, divisor = 1;
-        while(has_next())
-        {
-            if(!isdigit(peek()))
-                return fp;
-            if(dec_part > max_fraction / 10)
-            {
-                break;
-            }
-            auto digit = next() - '0';
-            dec_part = dec_part * 10 + digit;
-            divisor *= 10;
-        }
-        fp = fixed64::from_internal_value((int_part << fixed64::precision) + (dec_part << fixed64::precision) / divisor);
-    }
-    else
-    {
-        fp = fixed64::from_internal_value(int_part << fixed64::precision);
-    }
-    if(negative)
-        fp = -fp;
+    detail::parse(str, len, fp);
     return fp;
 }
 
@@ -927,4 +883,4 @@ const char* parse(const char* start, const char* stop, fixed32& out);
 } // namespace eirin
 
 
-#endif // FIXED32_FIXED_HPP
+#endif // EIRIN_FIXED_FIXED_HPP

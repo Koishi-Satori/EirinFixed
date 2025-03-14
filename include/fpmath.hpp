@@ -1,5 +1,5 @@
-#ifndef FIXED_MATH_HPP
-#define FIXED_MATH_HPP
+#ifndef EIRIN_FIXED_MATH_HPP
+#define EIRIN_FIXED_MATH_HPP
 
 #include <fixed.hpp>
 #include <stdexcept>
@@ -409,6 +409,21 @@ constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, fixed_num<T,
 
     return pow(b, e_int) * exp(e * log(b));
 }
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> fmod(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    return a - b * floor(a / b);
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+constexpr inline fixed_num<T, I, f, r> modf(fixed_num<T, I, f, r> fp, fixed_num<T, I, f, r>& int_part) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    int_part = floor(fp);
+    return fp - int_part;
+}
 } // namespace eirin
 
-#endif // FIXED_MATH_HPP
+#endif // EIRIN_FIXED_MATH_HPP
