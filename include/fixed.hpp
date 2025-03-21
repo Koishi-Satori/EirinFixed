@@ -883,5 +883,75 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
 const char* parse(const char* start, const char* stop, fixed32& out);
 } // namespace eirin
 
+namespace std
+{
+template <typename T, typename I, unsigned int f, bool r>
+struct numeric_limits<eirin::fixed_num<T, I, f, r>>
+{
+    using fixed_type = eirin::fixed_num<T, I, f, r>;
+
+    static constexpr bool is_specialized = true;
+    static constexpr bool is_signed = true;
+    static constexpr bool is_integer = false;
+    static constexpr bool is_exact = true;
+    static constexpr bool has_infinity = false;
+    static constexpr bool has_quiet_NaN = false;
+    static constexpr bool has_signaling_NaN = false;
+
+    static constexpr fixed_type radix = fixed_type(2);
+    // 1 bit sign + fractions bits + integer bits
+    static constexpr fixed_type digits = fixed_type(sizeof(T) * 8 - 1);
+    // integer bits = sizeof(T) * 8 - 1 - f
+    // fraction bits = f
+    // digits10 = integer bits * log10(2) + fraction bits * log10(2)
+    // we can use log10(2) = 643 / 2136
+    static constexpr fixed_type digits10 = fixed_type(static_cast<T>((sizeof(T) * 8 - 1) * 643L / 2136));
+    static constexpr fixed_type min_exponent = fixed_type(0);
+    static constexpr fixed_type min_exponent10 = fixed_type(10);
+
+    static constexpr float_denorm_style has_denorm = denorm_absent;
+    static constexpr bool has_denorm_loss = false;
+
+    static constexpr bool is_iec559 = false;
+    static constexpr bool is_bounded = true;
+    static constexpr bool is_modulo = false;
+
+    static constexpr bool traps = true;
+    static constexpr bool tinyness_before = false;
+    static constexpr float_round_style round_style = round_toward_zero;
+
+#define EIRIN_SHORT_IMPL(name)         \
+    static constexpr fixed_type name() \
+    {                                  \
+        return fixed_type::name();     \
+    }
+#define EIRIN_INTERNAL_RECRUIT_IMPL(name)                                       \
+    static constexpr fixed_type name()                                          \
+    {                                                                           \
+        return fixed_type::from_internal_value(std::numeric_limits<T>::name()); \
+    }
+
+#define EIRIN_DIRECT_IMPL(name, value)        \
+    static constexpr fixed_type name() \
+    {                                  \
+        return fixed_type(value);       \
+    }
+
+    EIRIN_SHORT_IMPL(epsilon)
+    EIRIN_DIRECT_IMPL(round_error, 0)
+    EIRIN_DIRECT_IMPL(infinity, 0)
+    EIRIN_DIRECT_IMPL(quiet_NaN, 0)
+    EIRIN_DIRECT_IMPL(signaling_NaN, 0)
+    EIRIN_DIRECT_IMPL(denorm_min, 0)
+
+    EIRIN_INTERNAL_RECRUIT_IMPL(min)
+    EIRIN_INTERNAL_RECRUIT_IMPL(max)
+    EIRIN_INTERNAL_RECRUIT_IMPL(lowest)
+
+#undef EIRIN_SHORT_IMPL
+#undef EIRIN_INTERNAL_RECRUIT_IMPL
+#undef EIRIN_DIRECT_IMPL
+};
+} // namespace std
 
 #endif // EIRIN_FIXED_FIXED_HPP

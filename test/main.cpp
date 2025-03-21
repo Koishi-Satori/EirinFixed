@@ -49,7 +49,7 @@ TEST(fixed64, operator)
 
 TEST(fixed_num, constants)
 {
-    GTEST_LOG_(INFO) << "fixed32 max value: " << f32_max << ", min value: " << f32_min;
+    GTEST_LOG_(INFO) << "fixed32 max value: " << max_value<fixed32>() << ", min value: " << f32_min;
     GTEST_LOG_(INFO) << "fixed64 max value: " << f64_max << ", min value: " << f64_min;
 
     GTEST_LOG_(INFO) << "fixed32 e value: " << fixed32::e() << ", pi value: " << fixed32::pi();

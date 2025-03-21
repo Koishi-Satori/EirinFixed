@@ -11,6 +11,12 @@ constexpr inline fixed32 f32_min = fixed32::from_internal_value(0x80000000);
 constexpr inline fixed64 f64_max = fixed64::from_internal_value(0x7FFFFFFFFFFFFFFF);
 constexpr inline fixed64 f64_min = fixed64::from_internal_value(0x8000000000000000);
 
+template <fixed_point T>
+EIRIN_ALWAYS_INLINE constexpr inline T max_value() noexcept
+{
+    return std::numeric_limits<T>::max();
+}
+
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> ceil(fixed_num<T, I, f, r> fp) noexcept
 {

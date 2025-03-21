@@ -39,6 +39,7 @@ target("fixed32")
         add_packages("papilio")
     end
     add_packages("boost", {public = true})
+    target_end()
 
 if has_config("eirin_build_tests") then
     includes("test")
