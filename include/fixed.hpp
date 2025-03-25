@@ -21,6 +21,7 @@
 #include <papilio/format.hpp>
 #include <macro.hpp>
 
+#ifdef EIRIN_DEFINE_INT128_SIGNED
 namespace std
 {
 /**
@@ -32,6 +33,7 @@ template <>
 struct is_signed<boost::multiprecision::int128_type> : public std::true_type
 {};
 } // namespace std
+#endif
 
 namespace eirin
 {
@@ -487,12 +489,22 @@ public:
         };
 
         auto value = m_value;
-        if(value < 0)
+        Type int_part;
+        if(value == minimum_value)
         {
             put_char('-');
-            value = -value;
+            int_part = ~(value >> fraction) + 1;
+            value = 0;
         }
-        auto int_part = value >> fraction;
+        else
+        {
+            if(value < 0)
+            {
+                put_char('-');
+                value = -value;
+            }
+            int_part = value >> fraction;
+        }
         value %= divisor;
         std::array<char, 514> buffer;
         auto koishi = buffer.begin();
@@ -557,6 +569,7 @@ private:
 
     static constexpr Type self_add_value = Type(1) << fraction;
     static constexpr Type compare_epsilon_v = nearly_compare_epsilon().m_value;
+    static constexpr Type minimum_value = signbit_mask();
 };
 
 namespace detail
@@ -925,11 +938,6 @@ struct numeric_limits<eirin::fixed_num<T, I, f, r>>
     {                                  \
         return fixed_type::name();     \
     }
-#define EIRIN_INTERNAL_RECRUIT_IMPL(name)                                       \
-    static constexpr fixed_type name()                                          \
-    {                                                                           \
-        return fixed_type::from_internal_value(std::numeric_limits<T>::name()); \
-    }
 
 #define EIRIN_DIRECT_IMPL(name, value) \
     static constexpr fixed_type name() \
@@ -944,12 +952,37 @@ struct numeric_limits<eirin::fixed_num<T, I, f, r>>
     EIRIN_DIRECT_IMPL(signaling_NaN, 0)
     EIRIN_DIRECT_IMPL(denorm_min, 0)
 
-    EIRIN_INTERNAL_RECRUIT_IMPL(min)
-    EIRIN_INTERNAL_RECRUIT_IMPL(max)
-    EIRIN_INTERNAL_RECRUIT_IMPL(lowest)
+    static constexpr fixed_type min() noexcept
+    {
+        if constexpr(std::numeric_limits<T>::is_specialized)
+        {
+            return fixed_type::from_internal_value(std::numeric_limits<T>::min());
+        }
+        else
+        {
+            constexpr fixed_type min_value = fixed_type::from_internal_value(fixed_type::signbit_mask());
+            return min_value;
+        }
+    }
+
+    static constexpr fixed_type max() noexcept
+    {
+        if constexpr(std::numeric_limits<T>::is_specialized)
+        {
+            return fixed_type::from_internal_value(std::numeric_limits<T>::max());
+        }
+        else
+        {
+            constexpr fixed_type max_value = fixed_type::from_internal_value(~fixed_type::signbit_mask());
+        }
+    }
+
+    static constexpr fixed_type lowest() noexcept
+    {
+        return min();
+    }
 
 #undef EIRIN_SHORT_IMPL
-#undef EIRIN_INTERNAL_RECRUIT_IMPL
 #undef EIRIN_DIRECT_IMPL
 };
 } // namespace std

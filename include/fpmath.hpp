@@ -17,6 +17,12 @@ EIRIN_ALWAYS_INLINE constexpr inline T max_value() noexcept
     return std::numeric_limits<T>::max();
 }
 
+template <fixed_point T>
+EIRIN_ALWAYS_INLINE constexpr inline T min_value() noexcept
+{
+    return std::numeric_limits<T>::min();
+}
+
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> ceil(fixed_num<T, I, f, r> fp) noexcept
 {
