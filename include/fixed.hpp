@@ -931,10 +931,10 @@ struct numeric_limits<eirin::fixed_num<T, I, f, r>>
         return fixed_type::from_internal_value(std::numeric_limits<T>::name()); \
     }
 
-#define EIRIN_DIRECT_IMPL(name, value)        \
+#define EIRIN_DIRECT_IMPL(name, value) \
     static constexpr fixed_type name() \
     {                                  \
-        return fixed_type(value);       \
+        return fixed_type(value);      \
     }
 
     EIRIN_SHORT_IMPL(epsilon)

@@ -378,24 +378,36 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f
     return res;
 }
 
+namespace detail
+{
+    template <typename T, typename I, unsigned int f, bool r>
+    EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> exp_expand(fixed_num<T, I, f, r> fp) noexcept
+    {
+        using fixed = fixed_num<T, I, f, r>;
+        // the integer part of the input fixed point number.
+        const T x_int = fp.internal_value() / (I(1) << f);
+        fp -= x_int;
+
+        constexpr auto a = fixed::template from_fixed_num_value<63>(0x01C798ECC0CBC856ll); // 1.3903728105644451e-2
+        constexpr auto b = fixed::template from_fixed_num_value<63>(0x04745859810836DAll); // 3.4800571158543038e-2
+        constexpr auto c = fixed::template from_fixed_num_value<63>(0x15CFBB5C306F85F3ll); // 1.7040197373796334e-1
+        constexpr auto d = fixed::template from_fixed_num_value<63>(0x3FE26186C531F98Ell); // 4.9909609871464493e-1
+        constexpr auto e = fixed::template from_fixed_num_value<63>(0x40014D4407008BB0ll); // 1.0000794567422495
+        constexpr auto _f = fixed::template from_fixed_num_value<63>(0x7FFFF686446F1B43ll); // 9.9999887043019773e-1
+        return pow(fixed::e(), x_int) * (_f + fp * (e + fp * (d + fp * (c + fp * (b + fp * a)))));
+    }
+} // namespace detail
+
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> exp(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
+
+    if(fp == fixed(0))
+        return fixed(1);
     if(fp < fixed(0))
-        return fixed(1) / exp(-fp);
-
-    // the integer part of the input fixed point number.
-    const T x_int = fp.internal_value() / (I(1) << f);
-    fp -= x_int;
-
-    constexpr auto a = fixed::template from_fixed_num_value<63>(0x01C798ECC0CBC856ll); // 1.3903728105644451e-2
-    constexpr auto b = fixed::template from_fixed_num_value<63>(0x04745859810836DAll); // 3.4800571158543038e-2
-    constexpr auto c = fixed::template from_fixed_num_value<63>(0x15CFBB5C306F85F3ll); // 1.7040197373796334e-1
-    constexpr auto d = fixed::template from_fixed_num_value<63>(0x3FE26186C531F98Ell); // 4.9909609871464493e-1
-    constexpr auto e = fixed::template from_fixed_num_value<63>(0x40014D4407008BB0ll); // 1.0000794567422495
-    constexpr auto _f = fixed::template from_fixed_num_value<63>(0x7FFFF686446F1B43ll); // 9.9999887043019773e-1
-    return pow(fixed::e(), x_int) * (_f + fp * (e + fp * (d + fp * (c + fp * (b + fp * a)))));
+        return fixed(1) / detail::exp_expand(-fp);
+    return detail::exp_expand(fp);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
