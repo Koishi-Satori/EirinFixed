@@ -21,20 +21,6 @@
 #include <papilio/format.hpp>
 #include <macro.hpp>
 
-#ifdef EIRIN_DEFINE_INT128_SIGNED
-namespace std
-{
-/**
- * @brief Template specialization for int128_type.
- *
- * @tparam T int128_type
- */
-template <>
-struct is_signed<boost::multiprecision::int128_type> : public std::true_type
-{};
-} // namespace std
-#endif
-
 namespace eirin
 {
 
@@ -43,23 +29,6 @@ class divide_by_zero : public std::domain_error
 public:
     divide_by_zero()
         : std::domain_error("Divide by zero.") {};
-};
-
-template <typename Type, unsigned int fraction>
-concept fixed_num_fraction = fraction > 0 && fraction <= sizeof(Type) * 8 - 1;
-
-template <typename Type, typename IntermediateType>
-concept fixed_num_size = sizeof(IntermediateType) > sizeof(Type);
-
-template <typename Type, typename IntermediateType>
-concept fixed_num_signness = std::is_signed<IntermediateType>::value == std::is_signed<Type>::value;
-
-template <typename Type, typename IntermediateType, unsigned int fraction>
-concept fixed_num_check = std::is_integral_v<Type> && fixed_num_fraction<Type, fraction> && fixed_num_size<Type, IntermediateType> && fixed_num_signness<Type, IntermediateType>;
-
-template <int scale>
-concept fixed_format_check_scale = requires {
-    scale == 2 || scale == 8 || scale == 10 || scale == 16;
 };
 
 namespace detail
@@ -110,7 +79,30 @@ namespace detail
             return bits;
         }
     }
+
+    template <typename T>
+    struct is_signed : public std::is_signed<T> {};
+
+    template <>
+    struct is_signed<boost::multiprecision::int128_type> : public std::true_type {};
 } // namespace detail
+
+template <typename Type, unsigned int fraction>
+concept fixed_num_fraction = fraction > 0 && fraction <= sizeof(Type) * 8 - 1;
+
+template <typename Type, typename IntermediateType>
+concept fixed_num_size = sizeof(IntermediateType) > sizeof(Type);
+
+template <typename Type, typename IntermediateType>
+concept fixed_num_signness = detail::is_signed<IntermediateType>::value == detail::is_signed<Type>::value;
+
+template <typename Type, typename IntermediateType, unsigned int fraction>
+concept fixed_num_check = std::is_integral_v<Type> && fixed_num_fraction<Type, fraction> && fixed_num_size<Type, IntermediateType> && fixed_num_signness<Type, IntermediateType>;
+
+template <int scale>
+concept fixed_format_check_scale = requires {
+    scale == 2 || scale == 8 || scale == 10 || scale == 16;
+};
 
 /**
      * @brief The fixed number.
