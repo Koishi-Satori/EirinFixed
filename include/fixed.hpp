@@ -966,6 +966,7 @@ struct numeric_limits<eirin::fixed_num<T, I, f, r>>
         else
         {
             constexpr fixed_type max_value = fixed_type::from_internal_value(~fixed_type::signbit_mask());
+            return max_value;
         }
     }
 
