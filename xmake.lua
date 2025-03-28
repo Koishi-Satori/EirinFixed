@@ -1,6 +1,9 @@
+set_project("eirin_fixed")
+set_version("1.0.2")
+
 add_rules("mode.debug", "mode.release")
 
-add_repositories("fixed32_repo fixed32_repo")
+add_repositories("eirin_repo eirin_repo")
 
 option("eirin_with_papilio")
     set_default(false)
@@ -21,7 +24,7 @@ option("eirin_build_benchmarks")
     add_defines("EIRIN_BUILD_BENCHMARK")
     option_end()
 
-add_requires("boost 1.86.0")
+add_requires("boost 1.86.0", {configs = {multiprecision = true}})
 if has_config("eirin_with_papilio") then
     add_requires("papilio")
 end
@@ -30,7 +33,7 @@ set_warnings("all")
 set_languages("cxx20")
 add_cxxflags("-O3")
 
-target("fixed32")
+target("eirin_fixed")
     add_options("eirin_with_papilio")
     set_kind("shared")
     add_includedirs("include", {public = true})
