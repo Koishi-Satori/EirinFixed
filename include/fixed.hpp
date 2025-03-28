@@ -134,6 +134,13 @@ class fixed_num
 public:
     inline fixed_num() noexcept = default;
 
+    /**
+     * @brief Construct the fixed number from a integer value.
+     * 
+     * @tparam T integral type.
+     * @param val the input integer.
+     * @return EIRIN_ALWAYS_INLINE constexpr the fixed number converted from the integer.
+     */
     template <std::integral T>
     EIRIN_ALWAYS_INLINE constexpr inline explicit fixed_num(T val) noexcept
         : m_value(static_cast<Type>(val) << fraction){};

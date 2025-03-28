@@ -15,3 +15,4 @@ compile_commands.json
 docs/html/
 docs/latex/
 docs/xml/
+docs/_build
