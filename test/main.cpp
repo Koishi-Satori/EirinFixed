@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <fixed.hpp>
 #include <fpmath.hpp>
+#include <ext/fixed_as.hpp>
 #include <numbers>
 #include <fixed_formatter.hpp>
 #include <papilio/core.hpp>

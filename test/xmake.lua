@@ -1,7 +1,7 @@
 add_requires("gtest")
 
-target("fixed32.test")
+target("eirin_fixed.test")
     set_kind("binary")
     add_files("*.cpp")
-    add_deps("fixed32")
+    add_deps("eirin_fixed")
     add_packages("gtest")

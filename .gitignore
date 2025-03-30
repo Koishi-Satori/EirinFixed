@@ -10,3 +10,9 @@ build/
 .cache/
 
 compile_commands.json
+
+# Doxygen generated
+docs/html/
+docs/latex/
+docs/xml/
+docs/_build
