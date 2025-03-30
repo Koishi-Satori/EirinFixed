@@ -37,6 +37,7 @@ target("eirin_fixed")
     add_options("eirin_with_papilio")
     set_kind("shared")
     add_includedirs("include", {public = true})
+    add_includedirs("include/ext", {public = true})
     add_files("src/*.cpp")
     if has_config("eirin_with_papilio") then
         add_packages("papilio")
