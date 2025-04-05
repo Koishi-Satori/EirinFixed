@@ -100,6 +100,31 @@ The ``_f64`` literal provides to create from integral or floating point types or
         return 0;
     }
 
+Construct from Another Fixed Point Number
+------------------------------------------------
+
+You can create a fixed point number from another fixed point number with the same type or different type.
+The constructor will automatically convert the fixed point number to the target type.
+
+.. code-block:: c++
+
+    #include <iostream>
+    #include <eirin/fixed_point.hpp>
+    
+    int main() {
+        using namespace eirin;
+        fixed32 fp1 = "123.45"_f32;
+        std::cout << "fp1: " << fp1 << std::endl;
+
+        fixed64 fp2(fp1);
+        std::cout << "fp2: " << fp2 << std::endl;
+
+        fixed32 fp3(fp2);
+        std::cout << "fp3: " << fp3 << std::endl;
+
+        return 0;
+    }
+
 Convert from Integer or Floating Point Types
 ------------------------------------------------
 
@@ -170,3 +195,66 @@ Before using it, you need to know the internal representation of the fixed point
 - The integral part are just like the integral types, so the actual value is ``m_value >> fraction``, marked as ``m_int_actual`` here.
 - Each bits of the fractional part are a value of ``2^(-i)`` where ``i`` is the index of the bit, starting from 1, if this bit is 1. For example, the first bit is ``2^(-1)``, the second bit is ``2^(-2)``, and so on. So it is easy to calculate the actual value of the fractional part, which is the summation from i equals 1 to ``fraction`` of ``2^i + f(i)``, ``f(i)`` same as the bit value of the i-th bit.
 - The actual value of the fixed point number are ``m_int_actual + m_frac_actual``.
+
+There is another function ``eirin::fixed_num::from_fixed_num_value`` which is used to create a fixed point number from the internal value of another fixed point number.
+
+.. code-block:: c++
+
+    #include <iostream>
+    #include <eirin/fixed_point.hpp>
+    
+    int main() {
+        using namespace eirin;
+        fixed32 fp1 = "123.45"_f32;
+        std::cout << "fp1: " << fp1 << std::endl;
+
+        // Get the internal representation
+        auto internal_value = fp1.internal_value();
+        std::cout << "internal_value: " << internal_value << std::endl;
+
+        // Create a fixed point number from the internal representation
+        fixed32 fp2 = fixed32::from_internal_value(internal_value);
+        std::cout << "fp2: " << fp2 << std::endl;
+
+        // waring: if you know what you are doing
+        auto fp3 = fixed32::from_internal_value(0x12345678);
+
+        return 0;
+    }
+
+
+Useful Functions
+=================
+
+Get the Integral or Fractional Part
+------------------------------------------------
+
+Get the Internal Representation
+------------------------------------------------
+
+Sign Bit
+----------------
+
+- You can get the sign bit of the fixed point number with the ``eirin::fixed_num::signbit`` function.
+- Also, you can get the sign bit mask with the ``eirin::fixed_num::signbit_mask`` function.
+
+.. code-block:: c++
+
+    #include <iostream>
+    #include <eirin/fixed_point.hpp>
+    
+    int main() {
+        using namespace eirin;
+        fixed32 fp1 = "123.45"_f32;
+        std::cout << "fp1: " << fp1 << std::endl;
+
+        // Get the sign bit
+        auto signbit = fp1.signbit();
+        std::cout << "signbit: " << signbit << std::endl;
+
+        // Get the sign bit mask
+        auto signbit_mask = fp1.signbit_mask();
+        std::cout << "signbit_mask: " << signbit_mask << std::endl;
+
+        return 0;
+    }
