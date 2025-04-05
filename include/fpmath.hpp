@@ -267,6 +267,8 @@ template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
+    if(abs(fp) < fixed::epsilon())
+        return fixed(0);
     auto x = (fixed(fp) + 2) / 3;
     auto iter_count = 0;
     constexpr auto precision = fixed::nearly_compare_epsilon() * 2;

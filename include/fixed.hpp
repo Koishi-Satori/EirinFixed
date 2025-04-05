@@ -653,32 +653,52 @@ concept fixed_point = detail::is_fixed_point<std::remove_cv_t<T>>::value;
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
 using fixed64 = fixed_num<int64_t, boost::multiprecision::int128_type, 32, false>;
 
-inline fixed32 operator""_f32(unsigned long long val)
+inline namespace literals
 {
-    return fixed32(val);
-}
-
-inline fixed32 operator""_f32(long double val)
-{
-    return fixed32(val);
-}
-
-constexpr fixed64 operator""_f64(const char* str, size_t len)
-{
-    fixed64 fp;
-    detail::parse(str, len, fp);
-    return fp;
-}
-
-template <char... chars>
-constexpr fixed64 operator""_f64()
-{
-    auto len = sizeof...(chars);
-    const char str[] = {chars...};
-    fixed64 fp;
-    detail::parse(str, len, fp);
-    return fp;
-}
+    constexpr inline fixed32 operator""_f32(unsigned long long val)
+    {
+        return fixed32(val);
+    }
+    
+    constexpr inline fixed32 operator""_f32(long double val)
+    {
+        return fixed32(val);
+    }
+    
+    constexpr inline fixed32 operator""_f32(const char* str, size_t len)
+    {
+        fixed32 fp;
+        detail::parse(str, len, fp);
+        return fp;
+    }
+    
+    template <char... chars>
+    constexpr inline fixed32 operator""_f32()
+    {
+        auto len = sizeof...(chars);
+        const char str[] = {chars...};
+        fixed32 fp;
+        detail::parse(str, len, fp);
+        return fp;
+    }
+    
+    constexpr inline fixed64 operator""_f64(const char* str, size_t len)
+    {
+        fixed64 fp;
+        detail::parse(str, len, fp);
+        return fp;
+    }
+    
+    template <char... chars>
+    constexpr inline fixed64 operator""_f64()
+    {
+        auto len = sizeof...(chars);
+        const char str[] = {chars...};
+        fixed64 fp;
+        detail::parse(str, len, fp);
+        return fp;
+    }
+} // namespace literals
 
 template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> operator+(const fixed_num<T, I, f, r>& fp, const std::integral auto& val) noexcept
@@ -864,24 +884,6 @@ bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) 
     if(negative)
         fp = -fp;
     return true;
-}
-
-inline fixed32 operator""_f32(const char* str)
-{
-    fixed32 fp;
-    if(f32_from_cstring(str, std::strlen(str), fp))
-        return fp;
-    else
-        throw std::runtime_error("failed converting string to fixed32");
-}
-
-inline fixed32 operator""_f32(const char* str, size_t len)
-{
-    fixed32 fp;
-    if(f32_from_cstring(str, len, fp))
-        return fp;
-    else
-        throw std::runtime_error("failed converting string to fixed32");
 }
 
 template <typename CharT, class Traits, typename T, typename I, unsigned int f, bool r>
