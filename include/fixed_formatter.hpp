@@ -73,7 +73,7 @@ public:
 
         case U'o':
             int_only = true;
-            base = 10;
+            base = 8;
             break;
 
         case U'B':
