@@ -32,7 +32,7 @@ The core library of EirinFixed is a header-only library, you can copy the ``incl
 
 To be noticed that the header files in ``ext`` directory is not a header-only library, and it includes the interface used for binding fixed point numbers to AngelScript for my another project. If you don't need it, you can ignore it.
 
-If your project has a custom location of ``boost/multiprecision/cpp_int.hpp``, you can include it before including the ``eirin/fixed_point.hpp`` header file, and the library will use your custom location instead of the default location.
+If your project has a custom location of ``boost/multiprecision/cpp_int.hpp``, you can include it before including the ``fixed.hpp`` header file, and the library will use your custom location instead of the default location.
 
 .. note::
     **About `fixed_formatter.hpp`**

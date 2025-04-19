@@ -49,7 +49,7 @@ The ``eirin::fixed_point`` class provides two constructors which allows you to c
 .. code-block:: c++
 
     #include <iostream>
-    #include <eirin/fixed_point.hpp>
+    #include <fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -87,7 +87,7 @@ The ``_f64`` literal provides to create from integral or floating point types or
 .. code-block:: c++
 
     #include <iostream>
-    #include <eirin/fixed_point.hpp>
+    #include <fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -109,7 +109,7 @@ The constructor will automatically convert the fixed point number to the target 
 .. code-block:: c++
 
     #include <iostream>
-    #include <eirin/fixed_point.hpp>
+    #include <fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -133,7 +133,7 @@ You can convert a fixed point number from an integer or floating point.
 .. code-block:: c++
 
     #include <iostream>
-    #include <eirin/fixed_point.hpp>
+    #include <fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -166,7 +166,7 @@ This function has 3 parameters:
 .. code-block:: c++
 
     #include <iostream>
-    #include <eirin/fixed_point.hpp>
+    #include <fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -201,7 +201,7 @@ There is another function ``eirin::fixed_num::from_fixed_num_value`` which is us
 .. code-block:: c++
 
     #include <iostream>
-    #include <eirin/fixed_point.hpp>
+    #include <fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -241,7 +241,7 @@ Sign Bit
 .. code-block:: c++
 
     #include <iostream>
-    #include <eirin/fixed_point.hpp>
+    #include <fixed.hpp>
     
     int main() {
         using namespace eirin;
