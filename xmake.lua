@@ -24,20 +24,18 @@ option("eirin_build_benchmarks")
     add_defines("EIRIN_BUILD_BENCHMARK")
     option_end()
 
-add_requires("boost 1.86.0", {configs = {multiprecision = true}})
+add_requires("boost 1.86.0", {configs = {multiprecision = true, container = true, math = true, cmake = false}})
 if has_config("eirin_with_papilio") then
     add_requires("papilio")
 end
 
 set_warnings("all")
 set_languages("cxx20")
-add_cxxflags("-O3")
 
 target("eirin_fixed")
     add_options("eirin_with_papilio")
-    set_kind("shared")
+    set_kind("static")
     add_includedirs("include", {public = true})
-    add_includedirs("include/ext", {public = true})
     add_files("src/*.cpp")
     if has_config("eirin_with_papilio") then
         add_packages("papilio")
