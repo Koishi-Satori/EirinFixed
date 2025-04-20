@@ -31,6 +31,11 @@ TEST(fixed32, operator)
     EXPECT_EQ(514_f32 / 2, 257_f32);
     EXPECT_EQ(515_f32 % 2_f32, 1_f32);
     EXPECT_EQ(--fp1, 0.14_f32);
+
+    EXPECT_THROW(
+        (void)(1_f32 / 0),
+        divide_by_zero
+    );
 }
 
 TEST(fixed64, operator)
@@ -43,6 +48,11 @@ TEST(fixed64, operator)
     EXPECT_EQ(514_f64 / 2, 257_f64);
     EXPECT_EQ(515_f64 % 2_f64, 1_f64);
     EXPECT_EQ(--fp1, 0.14_f64);
+
+    EXPECT_THROW(
+        (void)(1_f64 / 0),
+        divide_by_zero
+    );
 }
 
 TEST(fixed32, rounding)
@@ -228,6 +238,11 @@ TEST(fixed32, papilio_format)
     EXPECT_EQ(papilio::format("{:.2g}", fixed32::pi()), "3.14");
     EXPECT_EQ(papilio::format("{:.2f}", fixed32::pi()), "3.14");
     EXPECT_EQ(papilio::format("{:.4f}", fixed32::pi()), "3.1415");
+
+    EXPECT_THROW(
+        (void)papilio::format("{:s}", fixed32::pi()),
+        papilio::format_error
+    );
 }
 
 TEST(fixed_num, constants)
