@@ -236,7 +236,6 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> cos(fixed_num<T, I, f
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
 {
-    using fixed = fixed_num<T, I, f, r>;
     auto cosx = cos(fp);
     if(abs(cosx).internal_value() > 1)
         return sin(fp) / cosx;
@@ -441,14 +440,12 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> fmod(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
 {
-    using fixed = fixed_num<T, I, f, r>;
     return a - b * floor(a / b);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> modf(fixed_num<T, I, f, r> fp, fixed_num<T, I, f, r>& int_part) noexcept
 {
-    using fixed = fixed_num<T, I, f, r>;
     int_part = floor(fp);
     return fp - int_part;
 }

@@ -160,6 +160,7 @@ static void f64_create(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = f64_identity(1145.14_f64);
+        (void)fp1;
     }
 }
 

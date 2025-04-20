@@ -42,7 +42,7 @@ const char* parse(const char* start, const char* stop, fixed32& out)
     {
         next();
         constexpr auto max_fraction = (1 << fixed32::precision) - 1;
-        int32_t scale = 1, divisor = 1;
+        int32_t divisor = 1;
         while(has_next())
         {
             if(!isdigit(peek()))

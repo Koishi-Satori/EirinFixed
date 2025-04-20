@@ -147,11 +147,11 @@ public:
      * @return EIRIN_ALWAYS_INLINE constexpr the fixed number converted from the integer.
      */
     template <std::integral T>
-    EIRIN_ALWAYS_INLINE constexpr inline explicit fixed_num(T val) noexcept
+    EIRIN_ALWAYS_INLINE constexpr explicit fixed_num(T val) noexcept
         : m_value(static_cast<Type>(val) << fraction){};
 
     template <std::floating_point T>
-    EIRIN_ALWAYS_INLINE constexpr inline explicit fixed_num(T val) noexcept
+    EIRIN_ALWAYS_INLINE constexpr explicit fixed_num(T val) noexcept
     {
         if constexpr(std::is_class_v<IntermediateType>)
         {
@@ -179,15 +179,15 @@ public:
     };
 
     template <typename T, typename I, unsigned int f, bool r>
-    EIRIN_ALWAYS_INLINE constexpr inline explicit fixed_num(fixed_num<T, I, f, r> fp) noexcept
+    EIRIN_ALWAYS_INLINE constexpr explicit fixed_num(fixed_num<T, I, f, r> fp) noexcept
         : m_value(from_fixed_num_value<f>(fp.internal_value()).internal_value())
     {}
 
     /**
-        * @brief Get the inner value of the fixed number.
-        * @note do not use unless you know what this function is and what are u doing.
-        */
-    EIRIN_ALWAYS_INLINE constexpr inline Type internal_value() const noexcept
+     * @brief Get the inner value of the fixed number.
+     * @note do not use unless you know what this function is and what are u doing.
+     */
+    EIRIN_ALWAYS_INLINE constexpr Type internal_value() const noexcept
     {
         return m_value;
     }
@@ -237,12 +237,12 @@ public:
 
     static constexpr inline auto precision = fraction;
 
-    EIRIN_ALWAYS_INLINE static constexpr inline Type signbit_mask() noexcept
+    EIRIN_ALWAYS_INLINE static constexpr Type signbit_mask() noexcept
     {
         return static_cast<Type>(1) << (sizeof(Type) * 8 - 1);
     }
 
-    EIRIN_ALWAYS_INLINE friend constexpr inline bool signbit(const fixed_num& f) noexcept
+    EIRIN_ALWAYS_INLINE friend constexpr bool signbit(const fixed_num& f) noexcept
     {
         if constexpr(std::is_signed_v<Type>)
             return f.m_value & signbit_mask();
@@ -250,7 +250,7 @@ public:
             return false;
     }
 
-    EIRIN_ALWAYS_INLINE constexpr inline Type raw_integral_part() const noexcept
+    EIRIN_ALWAYS_INLINE constexpr Type raw_integral_part() const noexcept
     {
         Type result = m_value;
         result &= ~signbit_mask(); // Remove signbit
@@ -258,7 +258,7 @@ public:
         return result;
     }
 
-    EIRIN_ALWAYS_INLINE constexpr inline Type integral_part() const noexcept
+    EIRIN_ALWAYS_INLINE constexpr Type integral_part() const noexcept
     {
         Type result = m_value;
         if(signbit(*this))
@@ -271,7 +271,7 @@ public:
         return result;
     }
 
-    EIRIN_ALWAYS_INLINE constexpr inline Type fractional_part() const noexcept
+    EIRIN_ALWAYS_INLINE constexpr Type fractional_part() const noexcept
     {
         return m_value % (static_cast<Type>(1) << fraction);
     }
@@ -476,7 +476,7 @@ public:
     /* convert functions */
 
     template <unsigned int _fraction, typename T, typename std::enable_if_t<(_fraction > fraction), T*> = nullptr>
-    EIRIN_ALWAYS_INLINE static constexpr inline fixed_num from_fixed_num_value(T inner_value) noexcept
+    EIRIN_ALWAYS_INLINE static constexpr fixed_num from_fixed_num_value(T inner_value) noexcept
     {
         return rounding ?
                    fixed_num(static_cast<Type>(inner_value / (T(1) << (_fraction - fraction)) + (inner_value / (T(1) << (_fraction - fraction - 1)) % 2)), raw_value_construct_tag{}) :
@@ -484,7 +484,7 @@ public:
     }
 
     template <unsigned int _fraction, typename T, typename std::enable_if_t<(_fraction <= fraction), T*> = nullptr>
-    EIRIN_ALWAYS_INLINE static constexpr inline fixed_num from_fixed_num_value(T inner_value) noexcept
+    EIRIN_ALWAYS_INLINE static constexpr fixed_num from_fixed_num_value(T inner_value) noexcept
     {
         return fixed_num(static_cast<Type>(inner_value * (T(1) << (fraction - _fraction))), raw_value_construct_tag{});
     }
@@ -505,7 +505,7 @@ public:
     }
 
     template <typename CharT, class Traits>
-    EIRIN_ALWAYS_INLINE inline std::basic_ostream<CharT, Traits>& print(std::basic_ostream<CharT, Traits>& os) const noexcept
+    EIRIN_ALWAYS_INLINE std::basic_ostream<CharT, Traits>& print(std::basic_ostream<CharT, Traits>& os) const noexcept
     {
         auto uppercase = os.flags() & std::ios_base::uppercase;
         auto digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
@@ -631,7 +631,7 @@ namespace detail
             next();
         }
 
-        int64_t int_part = 0, dec_part = 0;
+        std::int64_t int_part = 0, dec_part = 0;
         // parse the integer part.
         while(has_next() && peek() != '.')
         {
@@ -643,8 +643,8 @@ namespace detail
         if(has_next() && peek() == '.')
         {
             ++pos;
-            constexpr auto max_fraction = ((int64_t)1 << fixed::precision) - 1;
-            int64_t scale = 1, divisor = 1;
+            constexpr auto max_fraction = ((std::int64_t)1 << fixed::precision) - 1;
+            std::int64_t divisor = 1;
             while(has_next())
             {
                 if(!isdigit(peek()))
@@ -657,11 +657,15 @@ namespace detail
                 dec_part = dec_part * 10 + digit;
                 divisor *= 10;
             }
-            fp = fixed::from_internal_value((int_part << fixed::precision) + (dec_part << fixed::precision) / divisor);
+            fp = fixed::from_internal_value(
+                static_cast<T>((int_part << fixed::precision) + (dec_part << fixed::precision) / divisor)
+            );
         }
         else
         {
-            fp = fixed::from_internal_value(int_part << fixed::precision);
+            fp = fixed::from_internal_value(
+                static_cast<T>(int_part << fixed::precision)
+            );
         }
         if(negative)
             fp = -fp;
@@ -828,7 +832,7 @@ inline bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
     {
         ++pos;
         constexpr auto max_fraction = (1 << fixed32::precision) - 1;
-        int32_t scale = 1, divisor = 1;
+        int32_t divisor = 1;
         while(has_next())
         {
             if(!isdigit(peek()))
