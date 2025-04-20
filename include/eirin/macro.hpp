@@ -12,7 +12,7 @@
 #elif defined _MSC_VER
 #    define EIRIN_ALWAYS_INLINE __forceinline
 #else
-#    define EIRIN_ALWAYS_INLINE
+#    define EIRIN_ALWAYS_INLINE inline
 #endif
 
 

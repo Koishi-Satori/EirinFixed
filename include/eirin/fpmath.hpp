@@ -1,7 +1,9 @@
-#ifndef EIRIN_FIXED_MATH_HPP
-#define EIRIN_FIXED_MATH_HPP
+#ifndef EIRIN_FIXED_FPMATH_HPP
+#define EIRIN_FIXED_FPMATH_HPP
 
-#include <fixed.hpp>
+#pragma once
+
+#include "fixed.hpp"
 #include <stdexcept>
 
 namespace eirin
@@ -234,7 +236,6 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> cos(fixed_num<T, I, f
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
 {
-    using fixed = fixed_num<T, I, f, r>;
     auto cosx = cos(fp);
     if(abs(cosx).internal_value() > 1)
         return sin(fp) / cosx;
@@ -393,7 +394,7 @@ namespace detail
     {
         using fixed = fixed_num<T, I, f, r>;
         // the integer part of the input fixed point number.
-        const T x_int = fp.internal_value() / (I(1) << f);
+        const T x_int = static_cast<T>(fp.internal_value() / (I(1) << f));
         fp -= x_int;
 
         constexpr auto a = fixed::template from_fixed_num_value<63>(0x01C798ECC0CBC856ll); // 1.3903728105644451e-2
@@ -430,7 +431,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f
     }
 
     // the integer part of the input exponent.
-    const T e_int = e.internal_value() / (I(1) << f);
+    const T e_int = static_cast<T>(e.internal_value() / (I(1) << f));
     e -= e_int;
 
     return pow(b, e_int) * exp(e * log(b));
@@ -439,17 +440,15 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> fmod(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
 {
-    using fixed = fixed_num<T, I, f, r>;
     return a - b * floor(a / b);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> modf(fixed_num<T, I, f, r> fp, fixed_num<T, I, f, r>& int_part) noexcept
 {
-    using fixed = fixed_num<T, I, f, r>;
     int_part = floor(fp);
     return fp - int_part;
 }
 } // namespace eirin
 
-#endif // EIRIN_FIXED_MATH_HPP
+#endif // EIRIN_FIXED_FPMATH_HPP
