@@ -1,11 +1,8 @@
-#ifndef EIRIN_FIXED_FIXED_FORMATTER_HPP
-#define EIRIN_FIXED_FIXED_FORMATTER_HPP
+#ifndef EIRIN_FIXED_EXT_PAPILIO_INTEGRATION_HPP
+#define EIRIN_FIXED_EXT_PAPILIO_INTEGRATION_HPP
 
-#ifdef EIRIN_WITH_PAPILIO
-
-#include <papilio/format.hpp>
 #include <papilio/core.hpp>
-#include <fixed.hpp>
+#include "../fixed.hpp"
 
 namespace papilio
 {
@@ -341,6 +338,5 @@ private:
     }
 };
 } // namespace papilio
-#endif
 
 #endif // EIRIN_FIXED_FIXED_FORMATTER_HPP

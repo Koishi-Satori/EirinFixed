@@ -1,17 +1,11 @@
 #include <cmath>
-#include <cstdlib>
-#include <fixed.hpp>
-#include <fpmath.hpp>
-#include <ext/fixed_as.hpp>
+#include <eirin/fixed.hpp>
+#include <eirin/fpmath.hpp>
+#include <eirin/parse.hpp>
 #include <numbers>
-#include <fixed_formatter.hpp>
-#include <gtest/gtest.h>
-
-#ifdef EIRIN_WITH_PAPILIO
-#include <papilio/core.hpp>
-#include <papilio/format.hpp>
 #include <papilio/print.hpp>
-#endif
+#include <eirin/ext/papilio_integration.hpp>
+#include <gtest/gtest.h>
 
 using namespace eirin;
 

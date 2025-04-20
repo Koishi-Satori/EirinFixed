@@ -1,7 +1,9 @@
-#ifndef EIRIN_FIXED_MATH_HPP
-#define EIRIN_FIXED_MATH_HPP
+#ifndef EIRIN_FIXED_FPMATH_HPP
+#define EIRIN_FIXED_FPMATH_HPP
 
-#include <fixed.hpp>
+#pragma once
+
+#include "fixed.hpp"
 #include <stdexcept>
 
 namespace eirin

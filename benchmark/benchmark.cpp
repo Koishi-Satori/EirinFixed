@@ -1,5 +1,5 @@
-#include <fixed.hpp>
-#include <fpmath.hpp>
+#include <eirin/fixed.hpp>
+#include <eirin/fpmath.hpp>
 #include <benchmark/benchmark.h>
 #include "bench.hpp"
 

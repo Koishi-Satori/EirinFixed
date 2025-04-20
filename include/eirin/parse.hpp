@@ -1,12 +1,14 @@
-#ifndef EIRIN_FIXED_FIXED_EXT_ANGEL_SCRIPT_HPP
-#define EIRIN_FIXED_FIXED_EXT_ANGEL_SCRIPT_HPP
+#ifndef EIRIN_FIXED_PARSE_HPP
+#define EIRIN_FIXED_PARSE_HPP
 
-#include <fixed.hpp>
+#pragma once
+
+#include "fixed.hpp"
 
 namespace eirin
 {
 /**
-     * @brief Parse fixed point number from string, for angel script.
+     * @brief Parse fixed point number from string
      *
      * @param start the beginning pos of the pointer.
      * @param stop the end pos of the pointer.

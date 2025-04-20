@@ -1,6 +1,8 @@
 #ifndef EIRIN_FIXED_FIXED_HPP
 #define EIRIN_FIXED_FIXED_HPP
 
+#pragma once
+
 #include <array>
 #include <cassert>
 #include <cctype>
@@ -19,11 +21,10 @@
 #include <boost/multiprecision/cpp_int/cpp_int_config.hpp>
 #include <boost/multiprecision/detail/standalone_config.hpp>
 #include <boost/multiprecision/traits/std_integer_traits.hpp>
-#include <macro.hpp>
+#include "macro.hpp"
 
 namespace eirin
 {
-
 class divide_by_zero : public std::domain_error
 {
 public:
