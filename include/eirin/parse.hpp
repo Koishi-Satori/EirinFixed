@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <string_view>
 #include "fixed.hpp"
 
 namespace eirin
@@ -16,7 +17,9 @@ namespace eirin
  * @return the pos of the pointer.
  */
 const char* parse(const char* start, const char* stop, fixed32& out);
+
+const char* parse(std::string_view str, fixed32& out);
 } // namespace eirin
 
 
-#endif
+#endif // EIRIN_FIXED_PARSE_HPP

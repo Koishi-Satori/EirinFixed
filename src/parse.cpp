@@ -67,4 +67,13 @@ const char* parse(const char* start, const char* stop, fixed32& out)
         out = -out;
     return start;
 }
+
+const char* parse(std::string_view str, fixed32& out)
+{
+    return parse(
+        std::to_address(str.begin()),
+        std::to_address(str.end()),
+        out
+    );
+}
 } // namespace eirin

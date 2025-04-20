@@ -451,4 +451,4 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> modf(fixed_num<T, I, 
 }
 } // namespace eirin
 
-#endif // EIRIN_FIXED_MATH_HPP
+#endif // EIRIN_FIXED_FPMATH_HPP

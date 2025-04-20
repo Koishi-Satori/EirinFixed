@@ -200,7 +200,6 @@ TEST(fixed64, math)
     EXPECT_TRUE(expect_fixed_eq(exp(1_f64), fixed64::e()));
 }
 
-#ifdef EIRIN_WITH_PAPILIO
 TEST(fixed32, papilio_format)
 {
     EXPECT_EQ(papilio::format("{:?}", 0_f32), "0");
@@ -230,7 +229,6 @@ TEST(fixed32, papilio_format)
     EXPECT_EQ(papilio::format("{:.2f}", fixed32::pi()), "3.14");
     EXPECT_EQ(papilio::format("{:.4f}", fixed32::pi()), "3.1415");
 }
-#endif
 
 TEST(fixed_num, constants)
 {
@@ -283,19 +281,16 @@ int main(int argc, char* argv[])
     if(fixed_from_cstring("495.625", 8, fp))
         papilio::println("test from_cstring: {}, {}", (float)fp, (float)-"495.625"_f32);
     fp = 0_f32;
-    papilio::println("test parse: {}, {}, {}", parse("114b.514a", "a", fp), (float)fp, (float)114.514_f32);
-    papilio::println("test parse: {}, {}, {}", parse("114.514a", "a", fp), (float)fp, (float)114.514_f32);
-    papilio::println("test parse: {}, {}, {}", parse("114a.514a", "a", fp), (float)fp, (float)114.514_f32);
-    // fp = 0_f32;
-    // std::cin >> fp;
-    // papilio::println("test cin: {}(%d)", (float) fp, fp.internal_value());
+    papilio::println("test parse: {}, {}, {}", parse("114b.514a", fp), (float)fp, (float)114.514_f32);
+    papilio::println("test parse: {}, {}, {}", parse("114.514a", fp), (float)fp, (float)114.514_f32);
+    papilio::println("test parse: {}, {}, {}", parse("114a.514a", fp), (float)fp, (float)114.514_f32);
+
     std::cout << 114.5625_f32 << std::endl;
     std::cout << -114.5625_f32 << std::endl;
 
-#ifdef EIRIN_WITH_PAPILIO
     static_assert(papilio::formattable<fixed32>);
-    papilio::printlnln("{:f}", 114.5625_f32);
-#endif
+    papilio::println("{:f}", 114.5625_f32);
+
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

@@ -4,10 +4,8 @@
 #include <papilio/core.hpp>
 #include "../fixed.hpp"
 
-namespace papilio
-{
 template <typename T, typename I, unsigned int F, bool R, typename CharT>
-class formatter<eirin::fixed_num<T, I, F, R>, CharT> : public std_formatter_base
+class papilio::formatter<eirin::fixed_num<T, I, F, R>, CharT> : public std_formatter_base
 {
     using my_base = std_formatter_base;
 
@@ -38,8 +36,6 @@ public:
         // Internal representation for debugging
         if(data().type == U'?')
         {
-            using namespace std::literals;
-
             std_formatter_data fmt_data = data();
             fmt_data.use_locale = false;
             fmt_data.type = U'x';
@@ -170,7 +166,7 @@ public:
             CharT float_buf[sizeof(T) * 8];
             CharT* float_buf_end = float_buf;
 
-            unsigned int precision = data().precision;
+            unsigned int precision = static_cast<unsigned int>(data().precision);
             if(precision == 0)
                 precision = 6;
             unsigned int used_prec = 0;
@@ -337,6 +333,5 @@ private:
         return out;
     }
 };
-} // namespace papilio
 
-#endif // EIRIN_FIXED_FIXED_FORMATTER_HPP
+#endif // EIRIN_FIXED_EXT_PAPILIO_INTEGRATION_HPP
