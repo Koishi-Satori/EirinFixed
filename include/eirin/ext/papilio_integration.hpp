@@ -78,11 +78,8 @@ public:
             break;
         }
 
-        T value = fp.internal_value();
         bool neg = signbit(fp);
-
         const T int_part = fp.integral_part();
-        const T frac_part = fp.fractional_part();
 
         std::size_t used = 0;
 

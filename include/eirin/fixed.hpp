@@ -895,7 +895,7 @@ bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) 
     {
         next();
         constexpr auto max_fraction = (T(1) << f) - T(1);
-        T scale = T(1), divisor = T(1);
+        T divisor = T(1);
         while(has_next())
         {
             if(dec_part > max_fraction / 10 || !isdigit(peek()))
