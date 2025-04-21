@@ -35,6 +35,7 @@ Self Increment/Decrement Operators
 You can perform self increment and decrement operations on fixed point numbers.
 
 .. code-block:: c++
+
     #include <iostream>
     #include <eirin/fixed.hpp>
     

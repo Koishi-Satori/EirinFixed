@@ -17,7 +17,7 @@ extensions = [ "breathe" ]
 
 breathe_default_project = "EirinFixed"
 breathe_projects_source = {
-    "EirinFixed": ( "../include", ["fixed.hpp", "fpmath.hpp", "marco.hpp"] )
+    "EirinFixed": ( "../include/eirin", ["fixed.hpp", "fpmath.hpp", "marco.hpp", "parse.hpp", "ext/papilio_integration.hpp"] )
 }
 
 templates_path = ['_templates']
