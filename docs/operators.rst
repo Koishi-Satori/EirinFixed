@@ -11,7 +11,7 @@ The output will always be fixed point.
 .. code-block:: c++
 
     #include <iostream>
-    #include <fixed.hpp>
+    #include <eirin/fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -35,8 +35,9 @@ Self Increment/Decrement Operators
 You can perform self increment and decrement operations on fixed point numbers.
 
 .. code-block:: c++
+
     #include <iostream>
-    #include <fixed.hpp>
+    #include <eirin/fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -59,7 +60,7 @@ You can cast a fixed point number to an integral or floating point type.
 .. code-block:: c++
 
     #include <iostream>
-    #include <fixed.hpp>
+    #include <eirin/fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -80,7 +81,7 @@ You can compare fixed point numbers with comparison operators.
 .. code-block:: c++
 
     #include <iostream>
-    #include <fixed.hpp>
+    #include <eirin/fixed.hpp>
     
     int main() {
         using namespace eirin;
@@ -105,7 +106,7 @@ You can perform nearly compare with functions ``nearly_eq``, ``nearly_ne``, ``ne
 .. code-block:: c++
 
     #include <iostream>
-    #include <fixed.hpp>
+    #include <eirin/fixed.hpp>
     
     int main() {
         using namespace eirin;

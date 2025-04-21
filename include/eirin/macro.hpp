@@ -5,14 +5,14 @@
 
 #ifdef __GNUC__
 #    ifndef __clang__
-#        define EIRIN_ALWAYS_INLINE __attribute__((always_inline))
+#        define EIRIN_ALWAYS_INLINE __attribute__((always_inline)) inline
 #    else
-#        define EIRIN_ALWAYS_INLINE [[gnu::always_inline]]
+#        define EIRIN_ALWAYS_INLINE [[gnu::always_inline]] inline
 #    endif
 #elif defined _MSC_VER
 #    define EIRIN_ALWAYS_INLINE __forceinline
 #else
-#    define EIRIN_ALWAYS_INLINE
+#    define EIRIN_ALWAYS_INLINE inline
 #endif
 
 

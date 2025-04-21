@@ -41,7 +41,7 @@ The functions are implemented as template functions, which means that they can b
 .. code-block:: c++
 
     #include <iostream>
-    #include <fixed.hpp>
+    #include <eirin/fixed.hpp>
     #include <fpmath.hpp>
 
     int main()

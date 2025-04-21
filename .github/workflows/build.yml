@@ -1,0 +1,68 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+    MSVC:
+        runs-on: windows-2022
+
+        name: Windows MSVC
+
+        steps:
+          - uses: actions/checkout@v4
+          - uses: ilammy/msvc-dev-cmd@v1
+            with:
+              arch: amd64
+          - uses: xmake-io/github-action-setup-xmake@v1
+            with:
+              xmake-version: v2.9.8
+              actions-cache-folder: '.xmake-cache'
+              actions-cache-key: "windows-2022"
+              package-cache: true
+              package-cache-key: "windows-2022"
+              build-cache: true
+              build-cache-key: "windows-2022-release"
+
+          - name: Configure
+            run: |
+              xmake config --yes -m release --toolchain=msvc
+
+          - name: Build
+            run: |
+              xmake build --verbose --diagnosis --all
+
+          - name: Test
+            run: xmake test --verbose
+
+    Clang:
+        runs-on: ubuntu-24.04
+
+        name: Linux Clang 18
+
+        steps:
+          - name: Install Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y cmake ninja-build clang-18 clang++-18
+
+          - uses: actions/checkout@v4
+          - uses: xmake-io/github-action-setup-xmake@v1
+            with:
+              xmake-version: v2.9.8
+              actions-cache-folder: '.xmake-cache'
+              actions-cache-key: "linux-clang-18"
+              package-cache: true
+              package-cache-key: "linux-clang-18"
+              build-cache: true
+              build-cache-key: "linux-clang-18"
+
+          - name: Configure
+            run: |
+              xmake config --yes -m release --toolchain=clang-18
+
+          - name: Build
+            run: |
+              xmake build --verbose --diagnosis --all
+
+          - name: Test
+            run: xmake test --verbose
