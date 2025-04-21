@@ -1,7 +1,9 @@
-#ifndef EIRIN_FIXED_MATH_HPP
-#define EIRIN_FIXED_MATH_HPP
+#ifndef EIRIN_FIXED_FPMATH_HPP
+#define EIRIN_FIXED_FPMATH_HPP
 
-#include <fixed.hpp>
+#pragma once
+
+#include "fixed.hpp"
 #include <stdexcept>
 
 namespace eirin
@@ -12,19 +14,19 @@ constexpr inline fixed64 f64_max = fixed64::from_internal_value(0x7FFFFFFFFFFFFF
 constexpr inline fixed64 f64_min = fixed64::from_internal_value(0x8000000000000000);
 
 template <fixed_point T>
-EIRIN_ALWAYS_INLINE constexpr inline T max_value() noexcept
+EIRIN_ALWAYS_INLINE constexpr T max_value() noexcept
 {
     return std::numeric_limits<T>::max();
 }
 
 template <fixed_point T>
-EIRIN_ALWAYS_INLINE constexpr inline T min_value() noexcept
+EIRIN_ALWAYS_INLINE constexpr T min_value() noexcept
 {
     return std::numeric_limits<T>::min();
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> ceil(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> ceil(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto frac_mult = T(1) << f;
@@ -38,7 +40,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> ceil(fixed_num<T, I, 
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> floor(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> floor(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto frac_mult = T(1) << f;
@@ -53,7 +55,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> floor(fixed_num<T, I,
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> trunc(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> trunc(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto frac_mult = T(1) << f;
@@ -61,7 +63,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> trunc(fixed_num<T, I,
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> round(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> round(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     auto frac_mult = T(1) << f;
@@ -70,7 +72,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> round(fixed_num<T, I,
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> abs(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> abs(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     auto value = fp.internal_value();
@@ -78,7 +80,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> abs(fixed_num<T, I, f
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> min(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> min(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
 {
     auto a_i = a.internal_value();
     auto b_i = b.internal_value();
@@ -86,7 +88,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> min(fixed_num<T, I, f
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> max(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> max(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
 {
     auto a_i = a.internal_value();
     auto b_i = b.internal_value();
@@ -94,7 +96,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> max(fixed_num<T, I, f
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     // test if T is int32_t, if so, we can use the fast sqrt algorithm.
@@ -184,7 +186,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> sqrt(fixed_num<T, I, 
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     auto x = fixed(fp);
@@ -225,16 +227,15 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> sin(fixed_num<T, I, f
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> cos(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> cos(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     return sin(fp.internal_value() > 0 ? fp - (fixed::double_pi() - fixed::pi_2()) : fp + fixed::pi_2());
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp)
 {
-    using fixed = fixed_num<T, I, f, r>;
     auto cosx = cos(fp);
     if(abs(cosx).internal_value() > 1)
         return sin(fp) / cosx;
@@ -255,7 +256,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> tan(fixed_num<T, I, f
      * @return atan(x).
      */
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto a = fixed::template from_fixed_num_value<16>(0x3985); // 0.2247
@@ -264,7 +265,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> atan(fixed_num<T, I, 
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     if(abs(fp) < fixed::epsilon())
@@ -282,7 +283,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> cbrt(fixed_num<T, I, 
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
 {
     using fixed = fixed_num<T, I, f, r>;
 
@@ -340,7 +341,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> log2(fixed_num<T, I, 
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> log(fixed_num<T, I, f, r> fp)
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log(fixed_num<T, I, f, r> fp)
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto log2_e = fixed::template from_fixed_num_value<60>(0x171547652B82FE00ll);
@@ -348,7 +349,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> log(fixed_num<T, I, f
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> log10(fixed_num<T, I, f, r> fp)
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log10(fixed_num<T, I, f, r> fp)
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr auto log2_10 = fixed::template from_fixed_num_value<60>(0x35269E12F346E200ll);
@@ -356,7 +357,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> log10(fixed_num<T, I,
 }
 
 template <typename T, typename I, unsigned int f, bool r, std::integral E>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, E e) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, E e) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     if(b == fixed(0))
@@ -389,11 +390,11 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f
 namespace detail
 {
     template <typename T, typename I, unsigned int f, bool r>
-    EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> exp_expand(fixed_num<T, I, f, r> fp) noexcept
+    EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> exp_expand(fixed_num<T, I, f, r> fp) noexcept
     {
         using fixed = fixed_num<T, I, f, r>;
         // the integer part of the input fixed point number.
-        const T x_int = fp.internal_value() / (I(1) << f);
+        const T x_int = static_cast<T>(fp.internal_value() / (I(1) << f));
         fp -= x_int;
 
         constexpr auto a = fixed::template from_fixed_num_value<63>(0x01C798ECC0CBC856ll); // 1.3903728105644451e-2
@@ -407,7 +408,7 @@ namespace detail
 } // namespace detail
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> exp(fixed_num<T, I, f, r> fp) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> exp(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
 
@@ -419,7 +420,7 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> exp(fixed_num<T, I, f
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, fixed_num<T, I, f, r> e) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, fixed_num<T, I, f, r> e) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     if(b == fixed(0))
@@ -430,26 +431,24 @@ EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> pow(fixed_num<T, I, f
     }
 
     // the integer part of the input exponent.
-    const T e_int = e.internal_value() / (I(1) << f);
+    const T e_int = static_cast<T>(e.internal_value() / (I(1) << f));
     e -= e_int;
 
     return pow(b, e_int) * exp(e * log(b));
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> fmod(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> fmod(fixed_num<T, I, f, r> a, fixed_num<T, I, f, r> b) noexcept
 {
-    using fixed = fixed_num<T, I, f, r>;
     return a - b * floor(a / b);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr inline fixed_num<T, I, f, r> modf(fixed_num<T, I, f, r> fp, fixed_num<T, I, f, r>& int_part) noexcept
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> modf(fixed_num<T, I, f, r> fp, fixed_num<T, I, f, r>& int_part) noexcept
 {
-    using fixed = fixed_num<T, I, f, r>;
     int_part = floor(fp);
     return fp - int_part;
 }
 } // namespace eirin
 
-#endif // EIRIN_FIXED_MATH_HPP
+#endif // EIRIN_FIXED_FPMATH_HPP

@@ -19,7 +19,7 @@ You can create a fixed point number with integral or floating types using constr
     - Reason: Floating point error in different platforms, devices, operator systems and compilers.
     - The fixed point needs to make sure same result in different situations.
 ```c++
-#include <fixed.hpp>
+#include <eirin/fixed.hpp>
 
 using namespace eirin;
 
@@ -47,7 +47,7 @@ You can also create a fixed point from std::basic_istream or strings.
     - for example, 114a.514a will only parse "114" part.
 
 ```c++
-#include <fixed.hpp>
+#include <eirin/fixed.hpp>
 
 using namespace eirin;
 
@@ -71,8 +71,8 @@ You can use std::ostream or format functions provided by [Papilio Charontis](htt
 
 
 ```c++
-#include <fixed.hpp>
-#include <fixed_formatter.hpp>
+#include <eirin/fixed.hpp>
+#include <eirin/ext/papilio_integration.hpp.hpp>
 
 using namespace eirin;
 
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 - **NOTE: this is not recommended, UNLESS you know what you're doing.**
 
 ```c++
-#include <fixed.hpp>
+#include <eirin/fixed.hpp>
 
 using namespace eirin;
 
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 You can convert fixed point to integral or floating types.
 
 ```c++
-#include <fixed.hpp>
+#include <eirin/fixed.hpp>
 
 using namespace eirin;
 
@@ -121,7 +121,7 @@ You can perform quadratic operations and module between fixed and fixed, fixed a
 The output will always be fixed point.
 
 ```c++
-#include <fixed.hpp>
+#include <eirin/fixed.hpp>
 
 using namespace eirin;
 
@@ -166,10 +166,9 @@ Supported functions:
 
 Requires at least C++20.
 
-- MSVC 19.3+ (Visual Studio 2022)
-- GCC 12+
-- Clang 15+ with libc++
-- Clang 16+ with libstdc++
+- xmake >= v2.2.2
+- Any C++ compiler that supports C++20
+- Boost >= 1.45.0
 
 ## License
 [MIT](LICENSE) License
