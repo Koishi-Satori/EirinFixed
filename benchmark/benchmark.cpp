@@ -9,7 +9,8 @@ static void f32_create(benchmark::State& state)
 {
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
+        auto fp1 = f32_identity("1145.14"_f32);
+        (void)fp1;
     }
 }
 
@@ -19,7 +20,7 @@ static void f32_divide(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        fp1 /= fp2;
+        f32_identity(fp1 /= fp2);
     }
 }
 
@@ -29,7 +30,7 @@ static void f32_multiple(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        fp1 *= fp2;
+        f32_identity(fp1 *= fp2);
     }
 }
 
@@ -39,7 +40,7 @@ static void f32_add(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        fp1 += fp2;
+        f32_identity(fp1 += fp2);
     }
 }
 
@@ -49,7 +50,7 @@ static void f32_minus(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        fp1 -= fp2;
+        f32_identity(fp1 -= fp2);
     }
 }
 
@@ -58,7 +59,7 @@ static void f32_sqrt(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        sqrt(fp1);
+        f32_identity(sqrt(fp1));
     }
 }
 
@@ -67,7 +68,7 @@ static void f32_log2(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        log2(fp1);
+        f32_identity(log2(fp1));
     }
 }
 static void f32_log(benchmark::State& state)
@@ -75,7 +76,7 @@ static void f32_log(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        log(fp1);
+        f32_identity(log(fp1));
     }
 }
 static void f32_log10(benchmark::State& state)
@@ -83,7 +84,7 @@ static void f32_log10(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        log10(fp1);
+        f32_identity(log10(fp1));
     }
 }
 
@@ -92,7 +93,7 @@ static void f32_exp(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "11.4514"_f32;
-        exp(fp1);
+        f32_identity(exp(fp1));
     }
 }
 static void f32_pow(benchmark::State& state)
@@ -101,7 +102,7 @@ static void f32_pow(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "11.4514"_f32;
-        pow(fp1, fp2);
+        f32_identity(pow(fp1, fp2));
     }
 }
 
@@ -110,7 +111,7 @@ static void f32_sin(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        sin(fp1);
+        f32_identity(sin(fp1));
     }
 }
 static void f32_cos(benchmark::State& state)
@@ -118,7 +119,7 @@ static void f32_cos(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        cos(fp1);
+        f32_identity(cos(fp1));
     }
 }
 static void f32_tan(benchmark::State& state)
@@ -126,7 +127,7 @@ static void f32_tan(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        tan(fp1);
+        f32_identity(tan(fp1));
     }
 }
 
@@ -135,7 +136,7 @@ static void f32_atan(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "1145.14"_f32;
-        atan(fp1);
+        f32_identity(atan(fp1));
     }
 }
 static void f32_asin(benchmark::State& state)
@@ -143,7 +144,7 @@ static void f32_asin(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "0.5"_f32;
-        atan(fp1);
+        f32_identity(atan(fp1));
     }
 }
 static void f32_acos(benchmark::State& state)
@@ -151,7 +152,7 @@ static void f32_acos(benchmark::State& state)
     for(auto _ : state)
     {
         auto fp1 = "0.5"_f32;
-        atan(fp1);
+        f32_identity(atan(fp1));
     }
 }
 
