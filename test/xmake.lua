@@ -2,6 +2,7 @@ add_requires("gtest")
 
 add_requires("papilio 1.1.0")
 target("eirin_fixed.test")
+    set_warnings("all", "error")
     set_kind("binary")
     add_tests("test_eirin_fixed")
     add_files("main.cpp")
