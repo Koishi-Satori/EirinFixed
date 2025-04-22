@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cstring>
 #include <ios>
+#include <limits>
 #include <istream>
 #include <stdexcept>
 #include <type_traits>

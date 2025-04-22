@@ -1,11 +1,15 @@
 #include <benchmark/benchmark.h>
 #include "bench.hpp"
+#include <cmath>
+
+using namespace std;
 
 static void double_create(benchmark::State& state)
 {
     for(auto _ : state)
     {
         auto fp1 = db_identity(1145.14);
+        (void)fp1;
     }
 }
 
