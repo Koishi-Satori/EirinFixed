@@ -16,11 +16,8 @@
 #include <type_traits>
 #include <concepts>
 #include <iostream>
-#include <boost/multiprecision/integer.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_int/cpp_int_config.hpp>
-#include <boost/multiprecision/detail/standalone_config.hpp>
-#include <boost/multiprecision/traits/std_integer_traits.hpp>
+#include <algorithm>
+#include "detail/int128.hpp"
 #include "macro.hpp"
 
 namespace eirin
@@ -86,7 +83,7 @@ namespace detail
     {};
 
     template <>
-    struct is_signed<boost::multiprecision::int128_t> : public std::true_type
+    struct is_signed<detail::int128_t> : public std::true_type
     {};
 } // namespace detail
 
@@ -680,7 +677,7 @@ template <typename T>
 concept fixed_point = detail::is_fixed_point<std::remove_cv_t<T>>::value;
 
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
-using fixed64 = fixed_num<int64_t, boost::multiprecision::int128_t, 32, false>;
+using fixed64 = fixed_num<int64_t, detail::int128_t, 32, false>;
 
 inline namespace literals
 {

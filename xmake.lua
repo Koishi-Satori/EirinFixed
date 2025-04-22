@@ -37,8 +37,6 @@ if has_config("eirin_build_tests") then
     package_end()
 end
 
-add_requires("boost >=1.86.0", {configs = {multiprecision = true, container = true, math = true, cmake = false}})
-
 set_warnings("all")
 set_languages("cxx20")
 
@@ -47,7 +45,9 @@ target("eirin_fixed")
     set_kind("static")
     add_includedirs("include", {public = true})
     add_files("src/*.cpp")
-    add_packages("boost", {public = true})
+    if is_mode("release") then
+        set_optimize("fastest")
+    end
     target_end()
 
 if has_config("eirin_build_tests") then
