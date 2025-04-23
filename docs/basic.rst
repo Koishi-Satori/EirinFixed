@@ -32,7 +32,8 @@ There are two pre-defined fixed point types in the library:
 - ``eirin::fixed32``: A fixed point number with 1 bit for sign, 31 bits for integer part and 32 bits for fractional part.
     - ``eirin::fixed32`` is a typedef of ``eirin::fixed_num<int32_t, int64_t, 32, false>``.
 - ``eirin::fixed64``: A fixed point number with 1 bit for sign, 63 bits for integer part and 64 bits for fractional part.
-    - ``eirin::fixed64`` is a typedef of ``eirin::fixed_num<int64_t, boost::multiprecision::int128_t, 64, false>``.
+    - ``eirin::fixed64`` is a typedef of ``eirin::fixed_num<int64_t, eirin::detail::int128_t, 64, false>``.
+    - Some compiler might not provide int128 type, and in this situation, the ``eirin::fixed64`` will not be available.
 
 These types can meet most of the requirements for fixed point numbers, and you can use them directly without specifying the template parameters.
 
