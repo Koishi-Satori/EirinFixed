@@ -7,7 +7,7 @@ The output functions support the formatter provided by [Papilio Charontis](https
 
 It also provides a pre-defined 32bit-width fixed point, with 16bit precision(```fixed32```), and 64bit-width fixed point, with 32bit precision(```fixed64```).
 The fixed points require same calculation result in different platforms, devices, operator systems and compilers, and this library fulfills this requirement.
-Notice that the fixed64 uses ```boost::multiprecision::int128_type``` (aka int128_t) as its calculation intermediate type. The int128_t implementation in GCC is builtin ```__int128``` and ```boost::multiprecision::int128_type``` for other compilers.
+Notice that the fixed64 uses some int128 compiler extension as its IntermediateType, and some compiler might not support it. The ```__msvc_int128.hpp``` in MSVC provides ```std::_Signed128``` and ```std::_Unsigned128```, Clang and GCC in Linux provide ```__int128```.
 
 
 ### Create Fixed Point
@@ -168,7 +168,6 @@ Requires at least C++20.
 
 - xmake >= v2.2.2
 - Any C++ compiler that supports C++20
-- Boost >= 1.45.0
 
 ## License
 [MIT](LICENSE) License
