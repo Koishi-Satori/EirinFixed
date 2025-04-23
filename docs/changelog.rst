@@ -3,6 +3,18 @@ Changelog
 
 Changelog since the version v1.0.0
 
+v1.1.1
+--------
+
+## What's Changed
+- Port to MSVC
+- Update project structure
+- Update documents
+- Remove dependency on boost
+- @HenryAWE made their first contribution in https://github.com/Koishi-Satori/EirinFixed/pull/5
+
+**Full Changelog**: https://github.com/Koishi-Satori/EirinFixed/compare/v1.0.2...v1.1.1
+
 v1.0.2
 --------
 

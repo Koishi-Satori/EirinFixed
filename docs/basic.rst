@@ -230,8 +230,59 @@ Useful Functions
 Get the Integral or Fractional Part
 ------------------------------------------------
 
+- You can get the integral part of the fixed point number with the ``eirin::fixed_num::integral_part`` function.
+- Also, you can get the fractional part of the fixed point number with the ``eirin::fixed_num::fractional_part`` function.
+
+.. code-block:: c++
+
+    #include <iostream>
+    #include <eirin/fixed.hpp>
+    
+    int main() {
+        using namespace eirin;
+        fixed32 fp1 = "123.45"_f32;
+        std::cout << "fp1: " << fp1 << std::endl;
+
+        // Get the integral part
+        auto integral_part = fp1.integral_part();
+        std::cout << "integral_part: " << integral_part << std::endl;
+
+        // Get the fractional part
+        auto fractional_part = fp1.fractional_part();
+        std::cout << "fractional_part: " << fractional_part << std::endl;
+
+        return 0;
+    }
+
 Get the Internal Representation
 ------------------------------------------------
+
+- You can get the internal representation of the fixed point number with the ``eirin::fixed_num::internal_value`` function.
+- You can also get the internal representation of the integral part with the ``eirin::fixed_num::raw_integral_value`` function.
+
+.. warning::
+    This method is not recommended to use, because it is not safe, unless you know what you are doing.
+
+.. code-block:: c++
+
+    #include <iostream>
+    #include <eirin/fixed.hpp>
+    
+    int main() {
+        using namespace eirin;
+        fixed32 fp1 = "123.45"_f32;
+        std::cout << "fp1: " << fp1 << std::endl;
+
+        // Get the internal representation
+        auto internal_value = fp1.internal_value();
+        std::cout << "internal_value: " << internal_value << std::endl;
+
+        // Get the integral part
+        auto integral_value = fp1.raw_integral_value();
+        std::cout << "integral_value: " << integral_value << std::endl;
+
+        return 0;
+    }
 
 Sign Bit
 ----------------
