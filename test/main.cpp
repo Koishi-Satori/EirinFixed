@@ -1,6 +1,6 @@
 #include <cmath>
 #include <eirin/fixed.hpp>
-#include <eirin/fpmath.hpp>
+#include <eirin/math.hpp>
 #include <eirin/parse.hpp>
 #include <numbers>
 #include <papilio/print.hpp>
