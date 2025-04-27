@@ -1,7 +1,7 @@
 Mathematic Functions
 ======================
 
-Next listed are the mathematical functions provided by the library. The functions are pure C++ implementations with high precision and high performance, and implemented in the ``fpmath.hpp`` header file.
+Next listed are the mathematical functions provided by the library. The functions are pure C++ implementations with high precision and high performance, and implemented in the ``math.hpp`` header file.
 
 The functions are implemented as template functions, which means that they can be used with any fixed point type provided by this library.
 
@@ -42,7 +42,7 @@ The functions are implemented as template functions, which means that they can b
 
     #include <iostream>
     #include <eirin/fixed.hpp>
-    #include <fpmath.hpp>
+    #include <math.hpp>
 
     int main()
     {

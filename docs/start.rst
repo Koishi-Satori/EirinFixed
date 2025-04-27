@@ -28,6 +28,7 @@ To be noticed that the header file ``parse.hpp`` is not a header-only library, a
     This file is used for formatting the fixed point number with ``PapilioFormat`` library, which is a C++20 format library.
     If you want to use it, you need to include the ``PapilioFormat`` library in your project.
     If you don't need it, you can ignore it.
+
 B. Build and Install with XMake
 -------------------------------
 
