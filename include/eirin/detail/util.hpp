@@ -67,7 +67,10 @@ namespace eirin::util
         0.577215664901532860606512090082402431L,
         1.618033988749894848204586834365638118L
     };
-    inline const char* csl_nme_lst[] = {
+
+    inline constexpr size_t cst_lst_size = sizeof(cst_lst) / sizeof(long double);
+
+    inline constexpr std::array<const char*, cst_lst_size> csl_nme_lst = {
         "log2e",
         "log10e",
         "inv_pi",
@@ -81,20 +84,14 @@ namespace eirin::util
         "phi"
     };
 
-    inline constexpr size_t cst_lst_size = sizeof(cst_lst) / sizeof(long double);
-
-    inline void print_constants()
+    template<typename T = int64_t>
+    requires std::is_integral_v<T>
+    inline void print_constants(int fraction = 61)
     {
         for(size_t i = 0; i < cst_lst_size; ++i)
         {
-            auto val = eval_value(cst_lst[i], 61);
+            auto val = eval_value<T>(cst_lst[i], fraction);
             auto name = csl_nme_lst[i];
-            // // log_2 e
-// template <typename T>
-// EIRIN_ALWAYS_INLINE constexpr enable_if_fixed<T> log2e_v()
-// {
-//     return T::template from_fixed_num_value<61>(0x2e2a8eca5705fc00ll);
-// }
             printf("\n// %s\ntemplate <typename T>\nEIRIN_ALWAYS_INLINE constexpr enable_if_fixed<T> %s_v()\n", name, name);
             printf("{\n\treturn T::template from_fixed_num_value<61>(0x%lxll);\n}\n", val);
         }
