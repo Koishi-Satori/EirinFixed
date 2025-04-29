@@ -1,11 +1,10 @@
 #include <cmath>
-#include <eirin/fixed.hpp>
-#include <eirin/math.hpp>
-#include <eirin/parse.hpp>
+#include <eirin/eirin.hpp>
 #include <numbers>
 #include <papilio/print.hpp>
 #include <eirin/ext/papilio_integration.hpp>
 #include <gtest/gtest.h>
+// #include <eirin/detail/util.hpp>
 
 using namespace eirin;
 
@@ -252,6 +251,39 @@ TEST(fixed_num, constants)
 
     GTEST_LOG_(INFO) << "fixed32 e value: " << fixed32::e() << ", pi value: " << fixed32::pi();
     GTEST_LOG_(INFO) << "fixed64 e value: " << fixed64::e() << ", pi value: " << fixed64::pi();
+
+    GTEST_LOG_(INFO) << "fixed32 log2_e value: " << numbers::log2e_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 log2_e value: " << numbers::log2e_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 log10_e value: " << numbers::log10e_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 log10_e value: " << numbers::log10e_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 inv_pi value: " << numbers::inv_pi_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 inv_pi value: " << numbers::inv_pi_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 inv_sqrtpi value: " << numbers::inv_sqrtpi_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 inv_sqrtpi value: " << numbers::inv_sqrtpi_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 ln2 value: " << numbers::ln2_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 ln2 value: " << numbers::ln2_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 ln10 value: " << numbers::ln10_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 ln10 value: " << numbers::ln10_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 sqrt2 value: " << numbers::sqrt2_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 sqrt2 value: " << numbers::sqrt2_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 sqrt3 value: " << numbers::sqrt3_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 sqrt3 value: " << numbers::sqrt3_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 inv_sqrt3 value: " << numbers::inv_sqrt3_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 inv_sqrt3 value: " << numbers::inv_sqrt3_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 egamma value: " << numbers::egamma_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 egamma value: " << numbers::egamma_v<fixed64>();
+
+    GTEST_LOG_(INFO) << "fixed32 phi value: " << numbers::phi_v<fixed32>();
+    GTEST_LOG_(INFO) << "fixed64 phi value: " << numbers::phi_v<fixed64>();
 }
 
 int main(int argc, char* argv[])
@@ -305,6 +337,8 @@ int main(int argc, char* argv[])
 
     static_assert(papilio::formattable<fixed32>);
     papilio::println("{:f}", 114.5625_f32);
+
+    // util::print_constants();
 
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
