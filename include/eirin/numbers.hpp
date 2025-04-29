@@ -101,6 +101,36 @@ EIRIN_ALWAYS_INLINE constexpr enable_if_fixed<T> phi_v()
     return T::template from_fixed_num_value<61>(0x33c6ef372fe95000ll);
 }
 
+inline constexpr auto pi = pi_v<fixed32>();
+inline constexpr auto e = e_v<fixed32>();
+inline constexpr auto log2e = log2e_v<fixed32>();
+inline constexpr auto log10e = log10e_v<fixed32>();
+inline constexpr auto inv_pi = inv_pi_v<fixed32>();
+inline constexpr auto inv_sqrtpi = inv_sqrtpi_v<fixed32>();
+inline constexpr auto ln2 = ln2_v<fixed32>();
+inline constexpr auto ln10 = ln10_v<fixed32>();
+inline constexpr auto sqrt2 = sqrt2_v<fixed32>();
+inline constexpr auto sqrt3 = sqrt3_v<fixed32>();
+inline constexpr auto inv_sqrt3 = inv_sqrt3_v<fixed32>();
+inline constexpr auto egamma = egamma_v<fixed32>();
+inline constexpr auto phi = phi_v<fixed32>();
+
+#ifdef EIRIN_FIXED_HAS_INT128
+inline constexpr auto pi_f64 = pi_v<fixed64>();
+inline constexpr auto e_f64 = e_v<fixed64>();
+inline constexpr auto log2e_f64 = log2e_v<fixed64>();
+inline constexpr auto log10e_f64 = log10e_v<fixed64>();
+inline constexpr auto inv_pi_f64 = inv_pi_v<fixed64>();
+inline constexpr auto inv_sqrtpi_f64 = inv_sqrtpi_v<fixed64>();
+inline constexpr auto ln2_f64 = ln2_v<fixed64>();
+inline constexpr auto ln10_f64 = ln10_v<fixed64>();
+inline constexpr auto sqrt2_f64 = sqrt2_v<fixed64>();
+inline constexpr auto sqrt3_f64 = sqrt3_v<fixed64>();
+inline constexpr auto inv_sqrt3_f64 = inv_sqrt3_v<fixed64>();
+inline constexpr auto egamma_f64 = egamma_v<fixed64>();
+inline constexpr auto phi_f64 = phi_v<fixed64>();
+#endif
+
 } // namespace eirin::numbers
 
 #endif
