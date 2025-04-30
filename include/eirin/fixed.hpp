@@ -83,9 +83,11 @@ namespace detail
     struct is_signed : public std::is_signed<T>
     {};
 
+#ifdef EIRIN_FIXED_HAS_INT128
     template <>
     struct is_signed<detail::int128_t> : public std::true_type
     {};
+#endif
 } // namespace detail
 
 template <typename Type, unsigned int fraction>
@@ -678,7 +680,9 @@ template <typename T>
 concept fixed_point = detail::is_fixed_point<std::remove_cv_t<T>>::value;
 
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
+#ifdef EIRIN_FIXED_HAS_INT128
 using fixed64 = fixed_num<int64_t, detail::int128_t, 32, false>;
+#endif
 
 inline namespace literals
 {
@@ -709,6 +713,7 @@ inline namespace literals
         return fp;
     }
 
+#ifdef EIRIN_FIXED_HAS_INT128
     constexpr inline fixed64 operator""_f64(const char* str, size_t len)
     {
         fixed64 fp;
@@ -725,6 +730,7 @@ inline namespace literals
         detail::parse(str, len, fp);
         return fp;
     }
+#endif
 } // namespace literals
 
 template <typename T, typename I, unsigned int f, bool r>

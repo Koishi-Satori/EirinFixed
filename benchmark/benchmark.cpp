@@ -156,6 +156,7 @@ static void f32_acos(benchmark::State& state)
     }
 }
 
+#ifdef EIRIN_FIXED_HAS_INT128
 static void f64_create(benchmark::State& state)
 {
     for(auto _ : state)
@@ -306,6 +307,7 @@ static void f64_acos(benchmark::State& state)
         f64_identity(atan(fp1));
     }
 }
+#endif
 
 BENCHMARK(f32_create);
 BENCHMARK(f32_divide);
@@ -324,6 +326,7 @@ BENCHMARK(f32_tan);
 BENCHMARK(f32_atan);
 BENCHMARK(f32_acos);
 BENCHMARK(f32_asin);
+#ifdef EIRIN_FIXED_HAS_INT128
 BENCHMARK(f64_create);
 BENCHMARK(f64_divide);
 BENCHMARK(f64_multiple);
@@ -341,5 +344,6 @@ BENCHMARK(f64_tan);
 BENCHMARK(f64_atan);
 BENCHMARK(f64_acos);
 BENCHMARK(f64_asin);
+#endif
 
 BENCHMARK_MAIN();

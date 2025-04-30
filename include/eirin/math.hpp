@@ -10,8 +10,10 @@ namespace eirin
 {
 constexpr inline fixed32 f32_max = fixed32::from_internal_value(0x7FFFFFFF);
 constexpr inline fixed32 f32_min = fixed32::from_internal_value(0x80000000);
+#ifdef EIRIN_FIXED_HAS_INT128
 constexpr inline fixed64 f64_max = fixed64::from_internal_value(0x7FFFFFFFFFFFFFFF);
 constexpr inline fixed64 f64_min = fixed64::from_internal_value(0x8000000000000000);
+#endif
 
 template <fixed_point T>
 EIRIN_ALWAYS_INLINE constexpr T max_value() noexcept
