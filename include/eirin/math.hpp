@@ -3,15 +3,18 @@
 
 #pragma once
 
-#include "fixed.hpp"
+#include <eirin/fixed.hpp>
 #include <stdexcept>
+#include <eirin/numbers.hpp>
 
 namespace eirin
 {
 constexpr inline fixed32 f32_max = fixed32::from_internal_value(0x7FFFFFFF);
 constexpr inline fixed32 f32_min = fixed32::from_internal_value(0x80000000);
+#ifdef EIRIN_FIXED_HAS_INT128
 constexpr inline fixed64 f64_max = fixed64::from_internal_value(0x7FFFFFFFFFFFFFFF);
 constexpr inline fixed64 f64_min = fixed64::from_internal_value(0x8000000000000000);
+#endif
 
 template <fixed_point T>
 EIRIN_ALWAYS_INLINE constexpr T max_value() noexcept
@@ -448,6 +451,24 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> modf(fixed_num<T, I, f, r> f
 {
     int_part = floor(fp);
     return fp - int_part;
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> degrees(fixed_num<T, I, f, r> rad, const fixed_num<T, I, f, r> pi = eirin::numbers::pi_v<fixed_num<T, I, f, r>>()) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr fixed factor = fixed(180);
+    fixed deg = rad / pi * factor;
+    return deg;
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> radians(fixed_num<T, I, f, r> deg, const fixed_num<T, I, f, r> pi = eirin::numbers::pi_v<fixed_num<T, I, f, r>>()) noexcept
+{
+    using fixed = fixed_num<T, I, f, r>;
+    constexpr fixed factor = fixed(180);
+    fixed rad = deg / factor * pi;
+    return rad;
 }
 } // namespace eirin
 

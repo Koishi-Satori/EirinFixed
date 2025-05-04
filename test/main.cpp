@@ -15,9 +15,11 @@ TEST(fixed_num, construct)
     parse("-114.514a", "a", fp1);
     EXPECT_EQ(fp1, -114.514_f32);
 
+#ifdef EIRIN_FIXED_HAS_INT128
     auto fp2 = 0_f64;
     EXPECT_EQ((int)fp2, 0);
     EXPECT_EQ("-114.514"_f64, -114.514_f64);
+#endif
 }
 
 TEST(fixed32, operator)
@@ -37,37 +39,12 @@ TEST(fixed32, operator)
     );
 }
 
-TEST(fixed64, operator)
-{
-    auto fp1 = 0_f64;
-    EXPECT_EQ(++fp1, 1_f64);
-    fp1 = 1.14_f64;
-    EXPECT_EQ(fp1 + 5.14_f64, 6.28_f64);
-    EXPECT_EQ(fp1 * 2, 2.28_f64);
-    EXPECT_EQ(514_f64 / 2, 257_f64);
-    EXPECT_EQ(515_f64 % 2_f64, 1_f64);
-    EXPECT_EQ(--fp1, 0.14_f64);
-
-    EXPECT_THROW(
-        (void)(1_f64 / 0),
-        divide_by_zero
-    );
-}
-
 TEST(fixed32, rounding)
 {
     EXPECT_EQ(round(114.414_f32), 114_f32);
     EXPECT_EQ(round(114.514_f32), 115_f32);
     EXPECT_EQ(round(-114.414_f32), -114_f32);
     EXPECT_EQ(round(-114.514_f32), -115_f32);
-}
-
-TEST(fixed64, rounding)
-{
-    EXPECT_EQ(round(114.414_f64), 114_f64);
-    EXPECT_EQ(round(114.514_f64), 115_f64);
-    EXPECT_EQ(round(-114.414_f64), -114_f64);
-    EXPECT_EQ(round(-114.514_f64), -115_f64);
 }
 
 TEST(fixed32, decompression)
@@ -92,28 +69,6 @@ TEST(fixed32, decompression)
     }
 }
 
-TEST(fixed64, decompression)
-{
-    EXPECT_FALSE(signbit(0_f64));
-    EXPECT_FALSE(signbit(1_f64));
-    EXPECT_TRUE(signbit(-1_f64));
-
-    EXPECT_EQ((1_f64).raw_integral_part(), 1);
-    EXPECT_EQ((-1_f64).raw_integral_part(), 2147483647);
-
-    EXPECT_EQ((1_f64).integral_part(), 1);
-    EXPECT_EQ((-1_f64).integral_part(), 1);
-
-    EXPECT_EQ((1_f64).fractional_part(), 0);
-    EXPECT_EQ((-1_f64).fractional_part(), 0);
-
-    {
-        auto val = 1_f64 / 2;
-        EXPECT_EQ(val.integral_part(), 0);
-        EXPECT_EQ(val.fractional_part(), 1ULL << (val.precision - 1));
-    }
-}
-
 namespace test_math
 {
 static testing::AssertionResult expect_fixed_eq(
@@ -126,11 +81,12 @@ static testing::AssertionResult expect_fixed_eq(
     if(diff > eps)
         return testing::AssertionFailure()
                << lhs << " != " << rhs << ", diff: " << diff
-               << "Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
+               << ", Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
     else
         return testing::AssertionSuccess();
 }
 
+#ifdef EIRIN_FIXED_HAS_INT128
 static testing::AssertionResult expect_fixed_eq(
     const eirin::fixed64& lhs,
     const eirin::fixed64& rhs,
@@ -141,10 +97,11 @@ static testing::AssertionResult expect_fixed_eq(
     if(diff > eps)
         return testing::AssertionFailure()
                << lhs << " != " << rhs << ", diff: " << diff
-               << "Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
+               << ", Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
     else
         return testing::AssertionSuccess();
 }
+#endif
 } // namespace test_math
 
 TEST(fixed32, math)
@@ -176,37 +133,8 @@ TEST(fixed32, math)
     EXPECT_TRUE(expect_fixed_eq(log10(10_f32), 1_f32));
     EXPECT_TRUE(expect_fixed_eq(log10(114.514_f32), 2.058859_f32));
     EXPECT_TRUE(expect_fixed_eq(exp(1_f32), fixed32::e()));
-}
-
-TEST(fixed64, math)
-{
-    using test_math::expect_fixed_eq;
-
-    EXPECT_EQ(abs(-114.514_f64), 114.514_f64);
-    EXPECT_EQ(sin(0_f64), 0_f64);
-    EXPECT_TRUE(expect_fixed_eq(sin(1_f64), 0.841471_f64));
-    EXPECT_TRUE(expect_fixed_eq(sin(fixed64::pi() / 6), 0.5_f64));
-    EXPECT_TRUE(expect_fixed_eq(cos(0_f64), 1_f64));
-    EXPECT_TRUE(expect_fixed_eq(cos(fixed64::pi() / 3), 0.5_f64));
-    EXPECT_TRUE(expect_fixed_eq(cos(1_f64), 0.540302_f64));
-    EXPECT_EQ(tan(0_f64), 0_f64);
-    EXPECT_TRUE(expect_fixed_eq(tan(1_f64), 1.557407_f64));
-    EXPECT_TRUE(expect_fixed_eq(atan(0_f64), 0_f64));
-    EXPECT_TRUE(expect_fixed_eq(atan(1_f64), 0.785398_f64));
-    EXPECT_TRUE(expect_fixed_eq(sqrt(0_f64), 0_f64));
-    EXPECT_TRUE(expect_fixed_eq(sqrt(4_f64), 2_f64));
-    EXPECT_TRUE(expect_fixed_eq(sqrt(114.514_f64), 10.701121_f64));
-    EXPECT_TRUE(expect_fixed_eq(cbrt(0_f64), 0_f64));
-    EXPECT_TRUE(expect_fixed_eq(cbrt(1_f64), 1_f64));
-    EXPECT_TRUE(expect_fixed_eq(cbrt(8_f64), 2_f64));
-    EXPECT_TRUE(expect_fixed_eq(cbrt(27_f64), 3_f64));
-    EXPECT_TRUE(expect_fixed_eq(log2(2_f64), 1_f64));
-    EXPECT_TRUE(expect_fixed_eq(log2(10_f64), 3.321928_f64));
-    EXPECT_TRUE(expect_fixed_eq(log(fixed64::e()), 1_f64));
-    EXPECT_TRUE(expect_fixed_eq(log(114.514_f64), 4.740697_f64));
-    EXPECT_TRUE(expect_fixed_eq(log10(10_f64), 1_f64));
-    EXPECT_TRUE(expect_fixed_eq(log10(114.514_f64), 2.058859_f64));
-    EXPECT_TRUE(expect_fixed_eq(exp(1_f64), fixed64::e()));
+    EXPECT_TRUE(expect_fixed_eq(radians(180_f32), numbers::pi));
+    EXPECT_TRUE(expect_fixed_eq(degrees(numbers::pi), 180_f32));
 }
 
 TEST(fixed32, papilio_format)
@@ -247,44 +175,120 @@ TEST(fixed32, papilio_format)
 TEST(fixed_num, constants)
 {
     GTEST_LOG_(INFO) << "fixed32 max value: " << max_value<fixed32>() << ", min value: " << min_value<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 max value: " << f64_max << ", min value: " << f64_min;
-
     GTEST_LOG_(INFO) << "fixed32 e value: " << fixed32::e() << ", pi value: " << fixed32::pi();
-    GTEST_LOG_(INFO) << "fixed64 e value: " << fixed64::e() << ", pi value: " << fixed64::pi();
-
     GTEST_LOG_(INFO) << "fixed32 log2_e value: " << numbers::log2e_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 log2_e value: " << numbers::log2e_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 log10_e value: " << numbers::log10e_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 log10_e value: " << numbers::log10e_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 inv_pi value: " << numbers::inv_pi_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 inv_pi value: " << numbers::inv_pi_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 inv_sqrtpi value: " << numbers::inv_sqrtpi_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 inv_sqrtpi value: " << numbers::inv_sqrtpi_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 ln2 value: " << numbers::ln2_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 ln2 value: " << numbers::ln2_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 ln10 value: " << numbers::ln10_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 ln10 value: " << numbers::ln10_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 sqrt2 value: " << numbers::sqrt2_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 sqrt2 value: " << numbers::sqrt2_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 sqrt3 value: " << numbers::sqrt3_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 sqrt3 value: " << numbers::sqrt3_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 inv_sqrt3 value: " << numbers::inv_sqrt3_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 inv_sqrt3 value: " << numbers::inv_sqrt3_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 egamma value: " << numbers::egamma_v<fixed32>();
-    GTEST_LOG_(INFO) << "fixed64 egamma value: " << numbers::egamma_v<fixed64>();
-
     GTEST_LOG_(INFO) << "fixed32 phi value: " << numbers::phi_v<fixed32>();
+
+    #ifdef EIRIN_FIXED_HAS_INT128
+    // fixed64
+    GTEST_LOG_(INFO) << "fixed64 max value: " << max_value<fixed64>() << ", min value: " << min_value<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 e value: " << fixed64::e() << ", pi value: " << fixed64::pi();
+    GTEST_LOG_(INFO) << "fixed64 log2_e value: " << numbers::log2e_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 log10_e value: " << numbers::log10e_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 inv_pi value: " << numbers::inv_pi_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 inv_sqrtpi value: " << numbers::inv_sqrtpi_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 ln2 value: " << numbers::ln2_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 ln10 value: " << numbers::ln10_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 sqrt2 value: " << numbers::sqrt2_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 sqrt3 value: " << numbers::sqrt3_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 inv_sqrt3 value: " << numbers::inv_sqrt3_v<fixed64>();
+    GTEST_LOG_(INFO) << "fixed64 egamma value: " << numbers::egamma_v<fixed64>();
     GTEST_LOG_(INFO) << "fixed64 phi value: " << numbers::phi_v<fixed64>();
+    #endif
 }
+
+#ifdef EIRIN_FIXED_HAS_INT128
+TEST(fixed64, operator)
+{
+    auto fp1 = 0_f64;
+    EXPECT_EQ(++fp1, 1_f64);
+    fp1 = 1.14_f64;
+    EXPECT_EQ(fp1 + 5.14_f64, 6.28_f64);
+    EXPECT_EQ(fp1 * 2, 2.28_f64);
+    EXPECT_EQ(514_f64 / 2, 257_f64);
+    EXPECT_EQ(515_f64 % 2_f64, 1_f64);
+    EXPECT_EQ(--fp1, 0.14_f64);
+
+    EXPECT_THROW(
+        (void)(1_f64 / 0),
+        divide_by_zero
+    );
+}
+
+TEST(fixed64, rounding)
+{
+    EXPECT_EQ(round(114.414_f64), 114_f64);
+    EXPECT_EQ(round(114.514_f64), 115_f64);
+    EXPECT_EQ(round(-114.414_f64), -114_f64);
+    EXPECT_EQ(round(-114.514_f64), -115_f64);
+}
+
+TEST(fixed64, decompression)
+{
+    EXPECT_FALSE(signbit(0_f64));
+    EXPECT_FALSE(signbit(1_f64));
+    EXPECT_TRUE(signbit(-1_f64));
+
+    EXPECT_EQ((1_f64).raw_integral_part(), 1);
+    EXPECT_EQ((-1_f64).raw_integral_part(), 2147483647);
+
+    EXPECT_EQ((1_f64).integral_part(), 1);
+    EXPECT_EQ((-1_f64).integral_part(), 1);
+
+    EXPECT_EQ((1_f64).fractional_part(), 0);
+    EXPECT_EQ((-1_f64).fractional_part(), 0);
+
+    {
+        auto val = 1_f64 / 2;
+        EXPECT_EQ(val.integral_part(), 0);
+        EXPECT_EQ(val.fractional_part(), 1ULL << (val.precision - 1));
+    }
+}
+
+TEST(fixed64, math)
+{
+    using test_math::expect_fixed_eq;
+
+    EXPECT_EQ(abs(-114.514_f64), 114.514_f64);
+    EXPECT_EQ(sin(0_f64), 0_f64);
+    EXPECT_TRUE(expect_fixed_eq(sin(1_f64), 0.841471_f64));
+    EXPECT_TRUE(expect_fixed_eq(sin(fixed64::pi() / 6), 0.5_f64));
+    EXPECT_TRUE(expect_fixed_eq(cos(0_f64), 1_f64));
+    EXPECT_TRUE(expect_fixed_eq(cos(fixed64::pi() / 3), 0.5_f64));
+    EXPECT_TRUE(expect_fixed_eq(cos(1_f64), 0.540302_f64));
+    EXPECT_EQ(tan(0_f64), 0_f64);
+    EXPECT_TRUE(expect_fixed_eq(tan(1_f64), 1.557407_f64));
+    EXPECT_TRUE(expect_fixed_eq(atan(0_f64), 0_f64));
+    EXPECT_TRUE(expect_fixed_eq(atan(1_f64), 0.785398_f64));
+    EXPECT_TRUE(expect_fixed_eq(sqrt(0_f64), 0_f64));
+    EXPECT_TRUE(expect_fixed_eq(sqrt(4_f64), 2_f64));
+    EXPECT_TRUE(expect_fixed_eq(sqrt(114.514_f64), 10.701121_f64));
+    EXPECT_TRUE(expect_fixed_eq(cbrt(0_f64), 0_f64));
+    EXPECT_TRUE(expect_fixed_eq(cbrt(1_f64), 1_f64));
+    EXPECT_TRUE(expect_fixed_eq(cbrt(8_f64), 2_f64));
+    EXPECT_TRUE(expect_fixed_eq(cbrt(27_f64), 3_f64));
+    EXPECT_TRUE(expect_fixed_eq(log2(2_f64), 1_f64));
+    EXPECT_TRUE(expect_fixed_eq(log2(10_f64), 3.321928_f64));
+    EXPECT_TRUE(expect_fixed_eq(log(fixed64::e()), 1_f64));
+    EXPECT_TRUE(expect_fixed_eq(log(114.514_f64), 4.740697_f64));
+    EXPECT_TRUE(expect_fixed_eq(log10(10_f64), 1_f64));
+    EXPECT_TRUE(expect_fixed_eq(log10(114.514_f64), 2.058859_f64));
+    EXPECT_TRUE(expect_fixed_eq(exp(1_f64), fixed64::e()));
+    EXPECT_EQ(radians(180_f64), numbers::pi_f64);
+    EXPECT_EQ(degrees(numbers::pi_f64), 180_f64);
+    EXPECT_EQ(radians(90_f64), numbers::pi_f64 / 2);
+    EXPECT_EQ(degrees(numbers::pi_f64 / 2), 90_f64);
+}
+#endif
 
 int main(int argc, char* argv[])
 {
