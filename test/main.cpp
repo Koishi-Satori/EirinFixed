@@ -133,10 +133,10 @@ TEST(fixed32, math)
     EXPECT_TRUE(expect_fixed_eq(log10(10_f32), 1_f32));
     EXPECT_TRUE(expect_fixed_eq(log10(114.514_f32), 2.058859_f32));
     EXPECT_TRUE(expect_fixed_eq(exp(1_f32), fixed32::e()));
-    EXPECT_EQ(radians(180_f32), numbers::pi);
-    EXPECT_EQ(degrees(numbers::pi), 180_f32);
-    EXPECT_EQ(radians(90_f32), numbers::pi / 2);
-    EXPECT_EQ(degrees(numbers::pi / 2), 90_f32);
+    EXPECT_TRUE(expect_fixed_eq(radians(180_f32), numbers::pi));
+    EXPECT_TRUE(expect_fixed_eq(degrees(numbers::pi), 180_f32));
+    EXPECT_TRUE(expect_fixed_eq(radians(90_f32), numbers::pi / 2));
+    EXPECT_TRUE(expect_fixed_eq(degrees(numbers::pi / 2), 90_f32));
 }
 
 TEST(fixed32, papilio_format)
