@@ -18,8 +18,8 @@
 #include <concepts>
 #include <iostream>
 #include <algorithm>
-#include "detail/int128.hpp"
-#include "macro.hpp"
+#include <eirin/detail/int128.hpp>
+#include <eirin/macro.hpp>
 
 namespace eirin
 {

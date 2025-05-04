@@ -34,6 +34,9 @@ jobs:
           - name: Test
             run: xmake test --verbose
 
+          - name: Benchmark
+            run: xmake run eirin_fixed.benchmark
+
     Clang:
         runs-on: ubuntu-24.04
 
@@ -66,3 +69,6 @@ jobs:
 
           - name: Test
             run: xmake test --verbose
+
+          - name: Benchmark
+            run: xmake run eirin_fixed.benchmark
