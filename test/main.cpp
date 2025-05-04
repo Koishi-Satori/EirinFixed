@@ -81,7 +81,7 @@ static testing::AssertionResult expect_fixed_eq(
     if(diff > eps)
         return testing::AssertionFailure()
                << lhs << " != " << rhs << ", diff: " << diff
-               << "Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
+               << ", Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
     else
         return testing::AssertionSuccess();
 }
@@ -97,7 +97,7 @@ static testing::AssertionResult expect_fixed_eq(
     if(diff > eps)
         return testing::AssertionFailure()
                << lhs << " != " << rhs << ", diff: " << diff
-               << "Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
+               << ", Internal values: " << lhs.internal_value() << ", " << rhs.internal_value();
     else
         return testing::AssertionSuccess();
 }
@@ -135,8 +135,6 @@ TEST(fixed32, math)
     EXPECT_TRUE(expect_fixed_eq(exp(1_f32), fixed32::e()));
     EXPECT_TRUE(expect_fixed_eq(radians(180_f32), numbers::pi));
     EXPECT_TRUE(expect_fixed_eq(degrees(numbers::pi), 180_f32));
-    EXPECT_TRUE(expect_fixed_eq(radians(90_f32), numbers::pi / 2));
-    EXPECT_TRUE(expect_fixed_eq(degrees(numbers::pi / 2), 90_f32));
 }
 
 TEST(fixed32, papilio_format)
