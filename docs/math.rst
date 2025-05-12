@@ -30,6 +30,9 @@ The functions are implemented as template functions, which means that they can b
 - exponential functions
     - exp
     - pow
+- degree/radian conversion
+    - radians
+    - degrees
 
 .. note::
     The implementation of max/min value functions used ``std::numeric_limits`` to get the max/min value of the fixed point type, so you need to make sure the store type has specialization for ``std::numeric_limits``.

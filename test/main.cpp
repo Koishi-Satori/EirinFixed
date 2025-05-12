@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
     auto fp2 = fixed32(3);
     fp2 /= 114.514_f32;
     papilio::println("{}, {}, {}", (float)fixed32::e(), (float)fixed32::pi(), (float)fixed32::double_pi());
-    papilio::println("%d, {}, {}", (int)fp1, (float)(114.514_f32 / 3), (float)fp2);
+    papilio::println("{}, {}, {}", (int)fp1, (float)(114.514_f32 / 3), (float)fp2);
     papilio::println("abs = {}, eps = {}, compare = {}", (float)abs(-114.5_f32), (float)fixed32::nearly_compare_epsilon(), 1.114_f32 < 1.115_f32);
     papilio::println("sqrt(114.514) = {}, {}", (float)sqrt(114.514_f32), std::sqrt(114.514));
     papilio::println("sin(pi/6) = {}, {}", (float)sin(fixed32::pi() / 6), std::sin(std::numbers::pi / 6));
@@ -343,6 +343,9 @@ int main(int argc, char* argv[])
     papilio::println("{:f}", 114.5625_f32);
 
     // util::print_constants();
+    // papilio::println("constants used in atan: {:X}, {:X}", util::eval_value<int64_t>(0.2247, 61), util::eval_value<int64_t>(0.0663, 61));
+    // auto test = fixed64::template from_fixed_num_value<61>(util::eval_value<int64_t>(0.0063, 61));
+    // papilio::println("test: {}", test);
 
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
