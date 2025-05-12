@@ -592,7 +592,10 @@ public:
         return fp.print(os);
     }
 
-private:
+    /**
+     * @brief internal value, just for NTTP, do not use it.
+     * 
+     */
     Type m_value;
 };
 

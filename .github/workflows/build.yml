@@ -36,6 +36,9 @@ jobs:
 
           - name: Benchmark
             run: xmake run --verbose eirin_fixed.benchmark
+          
+          - name: Benchmark (For Compare)
+            run: xmake run --verbose double.benchmark
 
     Clang:
         runs-on: ubuntu-24.04
@@ -72,3 +75,6 @@ jobs:
 
           - name: Benchmark
             run: xmake run --verbose eirin_fixed.benchmark
+          
+          - name: Benchmark (For Compare)
+            run: xmake run --verbose double.benchmark

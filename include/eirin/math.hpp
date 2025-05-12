@@ -188,7 +188,18 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> f
     }
 }
 
-template <typename T, typename I, unsigned int f, bool r>
+/**
+ * @brief sine function for fixed point number.
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @tparam pi the pi value, default is pi_v<fixed_num<T, I, f, r>>(). if you want more precision for fixed types like fixed128, you can pass the value you want.
+ * @param fp 
+ * @return sin(fp)
+ */
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> pi = numbers::pi_v<fixed_num<T, I, f, r>>()>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
@@ -221,19 +232,32 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp
     // we use tyler series to calculate sin(x).
     // n = 4 has enough precision.
     const auto x2 = x * x;
-    constexpr auto a = fixed::pi() * fixed::pi() / 24;
-    constexpr auto b = fixed::pi() * fixed::pi() / 80;
-    constexpr auto c = fixed::pi() * fixed::pi() / 168;
-    constexpr auto d = fixed::pi() * fixed::pi() / 288;
+    constexpr auto a = pi * pi / 24;
+    constexpr auto b = pi * pi / 80;
+    constexpr auto c = pi * pi / 168;
+    constexpr auto d = pi * pi / 288;
     auto res = fixed::pi() * x * (fp1 - a * x2 * (fp1 - b * x2 * (fp1 - c * x2 * (fp1 - d * x2)))) / 2;
     return negative ? -res : res;
 }
 
-template <typename T, typename I, unsigned int f, bool r>
+/**
+ * @brief cosine function for fixed point number.
+ * 
+ * @tparam T 
+ * @tparam I 
+ * @tparam f 
+ * @tparam r 
+ * @tparam pi the pi value, default is pi_v<fixed_num<T, I, f, r>>(). if you want more precision for fixed types like fixed128, you can pass the value you want.
+ * @param fp 
+ * @return cos(fp)
+ */
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> pi = numbers::pi_v<fixed_num<T, I, f, r>>()>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> cos(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    return sin(fp.internal_value() > 0 ? fp - (fixed::double_pi() - fixed::pi_2()) : fp + fixed::pi_2());
+    constexpr auto pi_2 = pi / fixed(2);
+    constexpr auto double_pi = pi * fixed(2);
+    return sin(fp.internal_value() > 0 ? fp - (double_pi - pi_2) : fp + pi_2);
 }
 
 template <typename T, typename I, unsigned int f, bool r>
@@ -255,19 +279,32 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp
      * @tparam I @see fixed_num
      * @tparam f @see fixed_num
      * @tparam r @see fixed_num
+     * @tparam pi the pi value, default is pi_v<fixed_num<T, I, f, r>>(). if you want more precision for fixed types like fixed128, you can pass the value you want.
      * @param fp the x of atan(x)
      * @return atan(x).
      */
-template <typename T, typename I, unsigned int f, bool r>
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> pi = numbers::pi_v<fixed_num<T, I, f, r>>()>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    constexpr auto a = fixed::template from_fixed_num_value<16>(0x3985); // 0.2247
-    constexpr auto b = fixed::template from_fixed_num_value<16>(0x10F9); // 0.0663
-    return fixed::pi_4() * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
+    constexpr auto a = fixed::template from_fixed_num_value<61>(0X730BE0DED288D00); // 0.2247
+    constexpr auto b = fixed::template from_fixed_num_value<61>(0X21F212D77318FC0); // 0.0663
+    constexpr auto pi_4 = pi / fixed(4);
+    return pi_4 * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
 }
 
-template <typename T, typename I, unsigned int f, bool r>
+/**
+ * @brief cbrt function for fixed point number, which used newton method to calculate the cbrt.
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @tparam iter_max max iteration times, default is 200.
+ * @param fp 
+ * @return cbrt(fp)
+ */
+template <typename T, typename I, unsigned int f, bool r, int iter_max = 200>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
@@ -277,7 +314,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> f
     auto iter_count = 0;
     constexpr auto precision = fixed::nearly_compare_epsilon() * 2;
 
-    while(abs(fp - (x * x * x)) >= precision && iter_count <= 200)
+    while(abs(fp - (x * x * x)) >= precision && iter_count <= iter_max)
     {
         x = (fp / (x * x) + x * 2) / 3;
         ++iter_count;
@@ -285,6 +322,16 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> cbrt(fixed_num<T, I, f, r> f
     return x;
 }
 
+/**
+ * @brief log2 function for fixed point number, which used some bit hacks.
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @param fp 
+ * @return log2(fp)
+ */
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> fp)
 {
@@ -343,19 +390,37 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> f
     return fixed::from_internal_value(y);
 }
 
-template <typename T, typename I, unsigned int f, bool r>
+/**
+ * @brief ln function for fixed point number, which used the log2 function to calculate the ln.
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @tparam log2_e the log2(e) value, and its default value is designed for 32bit and 64bit fixed number. if you want more precision for fixed types like fixed128, you can pass the value you want.
+ * @param fp 
+ * @return log(fp)
+ */
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> log2_e = fixed_num<T, I, f, r>::template from_fixed_num_value<60>(0x171547652B82FE00ll)>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log(fixed_num<T, I, f, r> fp)
 {
-    using fixed = fixed_num<T, I, f, r>;
-    constexpr auto log2_e = fixed::template from_fixed_num_value<60>(0x171547652B82FE00ll);
     return log2(fp) / log2_e;
 }
 
-template <typename T, typename I, unsigned int f, bool r>
+/**
+ * @brief the log10 function for fixed point number, which used the log2 function to calculate the log10.
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @tparam log2_10 the log2(10) value, and its default value is designed for 32bit and 64bit fixed number. if you want more precision for fixed types like fixed128, you can pass the value you want.
+ * @param fp 
+ * @return log10(fp)
+ */
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> log2_10 = fixed_num<T, I, f, r>::template from_fixed_num_value<60>(0x35269E12F346E200ll)>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log10(fixed_num<T, I, f, r> fp)
 {
-    using fixed = fixed_num<T, I, f, r>;
-    constexpr auto log2_10 = fixed::template from_fixed_num_value<60>(0x35269E12F346E200ll);
     return log2(fp) / log2_10;
 }
 
@@ -397,7 +462,7 @@ namespace detail
     {
         using fixed = fixed_num<T, I, f, r>;
         // the integer part of the input fixed point number.
-        const T x_int = static_cast<T>(fp.internal_value() / (I(1) << f));
+        const T x_int = fp.integral_part();
         fp -= x_int;
 
         constexpr auto a = fixed::template from_fixed_num_value<63>(0x01C798ECC0CBC856ll); // 1.3903728105644451e-2
@@ -406,7 +471,7 @@ namespace detail
         constexpr auto d = fixed::template from_fixed_num_value<63>(0x3FE26186C531F98Ell); // 4.9909609871464493e-1
         constexpr auto e = fixed::template from_fixed_num_value<63>(0x40014D4407008BB0ll); // 1.0000794567422495
         constexpr auto _f = fixed::template from_fixed_num_value<63>(0x7FFFF686446F1B43ll); // 9.9999887043019773e-1
-        return pow(fixed::e(), x_int) * (_f + fp * (e + fp * (d + fp * (c + fp * (b + fp * a)))));
+        return pow(numbers::e_v<fixed>(), x_int) * (_f + fp * (e + fp * (d + fp * (c + fp * (b + fp * a)))));
     }
 } // namespace detail
 
@@ -453,8 +518,19 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> modf(fixed_num<T, I, f, r> f
     return fp - int_part;
 }
 
-template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> degrees(fixed_num<T, I, f, r> rad, const fixed_num<T, I, f, r> pi = eirin::numbers::pi_v<fixed_num<T, I, f, r>>()) noexcept
+/**
+ * @brief convert radian to degree.
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @tparam pi the pi value, default is pi_v<fixed_num<T, I, f, r>>(). if you want more precision for fixed types like fixed128, you can pass the value you want.
+ * @param rad 
+ * @return deg(rad)
+ */
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> pi = eirin::numbers::pi_v<fixed_num<T, I, f, r>>()>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> degrees(fixed_num<T, I, f, r> rad) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr fixed factor = fixed(180);
@@ -462,13 +538,35 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> degrees(fixed_num<T, I, f, r
     return deg;
 }
 
-template <typename T, typename I, unsigned int f, bool r>
-EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> radians(fixed_num<T, I, f, r> deg, const fixed_num<T, I, f, r> pi = eirin::numbers::pi_v<fixed_num<T, I, f, r>>()) noexcept
+/**
+ * @brief convert degree to radian.
+ * 
+ * @tparam T @see fixed_num
+ * @tparam I @see fixed_num
+ * @tparam f @see fixed_num
+ * @tparam r @see fixed_num
+ * @tparam pi the pi value, default is pi_v<fixed_num<T, I, f, r>>(). if you want more precision for fixed types like fixed128, you can pass the value you want.
+ * @param deg 
+ * @return rad(deg)
+ */
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> pi = eirin::numbers::pi_v<fixed_num<T, I, f, r>>()>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> radians(fixed_num<T, I, f, r> deg) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     constexpr fixed factor = fixed(180);
     fixed rad = deg / factor * pi;
     return rad;
+}
+
+template <typename T, typename I, unsigned int f, bool r>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> hypot(fixed_num<T, I, f, r> x, fixed_num<T, I, f, r> y) noexcept
+{
+    return sqrt(x * x + y * y);
+}
+template <typename T, typename I, unsigned int f, bool r>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> hypot(fixed_num<T, I, f, r> x, fixed_num<T, I, f, r> y, fixed_num<T, I, f, r> z) noexcept
+{
+    return sqrt(x * x + y * y + z * z);
 }
 } // namespace eirin
 
