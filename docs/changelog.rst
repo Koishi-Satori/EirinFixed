@@ -3,6 +3,25 @@ Changelog
 
 Changelog since the version v1.0.0
 
+v1.1.3
+--------
+
+- Add ``add_headerfils`` to xmake.lua for correctly install library with xmake.
+
+**Full Changelog**: https://github.com/Koishi-Satori/EirinFixed/compare/v1.1.2...v1.1.3
+
+v1.1.2
+--------
+
+- Add ``numbers.hpp`` to provide fixed point constants.
+- Add ``detail/util.hpp`` to provide some utility functions.
+- Make sure compile passed without int128 support.
+- Adjust test and CI.
+- Update numbers and documentation.
+- rename ``fpmath.hpp`` to ``math.hpp``.
+
+**Full Changelog**: https://github.com/Koishi-Satori/EirinFixed/compare/v1.1.1...v1.1.2
+
 v1.1.1
 --------
 
