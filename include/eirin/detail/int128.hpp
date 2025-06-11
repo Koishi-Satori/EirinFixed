@@ -2,6 +2,11 @@
 #define EIRIN_FIXED_DETAIL_INT128_HPP
 
 #pragma once
+#ifdef __GNUC__
+#    ifndef __clang__
+#        pragma GCC diagnostic ignored "-Wpedantic"
+#    endif
+#endif
 
 #include <version>
 
