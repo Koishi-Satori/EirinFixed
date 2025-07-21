@@ -40,6 +40,41 @@ jobs:
           - name: Benchmark (For Compare)
             run: xmake run --verbose double.benchmark
 
+    ClangCl:
+        runs-on: windows-2025
+
+        name: Windows Clang-Cl
+
+        steps:
+          - uses: actions/checkout@v4
+
+          - uses: xmake-io/github-action-setup-xmake@v1
+            with:
+              xmake-version: v2.9.8
+              actions-cache-folder: '.xmake-cache'
+              actions-cache-key: "windows-2025"
+              package-cache: true
+              package-cache-key: "windows-2025"
+              build-cache: true
+              build-cache-key: "windows-2025-release"
+
+          - name: Configure
+            run: |
+              xmake config --yes -m release --toolchain=clang-cl
+
+          - name: Build
+            run: |
+              xmake build --verbose --diagnosis --all
+
+          - name: Test
+            run: xmake test --verbose
+
+          - name: Benchmark
+            run: xmake run --verbose eirin_fixed.benchmark
+          
+          - name: Benchmark (For Compare)
+            run: xmake run --verbose double.benchmark
+
     Clang:
         runs-on: ubuntu-24.04
 

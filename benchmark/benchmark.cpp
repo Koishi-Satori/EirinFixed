@@ -16,142 +16,151 @@ static void f32_create(benchmark::State& state)
 
 static void f32_divide(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f32;
+    auto fp1 = "4.95"_f32;
+    auto fp2 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(fp1 /= fp2);
     }
 }
 
 static void f32_multiple(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f32;
+    auto fp1 = "4.95"_f32;
+    auto fp2 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(fp1 *= fp2);
     }
 }
 
 static void f32_add(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f32;
+    auto fp1 = "4.95"_f32;
+    auto fp2 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(fp1 += fp2);
     }
 }
 
 static void f32_minus(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f32;
+    auto fp1 = "4.95"_f32;
+    auto fp2 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(fp1 -= fp2);
     }
 }
 
 static void f32_sqrt(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(sqrt(fp1));
     }
 }
 
 static void f32_log2(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(log2(fp1));
     }
 }
+
 static void f32_log(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(log(fp1));
     }
 }
+
 static void f32_log10(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(log10(fp1));
     }
 }
 
 static void f32_exp(benchmark::State& state)
 {
+    auto fp1 = f32_identity("11.4514"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "11.4514"_f32;
         f32_identity(exp(fp1));
     }
 }
+
 static void f32_pow(benchmark::State& state)
 {
-    auto fp2 = "3.5"_f32;
+    auto fp1 = "11.4514"_f32;
+    auto fp2 = f32_identity("3.5"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "11.4514"_f32;
         f32_identity(pow(fp1, fp2));
     }
 }
 
 static void f32_sin(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(sin(fp1));
     }
 }
+
 static void f32_cos(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(cos(fp1));
     }
 }
+
 static void f32_tan(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(tan(fp1));
     }
 }
 
 static void f32_atan(benchmark::State& state)
 {
+    auto fp1 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f32;
         f32_identity(atan(fp1));
     }
 }
+
+// FIXME: Use the correct functions! (by HenryAWE)
+
 static void f32_asin(benchmark::State& state)
 {
+    auto fp1 = f32_identity("0.5"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "0.5"_f32;
         f32_identity(atan(fp1));
     }
 }
+
 static void f32_acos(benchmark::State& state)
 {
+    auto fp1 = f32_identity("0.5"_f32);
     for(auto _ : state)
     {
-        auto fp1 = "0.5"_f32;
         f32_identity(atan(fp1));
     }
 }
@@ -168,142 +177,151 @@ static void f64_create(benchmark::State& state)
 
 static void f64_divide(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f64;
+    auto fp1 = 1145.14_f64;
+    auto fp2 = f64_identity("4.95"_f64);
     for(auto _ : state)
     {
-        auto fp1 = 1145.14_f64;
         f64_identity(fp1 /= fp2);
     }
 }
 
 static void f64_multiple(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f64;
+    auto fp1 = "1145.14"_f64;
+    auto fp2 = f64_identity("4.95"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
         f64_identity(fp1 *= fp2);
     }
 }
 
 static void f64_add(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f64;
+    auto fp1 = "1145.14"_f64;
+    auto fp2 = f64_identity("4.95"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
         f64_identity(fp1 += fp2);
     }
 }
 
 static void f64_minus(benchmark::State& state)
 {
-    auto fp2 = "4.95"_f64;
+    auto fp1 = "1145.14"_f64;
+    auto fp2 = f64_identity("4.95"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
         f64_identity(fp1 -= fp2);
     }
 }
 
 static void f64_sqrt(benchmark::State& state)
 {
+    auto fp1 = f64_identity("1145.14"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
-        sqrt(fp1);
+        f64_identity(sqrt(fp1));
     }
 }
 
 static void f64_log2(benchmark::State& state)
 {
+    auto fp1 = f64_identity("1145.14"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
-        log2(fp1);
+        f64_identity(log2(fp1));
     }
 }
+
 static void f64_log(benchmark::State& state)
 {
+    auto fp1 = f64_identity("1145.14"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
-        log(fp1);
+        f64_identity(log(fp1));
     }
 }
+
 static void f64_log10(benchmark::State& state)
 {
+    auto fp1 = f64_identity("1145.14"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
-        log10(fp1);
+        f64_identity(log10(fp1));
     }
 }
 
 static void f64_exp(benchmark::State& state)
 {
+    auto fp1 = f64_identity("11.4514"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "11.4514"_f64;
-        exp(fp1);
+        f64_identity(exp(fp1));
     }
 }
+
 static void f64_pow(benchmark::State& state)
 {
+    auto fp1 = f64_identity("11.4514"_f64);
     auto fp2 = "3.5"_f64;
     for(auto _ : state)
     {
-        auto fp1 = "11.4514"_f64;
-        pow(fp1, fp2);
+        f64_identity(pow(fp1, fp2));
     }
 }
 
 static void f64_sin(benchmark::State& state)
 {
+    auto fp1 = f64_identity("1145.14"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
         f64_identity(sin(fp1));
     }
 }
+
 static void f64_cos(benchmark::State& state)
 {
+    auto fp1 = f64_identity("1145.14"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
         f64_identity(cos(fp1));
     }
 }
+
 static void f64_tan(benchmark::State& state)
 {
+    auto fp1 = f64_identity("1145.14"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
         f64_identity(tan(fp1));
     }
 }
 
 static void f64_atan(benchmark::State& state)
 {
+    auto fp1 = f64_identity("0.5"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "1145.14"_f64;
         f64_identity(atan(fp1));
     }
 }
+
+// FIXME: Use the correct functions! (by HenryAWE)
+
 static void f64_asin(benchmark::State& state)
 {
+    auto fp1 = f64_identity("0.5"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "0.5"_f64;
         f64_identity(atan(fp1));
     }
 }
+
 static void f64_acos(benchmark::State& state)
 {
+    auto fp1 = f64_identity("0.5"_f64);
     for(auto _ : state)
     {
-        auto fp1 = "0.5"_f64;
         f64_identity(atan(fp1));
     }
 }

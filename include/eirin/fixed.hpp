@@ -362,7 +362,7 @@ public:
 
     constexpr inline fixed_num operator/(const fixed_num& other) const
     {
-        if(other.m_value == 0)
+        if(other.m_value == 0) [[unlikely]]
             throw divide_by_zero();
 
         if constexpr(rounding)
@@ -378,7 +378,7 @@ public:
 
     constexpr inline fixed_num& operator/=(const fixed_num& other)
     {
-        if(other.m_value == 0)
+        if(other.m_value == 0) [[unlikely]]
             throw divide_by_zero();
 
         if constexpr(rounding)
@@ -395,7 +395,7 @@ public:
 
     constexpr inline fixed_num& operator/=(const std::integral auto& val)
     {
-        if(val == 0)
+        if(val == 0) [[unlikely]]
             throw divide_by_zero();
 
         m_value /= val;
@@ -610,25 +610,24 @@ namespace detail
     {};
 
     template <typename CharT, typename T, typename I, unsigned int f, bool r>
-    constexpr inline bool parse(const CharT* str, size_t len, fixed_num<T, I, f, r>& fp) noexcept
+    constexpr bool parse(const CharT* str, size_t len, fixed_num<T, I, f, r>& fp) noexcept
     {
         using fixed = fixed_num<T, I, f, r>;
         size_t pos = 0;
         bool negative = false;
-        auto peek = [&]() -> CharT
+
+        auto check_ch = [](char ch) -> bool
         {
-            return str[pos];
+            // This should be faster than isdigit
+            return '0' <= ch && ch <= '9';
         };
+
         auto next = [&]() -> CharT
         {
             return str[pos++];
         };
-        auto has_next = [&]() -> bool
-        {
-            return pos < len;
-        };
 
-        if(has_next() && peek() == '-')
+        if(pos < len && str[pos] == '-')
         {
             negative = true;
             next();
@@ -636,21 +635,21 @@ namespace detail
 
         std::int64_t int_part = 0, dec_part = 0;
         // parse the integer part.
-        while(has_next() && peek() != '.')
+        while(pos < len && str[pos] != '.')
         {
-            if(!isdigit(peek()))
+            if(!check_ch(str[pos]))
                 return false;
             int_part = int_part * 10 + (next() - '0');
         }
         // parse the decimal part.
-        if(has_next() && peek() == '.')
+        if(pos < len && str[pos] == '.')
         {
             ++pos;
             constexpr auto max_fraction = ((std::int64_t)1 << fixed::precision) - 1;
             std::int64_t divisor = 1;
-            while(has_next())
+            while(pos < len)
             {
-                if(!isdigit(peek()))
+                if(!check_ch(str[pos]))
                     return false;
                 if(dec_part > max_fraction / 10)
                 {

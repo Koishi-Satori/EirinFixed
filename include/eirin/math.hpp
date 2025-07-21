@@ -487,6 +487,8 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> exp(fixed_num<T, I, f, r> fp
     return detail::exp_expand(fp);
 }
 
+// TODO: This function has performance issue on MSVC,
+// which is about 5x slower than the result of clang-cl.
 template <typename T, typename I, unsigned int f, bool r>
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> pow(fixed_num<T, I, f, r> b, fixed_num<T, I, f, r> e) noexcept
 {

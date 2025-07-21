@@ -188,7 +188,7 @@ TEST(fixed_num, constants)
     GTEST_LOG_(INFO) << "fixed32 egamma value: " << numbers::egamma_v<fixed32>();
     GTEST_LOG_(INFO) << "fixed32 phi value: " << numbers::phi_v<fixed32>();
 
-    #ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_FIXED_HAS_INT128
     // fixed64
     GTEST_LOG_(INFO) << "fixed64 max value: " << max_value<fixed64>() << ", min value: " << min_value<fixed64>();
     GTEST_LOG_(INFO) << "fixed64 e value: " << fixed64::e() << ", pi value: " << fixed64::pi();
@@ -203,7 +203,7 @@ TEST(fixed_num, constants)
     GTEST_LOG_(INFO) << "fixed64 inv_sqrt3 value: " << numbers::inv_sqrt3_v<fixed64>();
     GTEST_LOG_(INFO) << "fixed64 egamma value: " << numbers::egamma_v<fixed64>();
     GTEST_LOG_(INFO) << "fixed64 phi value: " << numbers::phi_v<fixed64>();
-    #endif
+#endif
 }
 
 #ifdef EIRIN_FIXED_HAS_INT128
@@ -292,6 +292,13 @@ TEST(fixed64, math)
 
 int main(int argc, char* argv[])
 {
+#ifdef EIRIN_FIXED_DETAIL_INT128_MSVC_STL
+    papilio::println("EIRIN_FIXED_DETAIL_INT128_MSVC_STL defined");
+#endif
+#ifdef EIRIN_FIXED_DETAIL_BUILTIN__INT128
+    papilio::println("EIRIN_FIXED_DETAIL_BUILTIN__INT128 defined");
+#endif
+
     auto fp1 = fixed32(1);
     auto fp2 = fixed32(3);
     fp2 /= 114.514_f32;
