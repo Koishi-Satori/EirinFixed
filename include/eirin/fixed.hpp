@@ -362,7 +362,7 @@ public:
 
     constexpr inline fixed_num operator/(const fixed_num& other) const
     {
-        if(other.m_value == 0)
+        if(other.m_value == 0) [[unlikely]]
             throw divide_by_zero();
 
         if constexpr(rounding)
@@ -378,7 +378,7 @@ public:
 
     constexpr inline fixed_num& operator/=(const fixed_num& other)
     {
-        if(other.m_value == 0)
+        if(other.m_value == 0) [[unlikely]]
             throw divide_by_zero();
 
         if constexpr(rounding)
@@ -395,7 +395,7 @@ public:
 
     constexpr inline fixed_num& operator/=(const std::integral auto& val)
     {
-        if(val == 0)
+        if(val == 0) [[unlikely]]
             throw divide_by_zero();
 
         m_value /= val;
