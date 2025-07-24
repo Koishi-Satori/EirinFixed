@@ -633,7 +633,7 @@ namespace detail
             next();
         }
 
-        std::int64_t int_part = 0, dec_part = 0;
+        I int_part = I(0), dec_part = I(0);
         // parse the integer part.
         while(pos < len && str[pos] != '.')
         {
@@ -641,12 +641,14 @@ namespace detail
                 return false;
             int_part = int_part * 10 + (next() - '0');
         }
+
+        I fixed_value;
         // parse the decimal part.
         if(pos < len && str[pos] == '.')
         {
             ++pos;
             constexpr auto max_fraction = ((std::int64_t)1 << fixed::precision) - 1;
-            std::int64_t divisor = 1;
+            I divisor = I(1);
             while(pos < len)
             {
                 if(!check_ch(str[pos]))
@@ -659,16 +661,20 @@ namespace detail
                 dec_part = dec_part * 10 + digit;
                 divisor *= 10;
             }
-            fp = fixed::from_internal_value(
-                static_cast<T>((int_part << fixed::precision) + (dec_part << fixed::precision) / divisor)
-            );
+            fixed_value = (int_part << fixed::precision) + (dec_part << fixed::precision) / divisor;
         }
         else
         {
-            fp = fixed::from_internal_value(
-                static_cast<T>(int_part << fixed::precision)
-            );
+            fixed_value = int_part << fixed::precision;
         }
+
+        // check overflow
+        if(fixed_value > static_cast<I>(std::numeric_limits<T>::max()) || fixed_value < static_cast<I>(std::numeric_limits<T>::min()))
+        {
+            return false;
+        }
+
+        fp = fixed::from_internal_value(static_cast<T>(fixed_value));
         if(negative)
             fp = -fp;
         return true;
@@ -817,31 +823,38 @@ inline bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
     {
         return pos < len;
     };
+    auto check_ch = [](char ch) -> bool
+    {
+        // This should be faster than isdigit
+        return '0' <= ch && ch <= '9';
+    };
+
     if(has_next() && peek() == '-')
     {
         negative = true;
         next();
     }
 
-    int32_t int_part = 0, dec_part = 0;
+    int64_t int_part = 0, dec_part = 0;
     // parse the integer part.
     while(has_next() && peek() != '.')
     {
-        if(!isdigit(peek()))
+        if(!check_ch(peek()))
         {
             return false;
         }
         int_part = int_part * 10 + (next() - '0');
     }
+    int64_t fixed_value;
     // parse the decimal part.
     if(has_next() && peek() == '.')
     {
         ++pos;
         constexpr auto max_fraction = (1 << fixed32::precision) - 1;
-        int32_t divisor = 1;
+        int64_t divisor = 1;
         while(has_next())
         {
-            if(!isdigit(peek()))
+            if(!check_ch(peek()))
             {
                 return false;
             }
@@ -853,19 +866,27 @@ inline bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed32::from_internal_value((int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor);
+        fixed_value = (int_part << fixed32::precision) + (dec_part << fixed32::precision) / divisor;
     }
     else
     {
-        fp = fixed32::from_internal_value(int_part << fixed32::precision);
+        fixed_value = int_part << fixed32::precision;
     }
+
+    // check overflow
+    if(fixed_value > static_cast<int64_t>(std::numeric_limits<int32_t>::max()) || fixed_value < static_cast<int64_t>(std::numeric_limits<int32_t>::min()))
+    {
+        return false;
+    }
+
+    fp = fixed32::from_internal_value(static_cast<int32_t>(fixed_value));
     if(negative)
         fp = -fp;
     return true;
 }
 
 template <typename T, typename I, unsigned int f, bool r>
-bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) noexcept
+constexpr bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
     size_t pos = 0;
@@ -882,40 +903,55 @@ bool fixed_from_cstring(const char* str, size_t len, fixed_num<T, I, f, r>& fp) 
     {
         return pos < len;
     };
+    auto check_ch = [](char ch) -> bool
+    {
+        // This should be faster than isdigit
+        return '0' <= ch && ch <= '9';
+    };
+
     if(has_next() && peek() == '-')
     {
         negative = true;
         next();
     }
 
-    T int_part = T(0), dec_part = T(0);
+    I int_part = I(0), dec_part = I(0);
     // parse the integer part.
     while(has_next() && peek() != '.')
     {
-        if(!isdigit(peek()))
+        if(!check_ch(peek()))
             break;
         int_part = int_part * 10 + (next() - '0');
     }
+    I fixed_value = I(0);
     // parse the decimal part.
     if(has_next() && peek() == '.')
     {
         next();
         constexpr auto max_fraction = (T(1) << f) - T(1);
-        T divisor = T(1);
+        I divisor = I(1);
         while(has_next())
         {
-            if(dec_part > max_fraction / 10 || !isdigit(peek()))
+            if(dec_part > max_fraction / 10 || !check_ch(peek()))
                 break;
             auto digit = next() - '0';
             dec_part = dec_part * 10 + digit;
             divisor *= 10;
         }
-        fp = fixed::from_internal_value((int_part << f) + (dec_part << f) / divisor);
+        fixed_value = (int_part << f) + (dec_part << f) / divisor;
     }
     else
     {
-        fp = fixed::from_internal_value(int_part << f);
+        fixed_value = (int_part << f);
     }
+
+    // check overflow
+    if(fixed_value > static_cast<I>(std::numeric_limits<T>::max()) || fixed_value < static_cast<I>(std::numeric_limits<T>::min()))
+    {
+        return false;
+    }
+
+    fp = fixed::from_internal_value(static_cast<T>(fixed_value));
     if(negative)
         fp = -fp;
     return true;
