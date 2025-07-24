@@ -4,6 +4,7 @@
 #include <papilio/print.hpp>
 #include <eirin/ext/papilio_integration.hpp>
 #include <gtest/gtest.h>
+#include <eirin/ext/cordic.hpp>
 // #include <eirin/detail/util.hpp>
 
 using namespace eirin;
@@ -348,6 +349,9 @@ int main(int argc, char* argv[])
 
     static_assert(papilio::formattable<fixed32>);
     papilio::println("{:f}", 114.5625_f32);
+    std::cout << cordic_sine(eirin::numbers::pi_f64 / 4) << std::endl;
+    std::cout << sin(eirin::numbers::pi_f64 / 4) << std::endl;
+    papilio::println("0.244978663126864={}", 0.244978663126864_f64);
 
     // util::print_constants();
     // papilio::println("constants used in atan: {:X}, {:X}", util::eval_value<int64_t>(0.2247, 61), util::eval_value<int64_t>(0.0663, 61));

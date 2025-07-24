@@ -142,7 +142,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> sqrt(fixed_num<T, I, f, r> f
                 v -= t;
                 q = t + b;
             }
-            if((r & 0x80000000) != 0)
+            if((v & 0x80000000) != 0)
             {
                 q >>= 1;
                 b >>= 1;
@@ -292,6 +292,8 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> f
     constexpr auto pi_4 = pi / fixed(4);
     return pi_4 * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
 }
+
+//TODO: Implement asin and acos functions with CORDIC, and optimize other functions with CORDIC.
 
 /**
  * @brief cbrt function for fixed point number, which used newton method to calculate the cbrt.

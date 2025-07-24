@@ -2,6 +2,7 @@
 #include <eirin/math.hpp>
 #include <benchmark/benchmark.h>
 #include "bench.hpp"
+#include <eirin/ext/cordic.hpp>
 
 using namespace eirin;
 
@@ -165,6 +166,15 @@ static void f32_acos(benchmark::State& state)
     }
 }
 
+static void f32_cordic_sin(benchmark::State& state)
+{
+    auto fp1 = f32_identity("1145.14"_f32);
+    for(auto _ : state)
+    {
+        f32_identity(cordic_sine(fp1));
+    }
+}
+
 #ifdef EIRIN_FIXED_HAS_INT128
 static void f64_create(benchmark::State& state)
 {
@@ -325,6 +335,15 @@ static void f64_acos(benchmark::State& state)
         f64_identity(atan(fp1));
     }
 }
+
+static void f64_cordic_sin(benchmark::State& state)
+{
+    auto fp1 = f64_identity("1145.14"_f64);
+    for(auto _ : state)
+    {
+        f64_identity(cordic_sine(fp1));
+    }
+}
 #endif
 
 BENCHMARK(f32_create);
@@ -344,6 +363,7 @@ BENCHMARK(f32_tan);
 BENCHMARK(f32_atan);
 BENCHMARK(f32_acos);
 BENCHMARK(f32_asin);
+BENCHMARK(f32_cordic_sin);
 #ifdef EIRIN_FIXED_HAS_INT128
 BENCHMARK(f64_create);
 BENCHMARK(f64_divide);
@@ -362,6 +382,7 @@ BENCHMARK(f64_tan);
 BENCHMARK(f64_atan);
 BENCHMARK(f64_acos);
 BENCHMARK(f64_asin);
+BENCHMARK(f64_cordic_sin);
 #endif
 
 BENCHMARK_MAIN();
