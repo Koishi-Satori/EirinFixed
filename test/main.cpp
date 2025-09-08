@@ -5,8 +5,8 @@
 #include <eirin/ext/papilio_integration.hpp>
 #include <gtest/gtest.h>
 #include <eirin/ext/cordic.hpp>
-#include <eirin/random.hpp>
 // #include <eirin/detail/util.hpp>
+#include <eirin/random.hpp>
 
 using namespace eirin;
 
