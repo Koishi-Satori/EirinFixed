@@ -114,7 +114,6 @@ namespace detail
         fixed q = fixed(0);
         for(size_t i = 0; i < count; ++i)
         {
-            // auto diff = Q - q;
             if(q < Q)
             {
                 temp = x - (y >> i);
@@ -129,18 +128,14 @@ namespace detail
                 x = temp;
                 q -= angel<T, I, f, r, count>(i);
             }
-            // if(abs(diff) < fixed::epsilon())
-            // {
-            //     break;
-            // }
         }
         if constexpr(sine)
         {
-            return fixed::from_internal_value(static_cast<T>(y)) * sin_sign;
+            return fixed::from_internal_value(static_cast<T>(y) * sin_sign);
         }
         else
         {
-            return fixed::from_internal_value(static_cast<T>(x)) * cos_sign;
+            return fixed::from_internal_value(static_cast<T>(x) * cos_sign);
         }
     }
 } // namespace detail
