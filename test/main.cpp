@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <eirin/ext/cordic.hpp>
 // #include <eirin/detail/util.hpp>
+#include <eirin/random.hpp>
 
 using namespace eirin;
 
@@ -352,6 +353,7 @@ int main(int argc, char* argv[])
     std::cout << cordic_sine(eirin::numbers::pi_f64 / 4) << std::endl;
     std::cout << sin(eirin::numbers::pi_f64 / 4) << std::endl;
     papilio::println("0.244978663126864={}", 0.244978663126864_f64);
+    test();
 
     // util::print_constants();
     // papilio::println("constants used in atan: {:X}, {:X}", util::eval_value<int64_t>(0.2247, 61), util::eval_value<int64_t>(0.0663, 61));
