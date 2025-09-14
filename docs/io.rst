@@ -73,12 +73,6 @@ Other I/O Libraries
       - ``x``, ``X``, ``d``, ``b``
       - The prefix will only be added with ``#`` argument specified.
 
-
-
-.. note::
-    If you use Xmake to build and install the library, you should set the xmake option ``eirin_with_papilio`` to ``true``.
-    Otherwise, the library will not be able to use Papilio Charontis.
-
 .. code-block:: c++
 
     #include <iostream>
