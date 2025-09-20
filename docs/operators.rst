@@ -8,6 +8,11 @@ You can perform quadratic operations and module between fixed and fixed, fixed a
 
 The output will always be fixed point.
 
+.. warning::
+    Division by zero will lead to undefined behavior.
+    You can check for zero before performing division.
+    Or you can use ``divide`` and ``divide_by`` functions which will throw ``eirin::divide_by_zero`` exception on division by zero.
+
 .. code-block:: c++
 
     #include <iostream>

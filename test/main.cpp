@@ -32,11 +32,13 @@ TEST(fixed32, operator)
     EXPECT_EQ(fp1 + 5.14_f32, 6.28_f32);
     EXPECT_EQ(fp1 * 2, 2.28_f32);
     EXPECT_EQ(514_f32 / 2, 257_f32);
+    auto fp2 = 514_f32;
+    EXPECT_EQ(fp2.divide(2), 257_f32);
     EXPECT_EQ(515_f32 % 2_f32, 1_f32);
     EXPECT_EQ(--fp1, 0.14_f32);
 
     EXPECT_THROW(
-        (void)(1_f32 / 0),
+        (void)(fp2.divide(0)),
         divide_by_zero
     );
 }
@@ -217,11 +219,13 @@ TEST(fixed64, operator)
     EXPECT_EQ(fp1 + 5.14_f64, 6.28_f64);
     EXPECT_EQ(fp1 * 2, 2.28_f64);
     EXPECT_EQ(514_f64 / 2, 257_f64);
+    auto fp2 = 514_f64;
+    EXPECT_EQ(fp2.divide(2), 257_f64);
     EXPECT_EQ(515_f64 % 2_f64, 1_f64);
     EXPECT_EQ(--fp1, 0.14_f64);
 
     EXPECT_THROW(
-        (void)(1_f64 / 0),
+        (void)(fp2.divide(0)),
         divide_by_zero
     );
 }
