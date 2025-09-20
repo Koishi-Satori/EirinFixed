@@ -360,10 +360,10 @@ public:
         return *this;
     }
 
-    constexpr inline fixed_num operator/(const fixed_num& other) const
+    constexpr inline fixed_num operator/(const fixed_num& other) const noexcept
     {
-        if(other.m_value == 0) [[unlikely]]
-            throw divide_by_zero();
+        // if(other.m_value == 0) [[unlikely]]
+        //     throw divide_by_zero();
 
         if constexpr(rounding)
         {
@@ -376,10 +376,10 @@ public:
         }
     }
 
-    constexpr inline fixed_num& operator/=(const fixed_num& other)
+    constexpr inline fixed_num& operator/=(const fixed_num& other) noexcept
     {
-        if(other.m_value == 0) [[unlikely]]
-            throw divide_by_zero();
+        // if(other.m_value == 0) [[unlikely]]
+        //     throw divide_by_zero();
 
         if constexpr(rounding)
         {
@@ -393,10 +393,10 @@ public:
         return *this;
     }
 
-    constexpr inline fixed_num& operator/=(const std::integral auto& val)
+    constexpr inline fixed_num& operator/=(const std::integral auto& val) noexcept
     {
-        if(val == 0) [[unlikely]]
-            throw divide_by_zero();
+        // if(val == 0) [[unlikely]]
+        //     throw divide_by_zero();
 
         m_value /= val;
         return *this;
@@ -585,6 +585,56 @@ public:
 
         os.flush();
         return os;
+    }
+
+    EIRIN_ALWAYS_INLINE constexpr fixed_num divide(const std::integral auto& val) const
+    {
+        if(val == 0) [[unlikely]]
+            throw divide_by_zero();
+
+        return fixed_num(m_value / val, raw_value_construct_tag{});
+    }
+
+    EIRIN_ALWAYS_INLINE constexpr fixed_num divide(const fixed_num& other) const
+    {
+        if(other.m_value == 0) [[unlikely]]
+            throw divide_by_zero();
+
+        if constexpr(rounding)
+        {
+            auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
+            return fixed_num(static_cast<Type>(_value + (_value % 2)), raw_value_construct_tag{});
+        }
+        else
+        {
+            return fixed_num(static_cast<Type>((static_cast<IntermediateType>(m_value) << fraction) / other.m_value), raw_value_construct_tag{});
+        }
+    }
+
+    EIRIN_ALWAYS_INLINE constexpr fixed_num& divide_by(const std::integral auto& val)
+    {
+        if(val == 0) [[unlikely]]
+            throw divide_by_zero();
+
+        m_value /= val;
+        return *this;
+    }
+
+    EIRIN_ALWAYS_INLINE constexpr fixed_num& divide_by(const fixed_num& other)
+    {
+        if(other.m_value == 0) [[unlikely]]
+            throw divide_by_zero();
+
+        if constexpr(rounding)
+        {
+            auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
+            m_value = static_cast<Type>(_value + (_value % 2));
+        }
+        else
+        {
+            m_value = static_cast<Type>((static_cast<IntermediateType>(m_value) << fraction) / other.m_value);
+        }
+        return *this;
     }
 
     friend std::ostream& operator<<(std::ostream& os, const fixed_num& fp) noexcept
