@@ -15,7 +15,7 @@ jobs:
               arch: amd64
           - uses: xmake-io/github-action-setup-xmake@v1
             with:
-              xmake-version: v2.9.8
+              xmake-version: v3.0.0
               actions-cache-folder: '.xmake-cache'
               actions-cache-key: "windows-2022"
               package-cache: true
@@ -50,7 +50,7 @@ jobs:
 
           - uses: xmake-io/github-action-setup-xmake@v1
             with:
-              xmake-version: v2.9.8
+              xmake-version: v3.0.0
               actions-cache-folder: '.xmake-cache'
               actions-cache-key: "windows-2025"
               package-cache: true
@@ -89,7 +89,7 @@ jobs:
           - uses: actions/checkout@v4
           - uses: xmake-io/github-action-setup-xmake@v1
             with:
-              xmake-version: v2.9.8
+              xmake-version: v3.0.0
               actions-cache-folder: '.xmake-cache'
               actions-cache-key: "linux-clang-18"
               package-cache: true
