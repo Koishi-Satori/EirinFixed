@@ -78,28 +78,75 @@ jobs:
     Clang:
         runs-on: ubuntu-24.04
 
-        name: Linux Clang 18
+        strategy:
+          matrix:
+            clang: [15, 18]
+          fail-fast: false
+        name: Linux Clang ${{ matrix.clang }}
 
         steps:
           - name: Install Dependencies
             run: |
               sudo apt-get update
-              sudo apt-get install -y cmake ninja-build clang-18 clang++-18
+              sudo apt-get install -y cmake ninja-build clang-${{ matrix.clang }} clang++-${{ matrix.clang }}
 
           - uses: actions/checkout@v4
           - uses: xmake-io/github-action-setup-xmake@v1
             with:
               xmake-version: v3.0.0
               actions-cache-folder: '.xmake-cache'
-              actions-cache-key: "linux-clang-18"
+              actions-cache-key: "linux-clang"
               package-cache: true
-              package-cache-key: "linux-clang-18"
+              package-cache-key: "linux-clang"
               build-cache: true
-              build-cache-key: "linux-clang-18"
+              build-cache-key: "linux-clang"
 
           - name: Configure
             run: |
-              xmake config --yes -m release --toolchain=clang-18
+              xmake config --yes -m release --toolchain=clang-${{ matrix.clang }}
+
+          - name: Build
+            run: |
+              xmake build --verbose --diagnosis --all
+
+          - name: Test
+            run: xmake test --verbose
+
+          - name: Benchmark
+            run: xmake run --verbose eirin_fixed.benchmark
+          
+          - name: Benchmark (For Compare)
+            run: xmake run --verbose double.benchmark
+
+    GCC:
+        runs-on: ubuntu-24.04
+
+        strategy:
+          matrix:
+            gcc: [13, 14]
+          fail-fast: false
+        name: Linux GCC ${{ matrix.gcc }}
+
+        steps:
+          - name: Install Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y cmake ninja-build gcc-${{ matrix.gcc }} g++-${{ matrix.gcc }}
+
+          - uses: actions/checkout@v4
+          - uses: xmake-io/github-action-setup-xmake@v1
+            with:
+              xmake-version: v3.0.0
+              actions-cache-folder: '.xmake-cache'
+              actions-cache-key: "linux-gcc"
+              package-cache: true
+              package-cache-key: "linux-gcc"
+              build-cache: true
+              build-cache-key: "linux-gcc"
+
+          - name: Configure
+            run: |
+              xmake config --yes -m release --toolchain=gcc-${{ matrix.gcc }}
 
           - name: Build
             run: |
