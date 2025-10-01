@@ -1,5 +1,5 @@
 set_project("eirin_fixed")
-set_version("1.5.0")
+set_version("1.2.0")
 
 add_rules("mode.debug", "mode.release")
 
