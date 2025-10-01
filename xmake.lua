@@ -42,10 +42,9 @@ set_languages("cxx20")
 
 target("eirin_fixed")
     add_options("eirin_with_papilio")
-    set_kind("static")
+    set_kind("headeronly")
     add_includedirs("include", {public = true})
     add_headerfiles("include/(eirin/**.hpp)")
-    add_files("src/*.cpp")
     if is_mode("release") then
         set_optimize("fastest")
     end
