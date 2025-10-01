@@ -15,7 +15,7 @@
 
 namespace eirin
 {
-    EIRIN_ALWAYS_INLINE static constexpr std::tuple<int, int, int> get_version() noexcept
+    inline constexpr std::tuple<int, int, int> get_version() noexcept
     {
         return {1, 1, 1};
     }

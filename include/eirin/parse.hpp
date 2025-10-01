@@ -16,7 +16,7 @@ namespace eirin
  * @param out tge output fixed point number
  * @return the pos of the pointer.
  */
-const char* parse(const char* start, const char* stop, fixed32& out)
+inline const char* parse(const char* start, const char* stop, fixed32& out)
 {
     size_t pos = 0;
     bool negative = false;
@@ -86,7 +86,7 @@ const char* parse(const char* start, const char* stop, fixed32& out)
     return start;
 }
 
-const char* parse(std::string_view str, fixed32& out)
+inline const char* parse(std::string_view str, fixed32& out)
 {
     return parse(
         std::to_address(str.begin()),
