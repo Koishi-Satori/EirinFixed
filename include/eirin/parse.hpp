@@ -17,7 +17,6 @@ namespace eirin
  * @return the pos of the pointer.
  */
 const char* parse(const char* start, const char* stop, fixed32& out)
-
 {
     size_t pos = 0;
     bool negative = false;
