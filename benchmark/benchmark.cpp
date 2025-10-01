@@ -17,7 +17,7 @@ static void f32_create(benchmark::State& state)
 
 static void f32_divide(benchmark::State& state)
 {
-    auto fp1 = "4.95"_f32;
+    auto fp1 = f32_identity("4.95"_f32);
     auto fp2 = f32_identity("1145.14"_f32);
     for(auto _ : state)
     {
@@ -102,7 +102,7 @@ static void f32_exp(benchmark::State& state)
 
 static void f32_pow(benchmark::State& state)
 {
-    auto fp1 = "11.4514"_f32;
+    auto fp1 = f32_identity("11.4514"_f32);
     auto fp2 = f32_identity("3.5"_f32);
     for(auto _ : state)
     {
