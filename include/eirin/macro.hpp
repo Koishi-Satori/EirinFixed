@@ -15,5 +15,8 @@
 #    define EIRIN_ALWAYS_INLINE inline
 #endif
 
+#ifndef __EXCEPTIONS
+#    define EIRIN_NO_EXCEPTIONS
+#endif
 
 #endif // EIRIN_FIXED_MARCO_HPP

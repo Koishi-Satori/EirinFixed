@@ -37,10 +37,14 @@ TEST(fixed32, operator)
     EXPECT_EQ(515_f32 % 2_f32, 1_f32);
     EXPECT_EQ(--fp1, 0.14_f32);
 
+#ifndef EIRIN_NO_EXCEPTIONS
+
     EXPECT_THROW(
         (void)(fp2.divide(0)),
         divide_by_zero
     );
+
+#endif
 }
 
 TEST(fixed32, rounding)
@@ -170,10 +174,12 @@ TEST(fixed32, papilio_format)
     EXPECT_EQ(papilio::format("{:.2f}", fixed32::pi()), "3.14");
     EXPECT_EQ(papilio::format("{:.4f}", fixed32::pi()), "3.1415");
 
+#ifndef EIRIN_NO_EXCEPTIONS
     EXPECT_THROW(
         (void)papilio::format("{:s}", fixed32::pi()),
         papilio::format_error
     );
+#endif
 }
 
 TEST(fixed_num, constants)
@@ -224,10 +230,12 @@ TEST(fixed64, operator)
     EXPECT_EQ(515_f64 % 2_f64, 1_f64);
     EXPECT_EQ(--fp1, 0.14_f64);
 
+#    ifndef EIRIN_NO_EXCEPTIONS
     EXPECT_THROW(
         (void)(fp2.divide(0)),
         divide_by_zero
     );
+#    endif
 }
 
 TEST(fixed64, rounding)
@@ -298,6 +306,10 @@ TEST(fixed64, math)
 
 int main(int argc, char* argv[])
 {
+#ifdef EIRIN_NO_EXCEPTIONS
+    papilio::println("EIRIN_NO_EXCEPTIONS defined");
+#endif
+
 #ifdef EIRIN_FIXED_DETAIL_INT128_MSVC_STL
     papilio::println("EIRIN_FIXED_DETAIL_INT128_MSVC_STL defined");
 #endif

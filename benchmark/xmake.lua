@@ -2,6 +2,9 @@ add_requires("benchmark")
 
 target("eirin_fixed.benchmark")
     set_kind("binary")
+    if is_plat("wasm") then
+        set_extension(".js")
+    end
     add_includedirs(".", {public = true})
     add_files("./benchmark.cpp", "./bench.cpp")
     add_deps("eirin_fixed")
@@ -9,6 +12,9 @@ target("eirin_fixed.benchmark")
 
 target("double.benchmark")
     set_kind("binary")
+    if is_plat("wasm") then
+        set_extension(".js")
+    end
     add_includedirs(".", {public = true})
     add_files("./double_bench.cpp", "./bench.cpp")
     add_deps("eirin_fixed")
