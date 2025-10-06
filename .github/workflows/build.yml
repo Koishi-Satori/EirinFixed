@@ -197,10 +197,10 @@ jobs:
               xmake build --verbose --diagnosis --all
 
           - name: Test
-            run: xmake test --verbose
+            run: node build/wasm/wasm32/release/eirin_fixed.test.js
 
           - name: Benchmark
-            run: xmake run --verbose eirin_fixed.benchmark
+            run: node build/wasm/wasm32/release/eirin_fixed.benchmark.js
           
           - name: Benchmark (For Compare)
-            run: xmake run --verbose double.benchmark
+            run: node build/wasm/wasm32/release/double.benchmark.js
