@@ -160,3 +160,47 @@ jobs:
           
           - name: Benchmark (For Compare)
             run: xmake run --verbose double.benchmark
+
+    Emscripten:
+        runs-on: ubuntu-24.04
+
+        name: Emscripten
+
+        steps:
+          - name: Install Dependencies
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y cmake ninja-build
+
+          - uses: actions/checkout@v4
+          - uses: xmake-io/github-action-setup-xmake@v1
+            with:
+              xmake-version: v3.0.0
+              actions-cache-folder: '.xmake-cache'
+              actions-cache-key: "wasm"
+              package-cache: true
+              package-cache-key: "wasm"
+              build-cache: true
+              build-cache-key: "wasm"
+
+          - name: Setup emsdk
+            uses: mymindstorm/setup-emsdk@v14
+            with:
+              actions-cache-folder: emsdk-cache
+
+          - name: Configure
+            run: |
+              xmake config --yes -m release -p wasm
+
+          - name: Build
+            run: |
+              xmake build --verbose --diagnosis --all
+
+          - name: Test
+            run: xmake test --verbose
+
+          - name: Benchmark
+            run: xmake run --verbose eirin_fixed.benchmark
+          
+          - name: Benchmark (For Compare)
+            run: xmake run --verbose double.benchmark
