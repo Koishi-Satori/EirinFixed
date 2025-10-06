@@ -69,4 +69,9 @@
 #    define EIRIN_FIXED_NO_SIMD
 #endif
 
+#ifndef __EXCEPTIONS
+#    define EIRIN_NO_EXCEPTIONS
+#endif
+#endif
+
 #endif // EIRIN_FIXED_MARCO_HPP
