@@ -69,9 +69,12 @@
 #    define EIRIN_FIXED_NO_SIMD
 #endif
 
-#ifndef __EXCEPTIONS
+#if defined(__EXCEPTIONS) && __EXCEPTIONS != 1
 #    define EIRIN_NO_EXCEPTIONS
 #endif
+
+#if defined(_MSC_VER) && !defined(_CPPUNWIND)
+#    define EIRIN_NO_EXCEPTIONS
 #endif
 
 #endif // EIRIN_FIXED_MARCO_HPP

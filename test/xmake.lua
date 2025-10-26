@@ -5,6 +5,7 @@ target("eirin_fixed.test")
     set_kind("binary")
     if is_plat("wasm") then
         set_extension(".js")
+        set_exceptions("no-cxx")
     end
     add_tests("test_eirin_fixed")
     add_files("main.cpp")
