@@ -15,7 +15,11 @@
 #    define EIRIN_ALWAYS_INLINE inline
 #endif
 
-#ifndef __EXCEPTIONS
+#if defined(__EXCEPTIONS) && __EXCEPTIONS != 1
+#    define EIRIN_NO_EXCEPTIONS
+#endif
+
+#if defined(_MSC_VER) && !defined(_CPPUNWIND)
 #    define EIRIN_NO_EXCEPTIONS
 #endif
 
