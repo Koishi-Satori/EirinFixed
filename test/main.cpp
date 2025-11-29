@@ -75,6 +75,9 @@ TEST(fixed32, decompression)
 
 namespace test_math
 {
+static constexpr eirin::fixed32 arc_triangle_max_error = 0.0003_f32;
+static constexpr eirin::fixed64 arc_triangle_max_error_64 = 0.0003_f64;
+
 static testing::AssertionResult expect_fixed_eq(
     const eirin::fixed32& lhs,
     const eirin::fixed32& rhs,
@@ -121,8 +124,13 @@ TEST(fixed32, math)
     EXPECT_TRUE(expect_fixed_eq(cos(1_f32), 0.540302_f32));
     EXPECT_EQ(tan(0_f32), 0_f32);
     EXPECT_TRUE(expect_fixed_eq(tan(1_f32), 1.557407_f32));
-    EXPECT_EQ(atan(0_f32), 0_f32);
-    EXPECT_EQ(atan(1_f32), 0.785398_f32);
+    EXPECT_TRUE(expect_fixed_eq(atan(0_f32), 0_f32, test_math::arc_triangle_max_error));
+    EXPECT_TRUE(expect_fixed_eq(atan(fixed32::pi() / 6), 0.482348_f32, test_math::arc_triangle_max_error));
+    EXPECT_TRUE(expect_fixed_eq(atan(1_f32), 0.785398_f32, test_math::arc_triangle_max_error));
+    EXPECT_TRUE(expect_fixed_eq(asin(0_f32), 0_f32, test_math::arc_triangle_max_error));
+    EXPECT_TRUE(expect_fixed_eq(asin(0.5_f32), 0.523598_f32, test_math::arc_triangle_max_error));
+    EXPECT_TRUE(expect_fixed_eq(acos(0_f32), 1.570796_f32, test_math::arc_triangle_max_error));
+    EXPECT_TRUE(expect_fixed_eq(acos(0.5_f32), 1.047197_f32, test_math::arc_triangle_max_error));
     EXPECT_EQ(sqrt(0_f32), 0_f32);
     EXPECT_EQ(sqrt(4_f32), 2_f32);
     EXPECT_EQ(sqrt(114.514_f32), 10.701121_f32);
@@ -273,8 +281,13 @@ TEST(fixed64, math)
     EXPECT_TRUE(expect_fixed_eq(cos(1_f64), 0.540302_f64));
     EXPECT_EQ(tan(0_f64), 0_f64);
     EXPECT_TRUE(expect_fixed_eq(tan(1_f64), 1.557407_f64));
-    EXPECT_TRUE(expect_fixed_eq(atan(0_f64), 0_f64));
-    EXPECT_TRUE(expect_fixed_eq(atan(1_f64), 0.785398_f64));
+    EXPECT_TRUE(expect_fixed_eq(atan(0_f64), 0_f64, test_math::arc_triangle_max_error_64));
+    EXPECT_TRUE(expect_fixed_eq(atan(fixed64::pi() / 6), 0.482348_f64, test_math::arc_triangle_max_error_64));
+    EXPECT_TRUE(expect_fixed_eq(atan(1_f64), 0.785398_f64, test_math::arc_triangle_max_error_64));
+    EXPECT_TRUE(expect_fixed_eq(asin(0_f64), 0_f64, test_math::arc_triangle_max_error_64));
+    EXPECT_TRUE(expect_fixed_eq(asin(0.5_f64), 0.523598_f64, test_math::arc_triangle_max_error_64));
+    EXPECT_TRUE(expect_fixed_eq(acos(0_f64), 1.570796_f64, test_math::arc_triangle_max_error_64));
+    EXPECT_TRUE(expect_fixed_eq(acos(0.5_f64), 1.047197_f64, test_math::arc_triangle_max_error_64));
     EXPECT_TRUE(expect_fixed_eq(sqrt(0_f64), 0_f64));
     EXPECT_TRUE(expect_fixed_eq(sqrt(4_f64), 2_f64));
     EXPECT_TRUE(expect_fixed_eq(sqrt(114.514_f64), 10.701121_f64));
@@ -363,6 +376,37 @@ int main(int argc, char* argv[])
     // papilio::println("constants used in atan: {:X}, {:X}", util::eval_value<int64_t>(0.2247, 61), util::eval_value<int64_t>(0.0663, 61));
     // auto test = fixed64::template from_fixed_num_value<61>(util::eval_value<int64_t>(0.0063, 61));
     // papilio::println("test: {}", test);
+
+    // papilio::println("0.28085 internal value: {:X}, {}", util::eval_value<int64_t>(0.28085, 61), fixed64::template from_fixed_num_value<61>(util::eval_value<int64_t>(0.28085, 61)));
+    // papilio::println("0.28125 internal value: {:X}, {}", util::eval_value<int64_t>(0.28125, 61), fixed64::template from_fixed_num_value<61>(util::eval_value<int64_t>(0.28125, 61)));
+    // papilio::println("0.0464964749 internal value: {:X}, {}", util::eval_value<int64_t>(0.0464964749, 61), fixed64::template from_fixed_num_value<61>(util::eval_value<int64_t>(0.0464964749, 61)));
+    // papilio::println("0.15931422 internal value: {:X}, {}", util::eval_value<int64_t>(0.15931422, 61), fixed64::template from_fixed_num_value<61>(util::eval_value<int64_t>(0.15931422, 61)));
+    // papilio::println("0.327622764 internal value: {:X}, {}", util::eval_value<int64_t>(0.327622764, 61), fixed64::template from_fixed_num_value<61>(util::eval_value<int64_t>(0.327622764, 61)));
+
+    // measure the precision of atan, with steps of 0.01 from sin(-pi/4)/cos(-pi/4) to sin(pi/4)/cos(pi/4).
+    fixed64 angle = eirin::numbers::pi_f64 / 4;
+    constexpr fixed64 step = 0.01_f64;
+    fixed64 max_esp = 0_f64, min_esp = 1_f64, max_angle = 0_f64, min_angle = 0_f64;
+    for(fixed64 x = -angle; x <= angle; x += step)
+    {
+        auto sin_val = sin(x);
+        auto cos_val = cos(x);
+        if(cos_val == 0_f64)
+            continue;
+        auto atan_val = atan(sin_val / cos_val);
+        auto esp = abs(atan_val - x);
+        if(esp > max_esp)
+        {
+            max_esp = esp;
+            max_angle = x;
+        }
+        if(esp < min_esp)
+        {
+            min_esp = esp;
+            min_angle = x;
+        }
+    }
+    papilio::println("atan max esp: {} at angle {}, min esp: {} at angle {}", max_esp, max_angle, min_esp, min_angle);
 
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

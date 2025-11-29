@@ -96,6 +96,8 @@ inline void test()
     // open a file stream to write the random results
     auto fs = std::ofstream("random_res.txt", std::ios::out);
     pcg2014 rng(seed);
+    std::random_device rd;
+    std::mt19937 mt(rd());
     for(int i = 0; i < 114514; ++i)
     {
         auto val = rng();

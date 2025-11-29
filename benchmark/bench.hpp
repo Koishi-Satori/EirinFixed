@@ -1,4 +1,5 @@
 #include <eirin/fixed.hpp>
+#include <string>
 
 #pragma once
 
@@ -11,4 +12,4 @@ eirin::fixed32 f32_identity(eirin::fixed32 val);
 
 double db_identity(double val);
 
-
+std::string get_input(std::string input, std::string key);
