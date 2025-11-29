@@ -4,21 +4,60 @@
 #include "bench.hpp"
 #include <eirin/ext/cordic.hpp>
 
+// on windows/msvc, -Wmaybe-uninitialized is not available
+// so we can use #pragma to ignore the warning there
+#ifdef _MSC_VER
+// save warning levels, and drop it to level 3 
+#pragma warning (push, 3)
+// turn two warnings off
+#pragma warning (disable : 4701 4703)
+#endif
+
 using namespace eirin;
+
+#ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+
+[[maybe_unused]] static void test_input(benchmark::State& state)
+{
+    auto str = get_input("input", "test_key");
+    fixed32 fp = 0_f32;
+    for(auto _ : state)
+    {
+        fixed_from_cstring(str.c_str(), str.size(), fp);
+        benchmark::DoNotOptimize(fp);
+    }
+    // printf("%f\n", (double)fp);
+}
+
+#endif
 
 static void f32_create(benchmark::State& state)
 {
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value = get_input("input", "test_create");
+    #endif
     for(auto _ : state)
     {
+        #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+        auto fp1 = f32_identity(operator""_f32(value.c_str(), value.size()));
+        #else
         auto fp1 = f32_identity("1145.14"_f32);
+        #endif
         (void)fp1;
     }
 }
 
 static void f32_divide(benchmark::State& state)
 {
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value_1 = get_input("input", "test_divide_1");
+    auto value_2 = get_input("input", "test_divide_2");
+    auto fp1 = operator""_f32(value_1.c_str(), value_1.size());
+    auto fp2 = operator""_f32(value_2.c_str(), value_2.size());
+    #else
     auto fp1 = f32_identity("4.95"_f32);
     auto fp2 = f32_identity("1145.14"_f32);
+    #endif
     for(auto _ : state)
     {
         f32_identity(fp1 /= fp2);
@@ -27,8 +66,15 @@ static void f32_divide(benchmark::State& state)
 
 static void f32_multiple(benchmark::State& state)
 {
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value_1 = get_input("input", "test_multiple_1");
+    auto value_2 = get_input("input", "test_multiple_2");
+    auto fp1 = operator""_f32(value_1.c_str(), value_1.size());
+    auto fp2 = operator""_f32(value_2.c_str(), value_2.size());
+    #else
     auto fp1 = "4.95"_f32;
     auto fp2 = f32_identity("1145.14"_f32);
+    #endif
     for(auto _ : state)
     {
         f32_identity(fp1 *= fp2);
@@ -112,7 +158,13 @@ static void f32_pow(benchmark::State& state)
 
 static void f32_sin(benchmark::State& state)
 {
+
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value = get_input("input", "test_create");
+    auto fp1 = f32_identity(operator""_f32(value.c_str(), value.size()));
+    #else
     auto fp1 = f32_identity("1145.14"_f32);
+    #endif
     for(auto _ : state)
     {
         f32_identity(sin(fp1));
@@ -139,21 +191,24 @@ static void f32_tan(benchmark::State& state)
 
 static void f32_atan(benchmark::State& state)
 {
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value = get_input("input", "test_atan");
+    auto fp1 = f32_identity(operator""_f32(value.c_str(), value.size()));
+    #else
     auto fp1 = f32_identity("1145.14"_f32);
+    #endif
     for(auto _ : state)
     {
         f32_identity(atan(fp1));
     }
 }
 
-// FIXME: Use the correct functions! (by HenryAWE)
-
 static void f32_asin(benchmark::State& state)
 {
     auto fp1 = f32_identity("0.5"_f32);
     for(auto _ : state)
     {
-        f32_identity(atan(fp1));
+        f32_identity(asin(fp1));
     }
 }
 
@@ -162,7 +217,7 @@ static void f32_acos(benchmark::State& state)
     auto fp1 = f32_identity("0.5"_f32);
     for(auto _ : state)
     {
-        f32_identity(atan(fp1));
+        f32_identity(acos(fp1));
     }
 }
 
@@ -309,21 +364,24 @@ static void f64_tan(benchmark::State& state)
 
 static void f64_atan(benchmark::State& state)
 {
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value = get_input("input", "test_atan");
+    auto fp1 = f64_identity(operator""_f64(value.c_str(), value.size()));
+    #else
     auto fp1 = f64_identity("0.5"_f64);
+    #endif
     for(auto _ : state)
     {
         f64_identity(atan(fp1));
     }
 }
 
-// FIXME: Use the correct functions! (by HenryAWE)
-
 static void f64_asin(benchmark::State& state)
 {
     auto fp1 = f64_identity("0.5"_f64);
     for(auto _ : state)
     {
-        f64_identity(atan(fp1));
+        f64_identity(asin(fp1));
     }
 }
 
@@ -332,7 +390,7 @@ static void f64_acos(benchmark::State& state)
     auto fp1 = f64_identity("0.5"_f64);
     for(auto _ : state)
     {
-        f64_identity(atan(fp1));
+        f64_identity(acos(fp1));
     }
 }
 
@@ -346,6 +404,9 @@ static void f64_cordic_sin(benchmark::State& state)
 }
 #endif
 
+#ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+BENCHMARK(test_input);
+#endif
 BENCHMARK(f32_create);
 BENCHMARK(f32_divide);
 BENCHMARK(f32_multiple);
@@ -386,3 +447,10 @@ BENCHMARK(f64_cordic_sin);
 #endif
 
 BENCHMARK_MAIN();
+
+// on windows/msvc, -Wmaybe-uninitialized is not available
+// so we can use #pragma to ignore the warning there
+#ifdef _MSC_VER
+// restore original warning levels.
+#pragma warning (pop)
+#endif
