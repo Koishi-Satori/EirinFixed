@@ -4,6 +4,15 @@
 #include "bench.hpp"
 #include <eirin/ext/cordic.hpp>
 
+// on windows/msvc, -Wmaybe-uninitialized is not available
+// so we can use #pragma to ignore the warning there
+#ifdef _MSC_VER
+// save warning levels, and drop it to level 3 
+#pragma warning (push, 3)
+// turn two warnings off
+#pragma warning (disable : 4701 4703)
+#endif
+
 using namespace eirin;
 
 #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
@@ -182,7 +191,12 @@ static void f32_tan(benchmark::State& state)
 
 static void f32_atan(benchmark::State& state)
 {
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value = get_input("input", "test_atan");
+    auto fp1 = f32_identity(operator""_f32(value.c_str(), value.size()));
+    #else
     auto fp1 = f32_identity("1145.14"_f32);
+    #endif
     for(auto _ : state)
     {
         f32_identity(atan(fp1));
@@ -350,7 +364,12 @@ static void f64_tan(benchmark::State& state)
 
 static void f64_atan(benchmark::State& state)
 {
+    #ifdef EIRIN_BENCHMARK_FILE_INPUT_MODE
+    auto value = get_input("input", "test_atan");
+    auto fp1 = f64_identity(operator""_f64(value.c_str(), value.size()));
+    #else
     auto fp1 = f64_identity("0.5"_f64);
+    #endif
     for(auto _ : state)
     {
         f64_identity(atan(fp1));
@@ -428,3 +447,10 @@ BENCHMARK(f64_cordic_sin);
 #endif
 
 BENCHMARK_MAIN();
+
+// on windows/msvc, -Wmaybe-uninitialized is not available
+// so we can use #pragma to ignore the warning there
+#ifdef _MSC_VER
+// restore original warning levels.
+#pragma warning (pop)
+#endif
