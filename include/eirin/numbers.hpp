@@ -4,7 +4,6 @@
 #pragma once
 
 #include <eirin/fixed.hpp>
-#include <cmath>
 
 namespace eirin::numbers
 {

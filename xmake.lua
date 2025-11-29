@@ -1,5 +1,5 @@
 set_project("eirin_fixed")
-set_version("1.0.2")
+set_version("1.2.0")
 
 add_rules("mode.debug", "mode.release")
 
@@ -7,13 +7,11 @@ option("eirin_build_tests")
     set_default(true)
     set_showmenu(true)
     set_description("Build unit tests")
-    add_defines("EIRIN_BUILD_TEST")
     option_end()
 option("eirin_build_benchmarks")
     set_default(true)
     set_showmenu(true)
     set_description("Build fixed number and double benchmarks")
-    add_defines("EIRIN_BUILD_BENCHMARK")
     option_end()
 
 if has_config("eirin_build_tests") then
@@ -28,9 +26,6 @@ target("eirin_fixed")
     set_kind("headeronly")
     add_includedirs("include", {public = true})
     add_headerfiles("include/(eirin/**.hpp)")
-    if is_mode("release") then
-        set_optimize("fastest")
-    end
     target_end()
 
 if has_config("eirin_build_tests") then

@@ -287,10 +287,64 @@ template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> 
 EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> atan(fixed_num<T, I, f, r> fp) noexcept
 {
     using fixed = fixed_num<T, I, f, r>;
-    constexpr auto a = fixed::template from_fixed_num_value<61>(0X730BE0DED288D00); // 0.2247
-    constexpr auto b = fixed::template from_fixed_num_value<61>(0X21F212D77318FC0); // 0.0663
-    constexpr auto pi_4 = pi / fixed(4);
-    return pi_4 * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
+    constexpr auto a = -1 * fixed::template from_fixed_num_value<61>(0X17CE62CE264A340); // 0.0464964749
+    constexpr auto b = fixed::template from_fixed_num_value<61>(0X5191A2296020A80); // 0.15931422
+    constexpr auto c = fixed::template from_fixed_num_value<61>(0XA7BE2BC19C39800); // 0.327622764
+    // TODO: because fixed point cannot represent infinity, so we need to handle the case when fp is very large.
+    auto abs_fp = abs(fp);
+    auto x = abs_fp;
+    auto x2 = x * x;
+    fixed result = ((a * x2 + b) * x2 - c) * x2 * x + x;
+    // if the input is negative, return negative result.
+    if(fp.signbit_mask() & fp.internal_value())
+        result = -result;
+    return result;
+    // another calc algorithm: x / (1 + 0.28125 * x * x)
+    // constexpr auto factor = fixed::template from_fixed_num_value<61>(0X900000000000000); // 0.28125
+    // constexpr auto fp_1 = fixed(1);
+    // if(abs(fp) > fixed(1))
+    // {
+    //     constexpr auto pi_2 = pi / fixed(2);
+    //     constexpr auto neg_pi_2 = -pi_2;
+    //     auto x = fp_1 / fp;
+    //     if(fp > fixed(0))
+    //         return pi_2 - (x / (fp_1 + factor * x * x));
+    //     else
+    //         return neg_pi_2 - (x / (fp_1 + factor * x * x));
+    // }
+    // return fp / (fp_1 + factor * fp * fp);
+    // constexpr auto a = fixed::template from_fixed_num_value<61>(0X730BE0DED288D00); // 0.2247
+    // constexpr auto b = fixed::template from_fixed_num_value<61>(0X21F212D77318FC0); // 0.0663
+    // constexpr auto pi_4 = pi / fixed(4);
+    // return pi_4 * fp - fp * (abs(fp) - fixed(1)) * (a - b * abs(fp));
+}
+
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> pi = numbers::pi_v<fixed_num<T, I, f, r>>()>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> asin(fixed_num<T, I, f, r> fp)
+{
+    using fixed = fixed_num<T, I, f, r>;
+    if(abs(fp) > fixed(1))
+        throw std::domain_error("error fp domain.");
+    if(fp == fixed(1))
+        return pi / fixed(2);
+    else if(fp == fixed(-1))
+        return -pi / fixed(2);
+    return atan(fp / sqrt(fixed(1) - fp * fp));
+}
+
+template <typename T, typename I, unsigned int f, bool r, fixed_num<T, I, f, r> pi = numbers::pi_v<fixed_num<T, I, f, r>>()>
+EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> acos(fixed_num<T, I, f, r> fp)
+{
+    using fixed = fixed_num<T, I, f, r>;
+    if(abs(fp) > fixed(1))
+        throw std::domain_error("error fp domain.");
+    if(fp == fixed(1))
+        return fixed(0);
+    else if(fp == fixed(-1))
+        return pi;
+    else if(fp == fixed(0))
+        return pi / fixed(2);
+    return pi / 2 - asin(fp);
 }
 
 //TODO: Implement asin and acos functions with CORDIC, and optimize other functions with CORDIC.
