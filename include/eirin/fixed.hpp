@@ -362,9 +362,6 @@ public:
 
     constexpr inline fixed_num operator/(const fixed_num& other) const noexcept
     {
-        // if(other.m_value == 0) [[unlikely]]
-        //     throw divide_by_zero();
-
         if constexpr(rounding)
         {
             auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
@@ -378,9 +375,6 @@ public:
 
     constexpr inline fixed_num& operator/=(const fixed_num& other) noexcept
     {
-        // if(other.m_value == 0) [[unlikely]]
-        //     throw divide_by_zero();
-
         if constexpr(rounding)
         {
             auto _value = ((static_cast<IntermediateType>(m_value) << fraction) * 2) / other.m_value;
@@ -395,9 +389,6 @@ public:
 
     constexpr inline fixed_num& operator/=(const std::integral auto& val) noexcept
     {
-        // if(val == 0) [[unlikely]]
-        //     throw divide_by_zero();
-
         m_value /= val;
         return *this;
     }
