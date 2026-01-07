@@ -112,7 +112,8 @@ static void double_sin(benchmark::State& state)
     for(auto _ : state)
     {
         auto d1 = 1145.14;
-        db_identity(sin(d1));
+        benchmark::DoNotOptimize(sin(d1));
+        // db_identity(sin(d1));
     }
 }
 
@@ -121,7 +122,8 @@ static void double_cos(benchmark::State& state)
     for(auto _ : state)
     {
         auto d1 = 1145.14;
-        db_identity(cos(d1));
+        benchmark::DoNotOptimize(cos(d1));
+        // db_identity(cos(d1));
     }
 }
 
@@ -130,7 +132,8 @@ static void double_tan(benchmark::State& state)
     for(auto _ : state)
     {
         auto d1 = 1145.14;
-        db_identity(atan(d1));
+        benchmark::DoNotOptimize(tan(d1));
+        // db_identity(atan(d1));
     }
 }
 
@@ -139,7 +142,8 @@ static void double_asin(benchmark::State& state)
     for(auto _ : state)
     {
         auto d1 = 1145.14;
-        db_identity(asin(d1));
+        benchmark::DoNotOptimize(asin(d1));
+        // db_identity(asin(d1));
     }
 }
 
@@ -148,7 +152,8 @@ static void double_acos(benchmark::State& state)
     for(auto _ : state)
     {
         auto d1 = 1145.14;
-        db_identity(acos(d1));
+        benchmark::DoNotOptimize(acos(d1));
+        // db_identity(acos(d1));
     }
 }
 
@@ -157,7 +162,8 @@ static void double_atan(benchmark::State& state)
     for(auto _ : state)
     {
         auto d1 = 1145.14;
-        db_identity(atan(d1));
+        benchmark::DoNotOptimize(atan(d1));
+        // db_identity(atan(d1));
     }
 }
 

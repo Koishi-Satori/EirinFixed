@@ -8,6 +8,7 @@
 #include <eirin/parse.hpp>
 #include <eirin/macro.hpp>
 #include <eirin/numbers.hpp>
+#include <eirin/random.hpp>
 
 // IWYU pragma: end_exports
 

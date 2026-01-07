@@ -135,6 +135,9 @@ class fixed_num
         : m_value(val) {};
 
 public:
+    typedef Type value_type;
+    typedef IntermediateType intermediate_type;
+
     inline fixed_num() noexcept = default;
 
     fixed_num(const fixed_num&) noexcept = default;
@@ -415,10 +418,24 @@ public:
         return *this;
     }
 
+    inline fixed_num operator++(int) noexcept
+    {
+        fixed_num temp = *this;
+        m_value += Type(1) << fraction;
+        return temp;
+    }
+
     inline fixed_num operator--() noexcept
     {
         m_value -= Type(1) << fraction;
         return *this;
+    }
+
+    inline fixed_num operator--(int) noexcept
+    {
+        fixed_num temp = *this;
+        m_value -= Type(1) << fraction;
+        return temp;
     }
 
     constexpr friend bool operator==(const fixed_num& lhs, const fixed_num& rhs) noexcept = default;
