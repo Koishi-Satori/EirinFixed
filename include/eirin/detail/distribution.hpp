@@ -2,6 +2,11 @@
 #define EIRIN_FIXED_EXT_UNIFORM_DIST_HPP
 
 #pragma once
+#ifdef EIRIN_OS_WINDOWS
+// C4244: conversion from 'type1' to 'type2', possible loss of data
+// This is excepted, so disable it.
+#pragma warning(disable : 4244)
+#endif
 
 #include <random>
 #include <eirin/fixed.hpp>
