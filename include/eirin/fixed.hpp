@@ -292,7 +292,7 @@ public:
     template <std::floating_point T>
     constexpr inline explicit operator T() const noexcept
     {
-        return static_cast<T>(m_value) / fraction_multiplier;
+        return static_cast<T>(m_value / fraction_multiplier);
     }
 
     constexpr inline fixed_num operator+(const fixed_num& other) const noexcept
