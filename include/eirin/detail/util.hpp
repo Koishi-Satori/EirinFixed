@@ -161,7 +161,7 @@ inline T bbp_calc_pi()
 {
     // BBP formula: pi = sum(k=0~inf){1/16^k * (4/(8k+1) - 2/(8k+4) - 1/(8k+5) - 1/(8k+6))}
     #ifdef EIRIN_FIXED_HAS_INT128
-    using intermediate_t = typename std::conditional<sizeof(T) <= 4, std::conditional<sizeof(T) <= 2, int32_t, int64_t>, __int128_t>::type;
+    using intermediate_t = typename std::conditional<sizeof(T) <= 4, std::conditional<sizeof(T) <= 2, int32_t, int64_t>, detail::int128_t>::type;
     #else
     if constexpr(sizeof(T) <= 2)
         using intermediate_t = int32_t;
@@ -219,7 +219,7 @@ std::array<fixed64, N> func_ptr_lut(fixed64 (*func)(fixed64))
 
 inline fixed64 __sin(fixed64 x)
 {
-    auto val = std::sin(double(x));
+    auto val = std::sin((double) x);
     return fixed64(val);
 }
 

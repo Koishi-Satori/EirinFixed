@@ -461,7 +461,12 @@ int main(int argc, char* argv[])
         {
             return fixed64(x);
         };
-        auto [max_esp, max_angle, min_esp, min_angle] = perf::measure_esp<fixed64>(-angle, angle, step, fp_sin, std_sin, initializer);
+        fixed64 max_esp, max_angle, min_esp, min_angle;
+        auto ret = perf::measure_esp<fixed64>(-angle, angle, step, fp_sin, std_sin, initializer);
+        max_esp = ret.max_esp;
+        max_angle = ret.max_esp_input;
+        min_esp = ret.min_esp;
+        min_angle = ret.min_esp_input;
         papilio::println("sin max esp: {} at angle {}, min esp: {:?} at angle {:?}", max_esp, max_angle, min_esp, min_angle);
     }
 

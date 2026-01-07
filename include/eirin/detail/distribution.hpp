@@ -20,7 +20,7 @@ public:
 
     struct param_type
     {
-        using target_type = DistType::param_type;
+        using target_type = typename DistType::param_type;
 
         explicit param_type(const result_type& a = std::numeric_limits<result_type>::min(), const result_type& b = std::numeric_limits<result_type>::max())
             : m_a(a), m_b(b)
@@ -141,7 +141,7 @@ public:
 
     struct param_type
     {
-        using target_type = DistType::param_type;
+        using target_type = typename DistType::param_type;
 
         explicit param_type(const result_type& a = std::numeric_limits<result_type>::min(), const result_type& b = std::numeric_limits<result_type>::max())
             : m_a(a), m_b(b)

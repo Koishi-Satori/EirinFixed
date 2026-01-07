@@ -23,7 +23,7 @@ namespace detail
         requires is_fixed_point_v<FixedType>;
         requires std::uniform_random_bit_generator<_RandomNumberEngine>;
         requires sizeof(typename FixedType::value_type) <= sizeof(typename _RandomNumberEngine::result_type);
-        { FixedType::template from_fixed_num_value<FixedType::precision>(static_cast<FixedType::value_type>(_RandomNumberEngine()())) } -> std::same_as<FixedType>;
+        { FixedType::template from_fixed_num_value<FixedType::precision>(static_cast<typename FixedType::value_type>(_RandomNumberEngine()())) } -> std::same_as<FixedType>;
     };
 } // namespace detail
 
