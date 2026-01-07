@@ -2,11 +2,12 @@
 #include <eirin/eirin.hpp>
 #include <numbers>
 #include <papilio/print.hpp>
-#include <eirin/ext/papilio_integration.hpp>
 #include <gtest/gtest.h>
+#include <eirin/ext/papilio_integration.hpp>
 #include <eirin/ext/cordic.hpp>
-// #include <eirin/detail/util.hpp>
+#include <eirin/detail/util.hpp>
 #include <eirin/random.hpp>
+#include <eirin/detail/perf.hpp>
 
 using namespace eirin;
 
@@ -218,6 +219,42 @@ TEST(fixed_num, constants)
 #endif
 }
 
+TEST(fixed_num, random)
+{
+    eirin::random_device rd;
+    eirin::pcg2014 pcg_32(rd());
+    eirin::mt19937 mt_32(rd());
+    eirin::fixed_int_distribution_adapter<fixed32, std::uniform_int_distribution<>> dist_32;
+    std::array<fixed32, 10> values_32;
+    auto test_random = [&](auto& engine, auto& dist, auto& values, const char* label)
+    {
+        std::generate(values.begin(), values.end(), [&]() { return dist(engine); });
+        GTEST_LOG_(INFO) << label << " Random distribution in [" << dist.min() << ", " << dist.max() << "]: ";
+        std::cout << "  { ";
+        for(size_t i = 0; i < values.size() - 1; ++i)
+        {
+            std::cout << values[i] << ", ";
+        }
+        std::cout << values[values.size() - 1] << " }" << std::endl;
+    };
+
+    test_random(pcg_32, dist_32, values_32, "Fixed32 PCG2014");
+    test_random(mt_32, dist_32, values_32, "Fixed32 MT19937");
+
+    fixed_random_engine_adapter<fixed32, eirin::mt19937> test_wrapper;
+    fixed_distribution_adapter<fixed32, std::uniform_int_distribution<>> test_dist_wrapper;
+    test_random(test_wrapper, test_dist_wrapper, values_32, "Fixed32 Wrapped MT19937");
+
+#ifdef EIRIN_FIXED_HAS_INT128
+    eirin::pcg2014_64 pcg_64(rd());
+    eirin::mt19937_64 mt_64(rd());
+    eirin::fixed_int_distribution_adapter<fixed64, std::uniform_int_distribution<>> dist_64;
+    std::array<fixed64, 10> values_64;
+    test_random(pcg_64, dist_64, values_64, "Fixed64 PCG2014");
+    test_random(mt_64, dist_64, values_64, "Fixed64 MT19937");
+#endif
+}
+
 #ifdef EIRIN_FIXED_HAS_INT128
 TEST(fixed64, operator)
 {
@@ -370,7 +407,6 @@ int main(int argc, char* argv[])
     std::cout << cordic_sine(eirin::numbers::pi_f64 / 4) << std::endl;
     std::cout << sin(eirin::numbers::pi_f64 / 4) << std::endl;
     papilio::println("0.244978663126864={}", 0.244978663126864_f64);
-    test();
 
     // util::print_constants();
     // papilio::println("constants used in atan: {:X}, {:X}", util::eval_value<int64_t>(0.2247, 61), util::eval_value<int64_t>(0.0663, 61));
@@ -386,7 +422,8 @@ int main(int argc, char* argv[])
     // measure the precision of atan, with steps of 0.01 from sin(-pi/4)/cos(-pi/4) to sin(pi/4)/cos(pi/4).
     fixed64 angle = eirin::numbers::pi_f64 / 4;
     constexpr fixed64 step = 0.01_f64;
-    fixed64 max_esp = 0_f64, min_esp = 1_f64, max_angle = 0_f64, min_angle = 0_f64;
+    fixed64 max_esp, min_esp, max_angle, min_angle;
+    max_esp = 0_f64, min_esp = 1_f64, max_angle = 0_f64, min_angle = 0_f64;
     for(fixed64 x = -angle; x <= angle; x += step)
     {
         auto sin_val = sin(x);
@@ -407,6 +444,50 @@ int main(int argc, char* argv[])
         }
     }
     papilio::println("atan max esp: {} at angle {}, min esp: {} at angle {}", max_esp, max_angle, min_esp, min_angle);
+    auto bbp_pi = util::pi_calc::bbp_calc_pi<int64_t, 61, 512>();
+    papilio::println("test calc pi with BBP: {}, {}", bbp_pi, fixed64::from_fixed_num_value<61>(bbp_pi));
+
+    {
+        fixed64 angle = eirin::numbers::pi_f64 / 4;
+        auto fp_sin = [](fixed64 x)
+        {
+            return sin(x);
+        };
+        auto std_sin = [](fixed64 x)
+        {
+            return fixed64(sin((double)x));
+        };
+        auto initializer = [](int64_t x)
+        {
+            return fixed64(x);
+        };
+        fixed64 max_esp, max_angle, min_esp, min_angle;
+        auto ret = perf::measure_esp<fixed64>(-angle, angle, step, fp_sin, std_sin, initializer);
+        max_esp = ret.max_esp;
+        max_angle = ret.max_esp_input;
+        min_esp = ret.min_esp;
+        min_angle = ret.min_esp_input;
+        papilio::println("sin max esp: {} at angle {}, min esp: {:?} at angle {:?}", max_esp, max_angle, min_esp, min_angle);
+    }
+
+    max_esp = 0_f64, min_esp = 1_f64, max_angle = 0_f64, min_angle = 0_f64;
+    for(fixed64 x = -angle; x <= angle; x += step)
+    {
+        auto cos_val = cos(x);
+        auto std_cos_val = fixed64(cos((double)x));
+        auto esp = abs(std_cos_val - cos_val);
+        if(esp > max_esp)
+        {
+            max_esp = esp;
+            max_angle = x;
+        }
+        if(esp < min_esp)
+        {
+            min_esp = esp;
+            min_angle = x;
+        }
+    }
+    papilio::println("cos max esp: {} at angle {}, min esp: {} at angle {}", max_esp, max_angle, min_esp, min_angle);
 
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

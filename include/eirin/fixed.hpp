@@ -2,6 +2,11 @@
 #define EIRIN_FIXED_FIXED_HPP
 
 #pragma once
+#ifdef EIRIN_OS_WINDOWS
+// C4244: conversion from 'type1' to 'type2', possible loss of data
+// This is excepted, so disable it.
+#pragma warning(disable : 4244)
+#endif
 
 #include <array>
 #include <cassert>
@@ -135,6 +140,9 @@ class fixed_num
         : m_value(val) {};
 
 public:
+    typedef Type value_type;
+    typedef IntermediateType intermediate_type;
+
     inline fixed_num() noexcept = default;
 
     fixed_num(const fixed_num&) noexcept = default;
@@ -289,7 +297,9 @@ public:
     template <std::floating_point T>
     constexpr inline explicit operator T() const noexcept
     {
-        return static_cast<T>(m_value) / fraction_multiplier;
+        // MSVC might warn about precision loss here, but it's expected.
+        // SO I JUST FUCK IT BEFORE.
+        return static_cast<T>(static_cast<value_type>(m_value / fraction_multiplier));
     }
 
     constexpr inline fixed_num operator+(const fixed_num& other) const noexcept
@@ -415,10 +425,24 @@ public:
         return *this;
     }
 
+    inline fixed_num operator++(int) noexcept
+    {
+        fixed_num temp = *this;
+        m_value += Type(1) << fraction;
+        return temp;
+    }
+
     inline fixed_num operator--() noexcept
     {
         m_value -= Type(1) << fraction;
         return *this;
+    }
+
+    inline fixed_num operator--(int) noexcept
+    {
+        fixed_num temp = *this;
+        m_value -= Type(1) << fraction;
+        return temp;
     }
 
     constexpr friend bool operator==(const fixed_num& lhs, const fixed_num& rhs) noexcept = default;

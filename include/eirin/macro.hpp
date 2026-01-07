@@ -33,4 +33,17 @@
 #    define EIRIN_BENCHMARK_COMMON_TEST_MODE
 #endif
 
+// check if SIMD is enabled
+#ifdef __AVX2__
+#    define EIRIN_FIXED_SIMD_AVX2
+#elif defined(__AVX__)
+#    define EIRIN_FIXED_SIMD_AVX
+#elif defined(__SSE4_2__)
+#    define EIRIN_FIXED_SIMD_SSE4_2
+#elif defined(__SSE2__)
+#    define EIRIN_FIXED_SIMD_SSE2
+#else
+#    define EIRIN_FIXED_NO_SIMD
+#endif
+
 #endif // EIRIN_FIXED_MARCO_HPP
