@@ -221,6 +221,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> sin(fixed_num<T, I, f, r> fp
 
     // we reconginzed the sin(x) = x when x is small enough.
     // sin(0.00015) = 0.000149999999437, so we use 0.0001 as the threshold.
+    // TODO: replace it with fixed::template from_fixed_num_value<61>(0x13A92A0000000)
     if(abs(fp) < fixed(0.00015))
         return negative ? -fp : fp;
 

@@ -130,24 +130,26 @@ inline void print_constants(int fraction = 61)
     }
 }
 
-namespace pi_calc {
-template <int N, int value>
-concept greater_than = (N > value);
-template <typename T, int fraction>
-concept check_valid_fixed_store_type = std::is_integral_v<T> && fraction > 0 && fraction <= sizeof(T) * 8 - 1;
-
-template <typename T, int fraction, int N>
-requires check_valid_fixed_store_type<T, fraction> || greater_than<N, 0>
-struct ret_value
+namespace pi_calc
 {
-    T value;
-    T error;
-    int iterations;
-    ret_value(const T v, const T e, int iters = N)
-        : value(v), error(e), iterations(iters) {}
-};
+    template <int N, int value>
+    concept greater_than = (N > value);
+    template <typename T, int fraction>
+    concept check_valid_fixed_store_type = std::is_integral_v<T> && fraction > 0 && fraction <= sizeof(T) * 8 - 1;
 
-/**
+    template <typename T, int fraction, int N>
+    requires check_valid_fixed_store_type<T, fraction> || greater_than<N, 0>
+    struct ret_value
+    {
+        T value;
+        T error;
+        int iterations;
+
+        ret_value(const T v, const T e, int iters = N)
+            : value(v), error(e), iterations(iters) {}
+    };
+
+    /**
  * @brief Calculate the internal fixed value for pi using BBP formula.
  * 
  * @tparam T 
@@ -155,96 +157,96 @@ struct ret_value
  * @param N The number of terms to calculate.
  * @return requires 
  */
-template <typename T = int64_t, int fraction = 61, int N>
-requires check_valid_fixed_store_type<T, fraction>
-inline T bbp_calc_pi()
-{
-    // BBP formula: pi = sum(k=0~inf){1/16^k * (4/(8k+1) - 2/(8k+4) - 1/(8k+5) - 1/(8k+6))}
-    #ifdef EIRIN_FIXED_HAS_INT128
-    using intermediate_t = typename std::conditional<sizeof(T) <= 4, std::conditional<sizeof(T) <= 2, int32_t, int64_t>, detail::int128_t>::type;
-    #else
-    if constexpr(sizeof(T) <= 2)
-        using intermediate_t = int32_t;
-    else
-    if constexpr(sizeof(T) <= 4)
-        using intermediate_t = int64_t;
-    else
-        static_assert(false, "Type too large, int128_t not supported.");
-    #endif
-    // simulate fixed point calculation using integer arithmetic.
-    intermediate_t sum = 0;
-    intermediate_t frac_mult = intermediate_t(1) << fraction;
-    for(int k = 0; k < N; ++k)
+    template <typename T = int64_t, int fraction = 61, int N>
+    requires check_valid_fixed_store_type<T, fraction>
+    inline T bbp_calc_pi()
     {
-        intermediate_t factor = frac_mult;
-        for(int i = 0; i < 4 * k; ++i)
-            factor /= 16;
+// BBP formula: pi = sum(k=0~inf){1/16^k * (4/(8k+1) - 2/(8k+4) - 1/(8k+5) - 1/(8k+6))}
+#ifdef EIRIN_FIXED_HAS_INT128
+        using intermediate_t = typename std::conditional<sizeof(T) <= 4, std::conditional<sizeof(T) <= 2, int32_t, int64_t>, detail::int128_t>::type;
+#else
+        if constexpr(sizeof(T) <= 2)
+            using intermediate_t = int32_t;
+        else if constexpr(sizeof(T) <= 4)
+            using intermediate_t = int64_t;
+        else
+            static_assert(false, "Type too large, int128_t not supported.");
+#endif
+        // simulate fixed point calculation using integer arithmetic.
+        intermediate_t sum = 0;
+        intermediate_t frac_mult = intermediate_t(1) << fraction;
+        for(int k = 0; k < N; ++k)
+        {
+            intermediate_t factor = frac_mult;
+            for(int i = 0; i < 4 * k; ++i)
+                factor /= 16;
 
-        intermediate_t term1 = (4 * factor) / (8 * k + 1);
-        intermediate_t term2 = (2 * factor) / (8 * k + 4);
-        intermediate_t term3 = (1 * factor) / (8 * k + 5);
-        intermediate_t term4 = (1 * factor) / (8 * k + 6);
+            intermediate_t term1 = (4 * factor) / (8 * k + 1);
+            intermediate_t term2 = (2 * factor) / (8 * k + 4);
+            intermediate_t term3 = (1 * factor) / (8 * k + 5);
+            intermediate_t term4 = (1 * factor) / (8 * k + 6);
 
-        sum += term1 - term2 - term3 - term4;
+            sum += term1 - term2 - term3 - term4;
+        }
+        return static_cast<T>(sum);
     }
-    return static_cast<T>(sum);
-}
-}; // namespace eirin::util::pi_calc
+}; // namespace pi_calc
 
 namespace lut
 {
-template <size_t N>
-constexpr std::array<fixed64, N> angels_lut()
-{
-    std::array<fixed64, N> lut = {};
-    constexpr fixed64 step = eirin::numbers::pi_f64 / fixed64(N);
-    for(size_t i = 0; i < N; ++i)
+    template <size_t N>
+    constexpr std::array<fixed64, N> angels_lut()
     {
-        lut[i] = step * fixed64(i);
+        std::array<fixed64, N> lut = {};
+        constexpr fixed64 step = eirin::numbers::pi_f64 / fixed64(N);
+        for(size_t i = 0; i < N; ++i)
+        {
+            lut[i] = step * fixed64(i);
+        }
+        return lut;
     }
-    return lut;
-}
 
-template <size_t N>
-std::array<fixed64, N> func_ptr_lut(fixed64 (*func)(fixed64))
-{
-    std::array<fixed64, N> lut = {};
-    constexpr fixed64 step = eirin::numbers::pi_f64 / fixed64(N);
-    for(size_t i = 0; i < N; ++i)
+    template <size_t N>
+    std::array<fixed64, N> func_ptr_lut(fixed64 (*func)(fixed64))
     {
-        lut[i] = func(step * fixed64(i));
+        std::array<fixed64, N> lut = {};
+        constexpr fixed64 step = eirin::numbers::pi_f64 / fixed64(N);
+        for(size_t i = 0; i < N; ++i)
+        {
+            lut[i] = func(step * fixed64(i));
+        }
+        return lut;
     }
-    return lut;
-}
 
-inline fixed64 __sin(fixed64 x)
-{
-    auto val = std::sin((double) x);
-    return fixed64(val);
-}
-
-template <size_t N = 512>
-fixed64 lut_calc_sin(fixed64 x)
-{
-    static auto lut = func_ptr_lut<N>(__sin);
-    // linear interpolation
-    constexpr auto two_pi = eirin::numbers::pi_f64 * 2_f64;
-    auto x_mod = x - two_pi * (x / two_pi).integral_part();
-    bool negate = false;
-    if (x_mod >= eirin::numbers::pi_f64) {
-        x_mod -= eirin::numbers::pi_f64;
-        negate = true;
+    inline fixed64 __sin(fixed64 x)
+    {
+        auto val = std::sin((double)x);
+        return fixed64(val);
     }
-    
-    // 3. 线性插值
-    auto pos = x_mod / (eirin::numbers::pi_f64 / fixed64(N-1));
-    auto idx = std::min(pos.integral_part(), static_cast<int64_t>(N - 2));
-    auto frac = pos - fixed64(idx);
-    
-    fixed64 result = lut[idx] * (1 - frac) + lut[idx + 1] * frac;
-    return negate ? -result : result;
-}
-} // namespace eirin::util::lut
+
+    template <size_t N = 512>
+    fixed64 lut_calc_sin(fixed64 x)
+    {
+        static auto lut = func_ptr_lut<N>(__sin);
+        // linear interpolation
+        constexpr auto two_pi = eirin::numbers::pi_f64 * 2_f64;
+        auto x_mod = x - two_pi * (x / two_pi).integral_part();
+        bool negate = false;
+        if(x_mod >= eirin::numbers::pi_f64)
+        {
+            x_mod -= eirin::numbers::pi_f64;
+            negate = true;
+        }
+
+        // 3. 线性插值
+        auto pos = x_mod / (eirin::numbers::pi_f64 / fixed64(N - 1));
+        auto idx = std::min(pos.integral_part(), static_cast<int64_t>(N - 2));
+        auto frac = pos - fixed64(idx);
+
+        fixed64 result = lut[idx] * (1 - frac) + lut[idx + 1] * frac;
+        return negate ? -result : result;
+    }
+} // namespace lut
 
 } // namespace eirin::util
 
