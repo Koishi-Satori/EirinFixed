@@ -13,6 +13,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <numbers>
 
 using namespace eirin;
 

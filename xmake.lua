@@ -18,6 +18,11 @@ option("eirin_dev_test")
     set_showmenu(true)
     set_description("Develop Test Include")
     option_end()
+option("eirin_build_advanced_benchmark")
+    set_default(false)
+    set_showmenu(true)
+    set_description("Build advanced fixed number benchmarks")
+    option_end()
 
 if has_config("eirin_build_tests") then
     -- Add dependency for tests --
