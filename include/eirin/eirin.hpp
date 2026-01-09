@@ -12,6 +12,8 @@
 
 // IWYU pragma: end_exports
 
+// IWYU pragma: end_exports
+
 #define EIRIN_FIXED_MAJOR_VERSION 1
 #define EIRIN_FIXED_MINOR_VERSION 5
 #define EIRIN_FIXED_PATCH_VERSION 0
