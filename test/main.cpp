@@ -1,13 +1,16 @@
 #include <cmath>
-#include <eirin/eirin.hpp>
 #include <numbers>
 #include <papilio/print.hpp>
 #include <gtest/gtest.h>
+#include <eirin/eirin.hpp>
 #include <eirin/ext/papilio_integration.hpp>
 #include <eirin/ext/cordic.hpp>
 #include <eirin/detail/util.hpp>
-#include <eirin/random.hpp>
 #include <eirin/detail/perf.hpp>
+
+#ifdef EIRIN_DEV_TEST_MODE
+#include <eirin/ext/simd_math.hpp>
+#endif
 
 using namespace eirin;
 
@@ -224,6 +227,9 @@ TEST(fixed_num, random)
     eirin::random_device rd;
     eirin::pcg2014 pcg_32(rd());
     eirin::mt19937 mt_32(rd());
+    auto tmp_mt_int = std::uniform_int_distribution<>()(mt_32);
+    // avoid C4834 on MSVC and unused variable.
+    (void) tmp_mt_int;
     eirin::fixed_int_distribution_adapter<fixed32, std::uniform_int_distribution<>> dist_32;
     std::array<fixed32, 10> values_32;
     auto test_random = [&](auto& engine, auto& dist, auto& values, const char* label)
@@ -488,6 +494,22 @@ int main(int argc, char* argv[])
         }
     }
     papilio::println("cos max esp: {} at angle {}, min esp: {} at angle {}", max_esp, max_angle, min_esp, min_angle);
+    std::unordered_map<fixed64, fixed64, fixed_hash<fixed64>> test_map;
+
+#ifdef EIRIN_DEV_TEST_MODE
+    // SIM TESTS
+    papilio::println("SSE2 support: {}, SSE4_2 support: {}", simd::platform_support::supports_sse2(), simd::platform_support::supports_sse4_2());
+    papilio::println("AVX support: {}, AVX2 support: {}", simd::platform_support::supports_avx(), simd::platform_support::supports_avx2());
+    papilio::println("AVX512F support: {}, AVX512DQ support: {}", simd::platform_support::supports_avx512_f(), simd::platform_support::supports_avx512_dq());
+    using namespace eirin::numbers;
+    std::array input = {pi_f64, pi_f64 + pi_f64 / 2, pi_f64 / 2 - pi_f64, 2 * pi_f64 + pi_f64};
+    auto simd_res = simd::simd_reduce_angle(input);
+    std::cout << "simd_reduce_angle res: [";
+    for(size_t i = 0; i < 3; ++i)
+        std::cout << simd_res[i] << ',';
+    std::cout << simd_res[3] << ']' << std::endl;
+    // std::cout << fixed64::template from_fixed_num_value<61>(0x13A92A0000000) << std::endl;
+#endif
 
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

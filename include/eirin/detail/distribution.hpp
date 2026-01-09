@@ -5,16 +5,30 @@
 #ifdef EIRIN_OS_WINDOWS
 // C4244: conversion from 'type1' to 'type2', possible loss of data
 // This is excepted, so disable it.
-#pragma warning(disable : 4244)
+#    pragma warning(disable : 4244)
 #endif
 
-#include <random>
 #include <eirin/fixed.hpp>
 
 namespace eirin
 {
+/**
+ * @brief A adapter to distribute fixed point numbers using integral distribution.
+ * @note Different from `fixed_distribution_adapter`, this adapter works directly with standard random engines.
+ * @code {.cpp}
+ * using namespace eirin;
+ * random_device rd;
+ * mt19937 mt_32(rd());
+ * fixed_int_distribution_adapter<fixed32, std::uniform_int_distribution<>> dist_32;
+ * std::array<fixed32, 10> values_32;
+ * std::generate(values_32.begin(), values_32.end(), &[]() { return dist_32(mt_32) });
+ * @endcode
+ * 
+ * @tparam FixedType Fixed point type, must satisfy concept `is_fixed_point_v`.
+ * @tparam DistType Distribution type, must be an integral distribution, and support UniformRandomBitGenerator.
+ */
 template <typename FixedType, typename DistType>
-requires is_fixed_point_v<FixedType>
+requires is_fixed_point_v<FixedType> && std::is_integral_v<typename DistType::result_type>
 class fixed_int_distribution_adapter
 {
 public:
@@ -99,7 +113,7 @@ public:
     void param(const param_type& param)
     {
         m_param = param;
-        m_dist = std::uniform_int_distribution<value_type>(static_cast<value_type>(param.a().internal_value()), static_cast<value_type>(param.b().internal_value()));
+        m_dist = DistType(static_cast<value_type>(param.a().internal_value()), static_cast<value_type>(param.b().internal_value()));
     }
 
     result_type a() const
@@ -134,8 +148,23 @@ private:
     param_type m_param;
 };
 
+/**
+ * @brief A adapter to distribute fixed point numbers using integral distribution with the adapter `fixed_random_engine_adapter`.
+ * @note This is similar to `fixed_int_distribution_adapter`, but designed to work with `fixed_random_engine_adapter`.
+ * @code {.cpp}
+ * using namespace eirin;
+ * random_device rd;
+ * fixed_random_engine_adapter<fixed32, mt19937> test_adapter;
+ * fixed_distribution_adapter<fixed32, std::uniform_int_distribution<>> test_dist_adapter;
+ * std::array<fixed32, 10> values_32;
+ * std::generate(values_32.begin(), values_32.end(), &[]() { return test_dist_adapter(test_adapter) });
+ * @endcode
+ * 
+ * @tparam FixedType Fixed point type, must satisfy concept `is_fixed_point_v`.
+ * @tparam DistType Distribution type, must be an integral distribution, and support UniformRandomBitGenerator.
+ */
 template <typename FixedType, typename DistType>
-requires is_fixed_point_v<FixedType>
+requires is_fixed_point_v<FixedType> && std::is_integral_v<typename DistType::result_type>
 class fixed_distribution_adapter
 {
 public:
