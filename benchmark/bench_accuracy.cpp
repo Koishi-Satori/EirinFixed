@@ -19,8 +19,8 @@ using namespace eirin;
 // 配置参数
 struct TestConfig {
     double interval_start = 0.0;
-    double interval_end = 2 * M_PI;
-    double subinterval_size = M_PI / 6.0;  // π/6 = 30度
+    double interval_end = 2 * std::numbers::pi;
+    double subinterval_size = std::numbers::pi / 6.0;  // π/6 = 30度
     int samples_per_subinterval = 1000;
     int critical_points_per_subinterval = 10;  // 每个子区间额外测试的关键点
     std::string output_csv = "sin_accuracy_report.csv";
@@ -74,7 +74,7 @@ private:
             for (int n = 1; n <= 6; ++n) {
                 for (int d = 1; d <= 6; ++d) {
                     double fraction = static_cast<double>(n) / d;
-                    if (std::abs(value - fraction * M_PI) < eps) {
+                    if (std::abs(value - fraction * std::numbers::pi) < eps) {
                         if (n == 1 && d == 1) return "π";
                         if (n == 1) return "π/" + std::to_string(d);
                         if (d == 1) return std::to_string(n) + "π";
@@ -85,7 +85,7 @@ private:
             
             // 检查是否为2π的倍数
             for (int n = 1; n <= 3; ++n) {
-                if (std::abs(value - n * 2 * M_PI) < eps) {
+                if (std::abs(value - n * 2 * std::numbers::pi) < eps) {
                     return std::to_string(n) + "·2π";
                 }
             }
@@ -124,10 +124,10 @@ private:
         
         // 添加特殊的三角函数关键点（如果在区间内）
         std::vector<double> trig_points = {
-            0, M_PI/6, M_PI/4, M_PI/3, M_PI/2,
-            2*M_PI/3, 3*M_PI/4, 5*M_PI/6, M_PI,
-            7*M_PI/6, 5*M_PI/4, 4*M_PI/3, 3*M_PI/2,
-            5*M_PI/3, 7*M_PI/4, 11*M_PI/6, 2*M_PI
+            0, std::numbers::pi/6, std::numbers::pi/4, std::numbers::pi/3, std::numbers::pi/2,
+            2*std::numbers::pi/3, 3*std::numbers::pi/4, 5*std::numbers::pi/6, std::numbers::pi,
+            7*std::numbers::pi/6, 5*std::numbers::pi/4, 4*std::numbers::pi/3, 3*std::numbers::pi/2,
+            5*std::numbers::pi/3, 7*std::numbers::pi/4, 11*std::numbers::pi/6, 2*std::numbers::pi
         };
         
         for (double pt : trig_points) {
@@ -261,7 +261,7 @@ public:
     void run_tests() {
         std::cout << "开始精度测试..." << std::endl;
         std::cout << "测试区间: [0, 2π]" << std::endl;
-        std::cout << "子区间大小: π/6 ≈ " << M_PI/6 << std::endl;
+        std::cout << "子区间大小: π/6 ≈ " << std::numbers::pi/6 << std::endl;
         std::cout << "每个子区间样本数: " << config.samples_per_subinterval << std::endl;
         std::cout << std::endl;
         
