@@ -227,7 +227,9 @@ TEST(fixed_num, random)
     eirin::random_device rd;
     eirin::pcg2014 pcg_32(rd());
     eirin::mt19937 mt_32(rd());
-    std::uniform_int_distribution<>()(mt_32);
+    auto tmp_mt_int = std::uniform_int_distribution<>()(mt_32);
+    // avoid C4834 on MSVC and unused variable.
+    (void) tmp_mt_int;
     eirin::fixed_int_distribution_adapter<fixed32, std::uniform_int_distribution<>> dist_32;
     std::array<fixed32, 10> values_32;
     auto test_random = [&](auto& engine, auto& dist, auto& values, const char* label)
