@@ -752,8 +752,18 @@ inline constexpr bool is_fixed_point_v = detail::is_fixed_point<std::remove_cv_t
 template <typename T>
 concept fixed_point = detail::is_fixed_point<std::remove_cv_t<T>>::value;
 
+/**
+ * @brief Predefined fixed32 type, with 16 bits fraction, 15 bits intergal, and 1 bit sign.
+ *        This type uses int32_t as store type, and int64_t as intermediate type.
+ * 
+ */
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
 #ifdef EIRIN_FIXED_HAS_INT128
+/**
+ * @brief Predefined fixed64 type, with 32 bits fraction, 16 bits intergal, and 1 bit sign.
+ *        This type uses int64_t as store type, and 128-bits intergal as intermediate type.
+ * 
+ */
 using fixed64 = fixed_num<int64_t, detail::int128_t, 32, false>;
 #endif
 
@@ -1082,6 +1092,21 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
         fp = -fp;
     return is;
 }
+
+/**
+ * @brief The default hash function for fixed point type.
+ * 
+ * @tparam FixedType fixed point type.
+ */
+template <typename FixedType>
+requires is_fixed_point_v<FixedType>
+struct fixed_hash
+{
+    std::size_t operator()(const FixedType& k) const noexcept
+    {
+        return std::hash<typename FixedType::value_type>()(k.internal_value());
+    }
+};
 } // namespace eirin
 
 namespace std

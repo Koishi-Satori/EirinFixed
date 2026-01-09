@@ -164,7 +164,7 @@ inline std::basic_ostream<charT, charTraits>& operator<<(std::basic_ostream<char
 }
 
 /**
- * @brief A wrapper for standard random engines to support fixed point types, which fits RandomNumberEngine requirements.
+ * @brief A adapter for standard random engines to support fixed point types, which fits RandomNumberEngine requirements.
  * 
  * @tparam FixedType Fixed point type, must satisfy concept `is_fixed_point_v`.
  * @tparam _RandomNumberEngine The underlying random number engine type.
