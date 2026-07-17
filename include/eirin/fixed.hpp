@@ -5,7 +5,7 @@
 #ifdef EIRIN_OS_WINDOWS
 // C4244: conversion from 'type1' to 'type2', possible loss of data
 // This is excepted, so disable it.
-#pragma warning(disable : 4244)
+#    pragma warning(disable : 4244)
 #endif
 
 #include <array>
@@ -23,6 +23,7 @@
 #include <concepts>
 #include <iostream>
 #include <algorithm>
+#include <iterator>
 #include <eirin/detail/int128.hpp>
 #include <eirin/macro.hpp>
 
@@ -519,16 +520,14 @@ public:
         return sqrt_init_table[clamped];
     }
 
-    template <typename CharT, class Traits>
-    EIRIN_ALWAYS_INLINE std::basic_ostream<CharT, Traits>& print(std::basic_ostream<CharT, Traits>& os) const noexcept
+    template <typename OutputIter>
+    constexpr OutputIter print(OutputIter iter, int base = 10, bool uppercase = false) const noexcept
     {
-        auto uppercase = os.flags() & std::ios_base::uppercase;
         auto digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
-        auto hex = os.flags() & std::ios_base::hex, dec = os.flags() & std::ios_base::dec, oct = os.flags() & std::ios_base::oct;
-        Type divisor = static_cast<Type>(1) << fraction, base = static_cast<Type>(hex ? 16 : (dec ? 10 : (oct ? 8 : 2)));
-        auto put_char = [&](const char c)
+        Type divisor = static_cast<Type>(1) << fraction;
+        auto put_char = [&iter](const char c)
         {
-            os.put(c);
+            *iter++ = c;
         };
 
         auto value = m_value;
@@ -598,8 +597,7 @@ public:
             }
         }
 
-        os.flush();
-        return os;
+        return iter;
     }
 
     EIRIN_ALWAYS_INLINE constexpr fixed_num divide(const std::integral auto& val) const
@@ -652,9 +650,15 @@ public:
         return *this;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const fixed_num& fp) noexcept
+    friend std::ostream& operator<<(std::ostream& os, const fixed_num& fp)
     {
-        return fp.print(os);
+        auto iter = std::ostream_iterator<char>(os);
+        auto flags = os.flags();
+        int base = (flags & std::ios_base::hex) ? 16 : ((flags & std::ios_base::dec) ? 10 : ((flags & std::ios_base::oct) ? 8 : 2));
+        bool uppercase = (flags & std::ios_base::uppercase) != 0;
+        fp.print(iter, base, uppercase);
+        os.flush();
+        return os;
     }
 
     /**
@@ -874,12 +878,6 @@ template <typename T, typename I, unsigned int f, bool r>
 constexpr inline fixed_num<T, I, f, r> operator%(const std::integral auto& val, const fixed_num<T, I, f, r>& fp) noexcept
 {
     return fixed_num<T, I, f, r>(val) %= fp;
-}
-
-template <typename CharT, class Traits, typename T, typename I, unsigned int F, bool R>
-std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const fixed_num<T, I, F, R>& fp) noexcept
-{
-    return fp.print(os);
 }
 
 inline bool f32_from_cstring(const char* str, size_t len, fixed32& fp) noexcept

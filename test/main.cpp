@@ -18,7 +18,7 @@ TEST(fixed_num, construct)
 {
     auto fp1 = 0_f32;
     EXPECT_EQ((int)fp1, 0);
-    parse("-114.514a", "a", fp1);
+    io::parse("-114.514a", "a", fp1);
     EXPECT_EQ(fp1, -114.514_f32);
 
 #ifdef EIRIN_FIXED_HAS_INT128
@@ -401,9 +401,9 @@ int main(int argc, char* argv[])
     if(fixed_from_cstring("495.625", 8, fp))
         papilio::println("test from_cstring: {}, {}", (float)fp, (float)-"495.625"_f32);
     fp = 0_f32;
-    papilio::println("test parse: {}, {}, {}", parse("114b.514a", fp), (float)fp, (float)114.514_f32);
-    papilio::println("test parse: {}, {}, {}", parse("114.514a", fp), (float)fp, (float)114.514_f32);
-    papilio::println("test parse: {}, {}, {}", parse("114a.514a", fp), (float)fp, (float)114.514_f32);
+    papilio::println("test parse: {}, {}, {}", io::parse("114b.514a", fp), (float)fp, (float)114.514_f32);
+    papilio::println("test parse: {}, {}, {}", io::parse("114.514a", fp), (float)fp, (float)114.514_f32);
+    papilio::println("test parse: {}, {}, {}", io::parse("114a.514a", fp), (float)fp, (float)114.514_f32);
 
     std::cout << 114.5625_f32 << std::endl;
     std::cout << -114.5625_f32 << std::endl;
