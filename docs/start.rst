@@ -20,7 +20,7 @@ A. Copy into Your Project
 
 The core library of EirinFixed is a header-only library, you can copy the ``include`` directory into your project, and include the header file in your code.
 
-To be noticed that the header file ``parse.hpp`` is not a header-only library, and it includes the interface used for binding fixed point numbers to AngelScript for my another project. If you don't need it, you can ignore it.
+To be noticed that the header file ``io/parse.hpp`` provides functions for parsing fixed point numbers from strings, located in the ``eirin::io`` namespace. If you don't need it, you can ignore it.
 
 .. note::
     **About `papilio_integration.hpp`**
