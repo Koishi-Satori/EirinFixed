@@ -521,18 +521,24 @@ public:
     }
 
     template <typename OutputIter>
-    constexpr OutputIter print(OutputIter iter, int base = 10, bool uppercase = false) const noexcept
+    static constexpr OutputIter copy_as_chars_to(
+        const fixed_num& val,
+        OutputIter out,
+        int base = 10,
+        bool uppercase = false
+    )
     {
-        auto digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
+        const char* digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef";
         Type divisor = static_cast<Type>(1) << fraction;
-        auto put_char = [&iter](const char c)
+        auto put_char = [&out](const char c)
         {
-            *iter++ = c;
+            *out = c;
+            ++out;
         };
 
-        auto value = m_value;
+        auto value = val.m_value;
         Type int_part;
-        if(value == signbit_mask())
+        if(value == val.signbit_mask())
         {
             put_char('-');
             int_part = ~(value >> fraction) + 1;
@@ -549,7 +555,7 @@ public:
         }
         value %= divisor;
         std::array<char, 514> buffer;
-        auto koishi = buffer.begin();
+        auto iter = buffer.begin();
 
         if(int_part == 0)
         {
@@ -560,18 +566,18 @@ public:
             while(int_part > 0)
             {
                 auto digit = int_part % base;
-                *koishi++ = digits[digit];
+                *iter++ = digits[digit];
                 int_part /= base;
-                if(koishi == buffer.end())
+                if(iter == buffer.end())
                 {
-                    while(koishi-- != buffer.begin())
-                        put_char(*koishi);
-                    koishi = buffer.begin();
+                    while(iter-- != buffer.begin())
+                        put_char(*iter);
+                    iter = buffer.begin();
                 }
             }
         }
-        while(koishi-- != buffer.begin())
-            put_char(*koishi);
+        while(iter-- != buffer.begin())
+            put_char(*iter);
 
         if(value != 0)
         {
@@ -597,7 +603,7 @@ public:
             }
         }
 
-        return iter;
+        return out;
     }
 
     EIRIN_ALWAYS_INLINE constexpr fixed_num divide(const std::integral auto& val) const
@@ -656,7 +662,7 @@ public:
         auto flags = os.flags();
         int base = (flags & std::ios_base::hex) ? 16 : ((flags & std::ios_base::dec) ? 10 : ((flags & std::ios_base::oct) ? 8 : 2));
         bool uppercase = (flags & std::ios_base::uppercase) != 0;
-        fp.print(iter, base, uppercase);
+        fixed_num::copy_as_chars_to(fp, iter, base, uppercase);
         os.flush();
         return os;
     }
