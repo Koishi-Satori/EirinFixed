@@ -1,9 +1,9 @@
 #ifndef EIRIN_FIXED_EXT_CORDIC_HPP
 #define EIRIN_FIXED_EXT_CORDIC_HPP
 
-#include <eirin/fixed.hpp>
-#include <eirin/numbers.hpp>
-#include <eirin/math.hpp>
+#include "../fixed.hpp"
+#include "../numbers.hpp"
+#include "../math.hpp"
 
 namespace eirin
 {

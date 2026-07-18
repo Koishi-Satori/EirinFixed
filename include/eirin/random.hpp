@@ -7,9 +7,9 @@
 #include <cstdio>
 #include <vector>
 #include <random>
-#include <eirin/macro.hpp>
-#include <eirin/fixed.hpp>
-#include <eirin/detail/distribution.hpp>
+#include "macro.hpp"
+#include "fixed.hpp"
+#include "detail/distribution.hpp"
 
 namespace eirin
 {

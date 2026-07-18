@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <eirin/macro.hpp>
-#include <eirin/fixed.hpp>
-#include "eirin/numbers.hpp"
+#include "../macro.hpp"
+#include "../fixed.hpp"
+#include "../numbers.hpp"
 #include <cmath>
 #include <bitset>
 

@@ -8,7 +8,7 @@
 #    pragma warning(disable : 4244)
 #endif
 
-#include <eirin/fixed.hpp>
+#include "../fixed.hpp"
 
 namespace eirin
 {

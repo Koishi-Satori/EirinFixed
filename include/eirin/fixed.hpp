@@ -24,8 +24,8 @@
 #include <iostream>
 #include <algorithm>
 #include <iterator>
-#include <eirin/detail/int128.hpp>
-#include <eirin/macro.hpp>
+#include "detail/int128.hpp"
+#include "macro.hpp"
 #include "error.hpp"
 
 namespace eirin

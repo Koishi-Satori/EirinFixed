@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <eirin/fixed.hpp>
+#include "fixed.hpp"
 #include <stdexcept>
-#include <eirin/numbers.hpp>
+#include "numbers.hpp"
 
 namespace eirin
 {

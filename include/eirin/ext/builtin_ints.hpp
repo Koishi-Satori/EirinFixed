@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <concepts>
 #include <limits>
-#include <eirin/macro.hpp>
+#include "../macro.hpp"
 
 #define EIRIN_FIXED_HAS_INT128_EXT
 

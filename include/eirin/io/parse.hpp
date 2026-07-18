@@ -4,7 +4,7 @@
 #pragma once
 
 #include <string_view>
-#include <eirin/fixed.hpp>
+#include "../fixed.hpp"
 
 namespace eirin::io
 {

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <eirin/fixed.hpp>
+#include "fixed.hpp"
 
 namespace eirin::numbers
 {
