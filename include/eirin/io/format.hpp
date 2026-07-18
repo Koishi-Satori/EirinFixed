@@ -49,12 +49,9 @@ public:
         return m_state;
     }
 
-    template <typename FormatContext>
-    auto format(const fixed_num_type& fp, FormatContext& ctx) const
-        -> typename FormatContext::iterator
+    template <typename OutputIt>
+    OutputIt format_to(OutputIt out, const fixed_num_type& fp) const
     {
-        auto out = ctx.out();
-
         // determine mode
         bool int_only = false;
         bool uppercase = false;
@@ -81,7 +78,7 @@ public:
             base = 2;
             break;
         case '?':
-            return format_debug(fp, ctx);
+            return format_debug_to(out, fp);
         default: // g, G, f, F
             if(m_state.type == 'G' || m_state.type == 'F')
                 uppercase = true;
@@ -184,10 +181,9 @@ private:
     state_type m_state;
 
     // format_debug - "?" type: show internal (raw) value in hex
-    template <typename Ctx>
-    auto format_debug(const fixed_num_type& fp, Ctx& ctx) const
+    template <typename OutputIt>
+    OutputIt format_debug_to(OutputIt out, const fixed_num_type& fp) const
     {
-        auto out = ctx.out();
         bool upper = false;
 
         T int_val = fp.internal_value(); // raw bits
@@ -368,6 +364,8 @@ template <typename T, typename I, unsigned int F, bool R, typename CharT>
 struct std::formatter<eirin::fixed_num<T, I, F, R>, CharT>
 {
 public:
+    using fixed_num_type = eirin::fixed_num<T, I, F, R>;
+
     constexpr auto parse(std::basic_format_parse_context<CharT>& ctx)
         -> typename std::basic_format_parse_context<CharT>::iterator
     {
@@ -489,10 +487,10 @@ public:
     }
 
     template <typename FormatContext>
-    auto format(const eirin::fixed_num<T, I, F, R>& fp, FormatContext& ctx) const
+    auto format(const fixed_num_type& fp, FormatContext& ctx) const
         -> typename FormatContext::iterator
     {
-        return m_impl.format(fp, ctx);
+        return m_impl.format_to(ctx.out(), fp);
     }
 
 private:
