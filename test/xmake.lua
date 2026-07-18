@@ -1,3 +1,5 @@
+add_requires("gtest")
+
 target("eirin_fixed.test")
     set_warnings("all", "error")
     set_kind("binary")
