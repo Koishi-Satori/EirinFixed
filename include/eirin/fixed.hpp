@@ -40,7 +40,7 @@ public:
 inline void throw_divide_by_zero()
 {
 #ifdef EIRIN_NO_EXCEPTIONS
-    std::abort();
+    std::terminate();
 #else
     throw divide_by_zero();
 #endif

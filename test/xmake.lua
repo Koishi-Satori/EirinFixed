@@ -6,6 +6,7 @@ target("eirin_fixed.test")
     if is_plat("wasm") then
         set_extension(".js")
         set_exceptions("no-cxx")
+        add_defines("EIRIN_NO_EXCEPTIONS")
     end
     add_tests("test_eirin_fixed")
     add_files("main.cpp")

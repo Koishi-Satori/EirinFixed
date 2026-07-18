@@ -358,9 +358,8 @@ TEST(fixed64, math)
 int main(int argc, char* argv[])
 {
 #ifdef EIRIN_NO_EXCEPTIONS
-    papilio::println("EIRIN_NO_EXCEPTIONS defined");
+    std::cerr << "EIRIN_NO_EXCEPTIONS defined" << std::endl;
 #endif
-
 #ifdef EIRIN_FIXED_DETAIL_INT128_MSVC_STL
     std::cerr << "EIRIN_FIXED_DETAIL_INT128_MSVC_STL defined" << std::endl;
 #endif

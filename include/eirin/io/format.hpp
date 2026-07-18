@@ -486,7 +486,11 @@ public:
             case '}':
                 break;
             default:
+#ifdef EIRIN_NO_EXCEPTIONS
+                std::terminate();
+#else
                 throw std::format_error("invalid format type");
+#endif
             }
         }
 
