@@ -43,9 +43,10 @@ jobs:
     Clang:
         runs-on: ubuntu-24.04
 
+        # TODO: Use libc++ for Clang 15. Use both on newer versions.
         strategy:
           matrix:
-            clang: [15, 18]
+            clang: [18]
           fail-fast: false
         name: Linux Clang ${{ matrix.clang }}
 
