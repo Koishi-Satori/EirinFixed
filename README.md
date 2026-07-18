@@ -3,7 +3,6 @@
 - Other language: [中文](README.zh-CN.md)
 
 A flexible and high-performance C++ fixed point number library, provides fixed point template class, high precision mathematical operations and basic input and output functions. You can run the benchmarks ```fixed.benchmark``` and ```double.benchmark``` to test for performance differences between the fixed types and the C++ double. Also the benchmark results have been provided in the benchmark directory, running in AMD laptop CPU R7-7735H, with [-O3](benchmark/fixed_benchmark_O3.txt) and [-O2](benchmark/fixed_benchmark_O2.txt) optimization.
-The output functions support the formatter provided by [Papilio Charontis](https://github.com/HenryAWE/PapilioCharontis).
 
 It also provides a pre-defined 32bit-width fixed point, with 16bit precision(```fixed32```), and 64bit-width fixed point, with 32bit precision(```fixed64```).
 The fixed points require same calculation result in different platforms, devices, operator systems and compilers, and this library fulfills this requirement.
@@ -65,14 +64,12 @@ int main(int argc, char** argv)
 
 ### Fixed Point Output
 
-You can use std::ostream or format functions provided by [Papilio Charontis](https://github.com/HenryAWE/PapilioCharontis).
-
-- When using Papilio Charontis, please **make sure** you have include the ```fixed_formatter.hpp``` header file.
-
+You can use `std::ostream` or `std::format`.
+Note that the formatter requires including additional header file.
 
 ```c++
 #include <eirin/fixed.hpp>
-#include <eirin/ext/papilio_integration.hpp.hpp>
+#include <eirin/io/format.hpp>
 
 using namespace eirin;
 
@@ -80,9 +77,9 @@ int main(int argc, char** argv)
 {
     std::cout << "114.5625"_f32 << std::endl;
     std::cout << "-114.5625"_f32 << std::endl;
-    papilio::println("{:s}", 114.5625_f32);
-    papilio::println("{:i}", 114.5625_f32);
-    papilio::println("{:f}", 114.5625_f32);
+    std::cout << std::format("{:s}", 114.5625_f32) << std::endl;
+    std::cout << std::format("{:i}", 114.5625_f32) << std::endl;
+    std::cout << std::format("{:f}", 114.5625_f32) << std::endl;
     return 0;
 }
 ```

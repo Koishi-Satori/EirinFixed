@@ -20,15 +20,6 @@ A. Copy into Your Project
 
 The core library of EirinFixed is a header-only library, you can copy the ``include`` directory into your project, and include the header file in your code.
 
-To be noticed that the header file ``io/parse.hpp`` provides functions for parsing fixed point numbers from strings, located in the ``eirin::io`` namespace. If you don't need it, you can ignore it.
-
-.. note::
-    **About `papilio_integration.hpp`**
-
-    This file is used for formatting the fixed point number with ``PapilioFormat`` library, which is a C++20 format library.
-    If you want to use it, you need to include the ``PapilioFormat`` library in your project.
-    If you don't need it, you can ignore it.
-
 B. Build and Install with XMake
 -------------------------------
 
