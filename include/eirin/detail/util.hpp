@@ -238,7 +238,7 @@ namespace lut
             negate = true;
         }
 
-        // 3. 线性插值
+        // 3. Linear interpolation
         auto pos = x_mod / (eirin::numbers::pi_f64 / fixed64(N - 1));
         auto idx = std::min(pos.integral_part(), static_cast<int64_t>(N - 2));
         auto frac = pos - fixed64(idx);

@@ -1,12 +1,12 @@
-#ifndef EIRIN_FIXED_PARSE_HPP
-#define EIRIN_FIXED_PARSE_HPP
+#ifndef EIRIN_FIXED_IO_PARSE_HPP
+#define EIRIN_FIXED_IO_PARSE_HPP
 
 #pragma once
 
 #include <string_view>
-#include "fixed.hpp"
+#include <eirin/fixed.hpp>
 
-namespace eirin
+namespace eirin::io
 {
 /**
  * @brief Parse fixed point number from string
@@ -94,7 +94,7 @@ inline const char* parse(std::string_view str, fixed32& out)
         out
     );
 }
-} // namespace eirin
+} // namespace eirin::io
 
 
-#endif // EIRIN_FIXED_PARSE_HPP
+#endif // EIRIN_FIXED_IO_PARSE_HPP

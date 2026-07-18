@@ -24,11 +24,6 @@ option("eirin_build_advanced_benchmark")
     set_description("Build advanced fixed number benchmarks")
     option_end()
 
-if has_config("eirin_build_tests") then
-    -- Add dependency for tests --
-    add_repositories("FRIKEE https://github.com/FRI-KEE/FRIKEE-xrepo.git")
-end
-
 set_warnings("all")
 set_languages("cxx20")
 
