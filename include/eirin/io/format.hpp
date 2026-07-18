@@ -17,20 +17,24 @@ namespace detail
 } // namespace detail
 
 template <typename CharT, typename T, typename I, unsigned int F, bool R>
-class formatter
+class fixed_num_formatter
 {
 public:
-    // parsed format-spec state
+    using char_type = CharT;
+
+    // Format-spec state
     struct state_type
     {
-        CharT fill_ch = ' ';
+        using char_type = CharT;
+
         char align_mode = '\0'; // '<' | '>' | '^' | '\0' -> default (right)
         char sign_mode = '-'; // '-' | '+' | ' '
         bool alt_form = false;
         bool zero_pad = false;
         int width_val = 0;
-        int prec = -1; // -1 means "not specified"
-        char fmt_type = 'g'; // g G f F d x X o b B ?
+        int precision = -1; // -1 means "not specified"
+        char type = 'g'; // g G f F d x X o b B ?
+        char_type fill_ch = ' ';
     };
 
     using fixed_num_type = fixed_num<T, I, F, R>;
@@ -56,7 +60,7 @@ public:
         bool uppercase = false;
         int base = 10;
 
-        switch(m_state.fmt_type)
+        switch(m_state.type)
         {
         case 'X': uppercase = true; [[fallthrough]];
         case 'x':
@@ -79,7 +83,7 @@ public:
         case '?':
             return format_debug(fp, ctx);
         default: // g, G, f, F
-            if(m_state.fmt_type == 'G' || m_state.fmt_type == 'F')
+            if(m_state.type == 'G' || m_state.type == 'F')
                 uppercase = true;
             break;
         }
@@ -119,7 +123,7 @@ public:
             {
                 body = prefix + digit_str;
             }
-            return write_aligned(out, body);
+            return output_aligned(out, body);
         }
 
         body = prefix + digit_str;
@@ -143,7 +147,7 @@ public:
                                          detail::digit_map_upper :
                                          detail::digit_map_lower;
 
-                int eff_prec = (m_state.prec < 0) ? 6 : m_state.prec;
+                int eff_prec = (m_state.precision < 0) ? 6 : m_state.precision;
 
                 T frac_bits = frac_val;
                 for(unsigned int i = 0; i < F && used_prec < eff_prec; ++i)
@@ -160,9 +164,9 @@ public:
             }
 
             // trailing zeros for fixed-point types (f/F)
-            if(m_state.fmt_type == 'f' || m_state.fmt_type == 'F')
+            if(m_state.type == 'f' || m_state.type == 'F')
             {
-                int eff_prec = (m_state.prec < 0) ? 6 : m_state.prec;
+                int eff_prec = (m_state.precision < 0) ? 6 : m_state.precision;
                 while(used_prec < eff_prec)
                 {
                     if(used_prec == 0)
@@ -173,7 +177,7 @@ public:
             }
         }
 
-        return write_aligned(out, body);
+        return output_aligned(out, body);
     }
 
 private:
@@ -189,24 +193,24 @@ private:
         T int_val = fp.internal_value(); // raw bits
         bool neg = false;
 
-        using U = std::make_unsigned_t<T>;
-        U uval;
+        using unsigned_type = std::make_unsigned_t<T>;
+        unsigned_type uval;
 
         if constexpr(std::is_signed_v<T>)
         {
             if(int_val < 0)
             {
                 neg = true;
-                uval = static_cast<U>(-(int_val + 1)) + U(1);
+                uval = static_cast<unsigned_type>(-(int_val + 1)) + unsigned_type(1);
             }
             else
             {
-                uval = static_cast<U>(int_val);
+                uval = static_cast<unsigned_type>(int_val);
             }
         }
         else
         {
-            uval = static_cast<U>(int_val);
+            uval = static_cast<unsigned_type>(int_val);
         }
 
         std::basic_string<CharT> body;
@@ -233,37 +237,37 @@ private:
             body += rev;
         }
 
-        return write_aligned(out, body);
+        return output_aligned(out, body);
     }
 
     // Convert an integer to a string in the given base
-    template <typename ValT>
-    static std::basic_string<CharT> int_to_string(ValT val, int base, bool uppercase)
+    template <typename ValType>
+    static std::basic_string<CharT> int_to_string(ValType ival, int base, bool uppercase)
     {
         const auto& digits = uppercase ? detail::digit_map_upper : detail::digit_map_lower;
         std::basic_string<CharT> result;
 
-        if(val == 0)
+        if(ival == 0)
         {
             result.push_back(static_cast<CharT>('0'));
             return result;
         }
 
-        using U = std::make_unsigned_t<ValT>;
-        U uval;
-        if constexpr(std::is_signed_v<ValT>)
+        using unsigned_type = std::make_unsigned_t<ValType>;
+        unsigned_type uval;
+        if constexpr(std::is_signed_v<ValType>)
         {
-            uval = val < 0 ? static_cast<U>(-(val + 1)) + U(1) : static_cast<U>(val);
+            uval = ival < 0 ? static_cast<unsigned_type>(-(ival + 1)) + unsigned_type(1) : static_cast<unsigned_type>(ival);
         }
         else
         {
-            uval = static_cast<U>(val);
+            uval = static_cast<unsigned_type>(ival);
         }
 
         while(uval > 0)
         {
-            result.push_back(static_cast<CharT>(digits[uval % static_cast<U>(base)]));
-            uval /= static_cast<U>(base);
+            result.push_back(static_cast<CharT>(digits[uval % static_cast<unsigned_type>(base)]));
+            uval /= static_cast<unsigned_type>(base);
         }
         std::reverse(result.begin(), result.end());
         return result;
@@ -320,7 +324,7 @@ private:
     }
 
     template <typename OutputIt>
-    OutputIt write_aligned(OutputIt out, const std::basic_string<CharT>& body) const
+    OutputIt output_aligned(OutputIt out, const std::basic_string<CharT>& body) const
     {
         auto sz = body.size();
         if(m_state.width_val <= 0 || static_cast<std::size_t>(m_state.width_val) <= sz)
@@ -367,7 +371,7 @@ public:
     constexpr auto parse(std::basic_format_parse_context<CharT>& ctx)
         -> typename std::basic_format_parse_context<CharT>::iterator
     {
-        using state_type = typename eirin::io::formatter<CharT, T, I, F, R>::state_type;
+        using state_type = typename eirin::io::fixed_num_formatter<CharT, T, I, F, R>::state_type;
         state_type st;
 
         auto it = ctx.begin();
@@ -379,7 +383,6 @@ public:
             return it;
         }
 
-        // MSVC may leak arg-id: into format-spec; skip it if present
         {
             auto p = it;
             while(p != end && *p >= '0' && *p <= '9')
@@ -447,10 +450,10 @@ public:
         if(it != end && *it == '.')
         {
             ++it;
-            st.prec = 0;
+            st.precision = 0;
             while(it != end && *it >= '0' && *it <= '9')
             {
-                st.prec = st.prec * 10 + static_cast<int>(*it - '0');
+                st.precision = st.precision * 10 + static_cast<int>(*it - '0');
                 ++it;
             }
         }
@@ -471,11 +474,10 @@ public:
             case 'b':
             case 'B':
             case '?':
-                st.fmt_type = *it;
+                st.type = *it;
                 ++it;
                 break;
             case '}':
-                // MSVC may include the closing brace in format-spec
                 break;
             default:
                 throw std::format_error("invalid format type");
@@ -494,7 +496,7 @@ public:
     }
 
 private:
-    eirin::io::formatter<CharT, T, I, F, R> m_impl;
+    eirin::io::fixed_num_formatter<CharT, T, I, F, R> m_impl;
 };
 
 #endif
