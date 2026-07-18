@@ -5,7 +5,7 @@
 
 #include <eirin/fixed.hpp>
 #include <eirin/math.hpp>
-#include <eirin/parse.hpp>
+#include <eirin/io/parse.hpp>
 #include <eirin/macro.hpp>
 #include <eirin/numbers.hpp>
 #include <eirin/random.hpp>

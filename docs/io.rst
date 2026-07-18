@@ -27,11 +27,10 @@ For example, you can use the following code to read a fixed point number from st
     }
 
 
-Other I/O Libraries
+Other I/O Methods
 -----------------
 
-- You can use the format functions provided by [Papilio Charontis](https://github.com/HenryAWE/PapilioCharontis).
-- When using Papilio Charontis, please **make sure** you have include the ``ext/papilio_integration.hpp`` header file.
+- You can use the std::format.
 - The default format is ``{}``, which will print the fixed point number in decimal format.
 - For other format arguments, you should branch it with ``{:}`` and use the format specifier as you would in C++. For example, you can use ``{:x}`` to print the fixed point number in hexadecimal format.
 - Some arguments will override other format arguments declared before. To illustrate this, the following table shows the format arguments, and the ``Conflict`` column shows the format arguments that will be overridden by the current format argument.
@@ -77,15 +76,15 @@ Other I/O Libraries
 
     #include <iostream>
     #include <eirin/fixed.hpp>
-    #include <eirin/ext/papilio_integration.hpp>
+    #include <eirin/io/format.hpp>
 
     int main() {
         using namespace eirin;
 
         fixed64 x = 114.514_f64;
 
-        papilio::println("fixed number: {}", x);
-        papilio::println("fixed number internal value: {:?}", x);
+        std::cout << std::format("fixed number: {}", x) << std::endl;
+        std::cout << std::format("fixed number internal value: {:?}", x) << std::endl;
 
         return 0;
     }
