@@ -1,6 +1,3 @@
-#include <cmath>
-#include <numbers>
-#include <format>
 #include <gtest/gtest.h>
 #include <eirin/eirin.hpp>
 #include <eirin/io/format.hpp>
@@ -14,7 +11,7 @@
 
 using namespace eirin;
 
-TEST(fixed_num, construct)
+TEST(FixedNum, Construct)
 {
     auto fp1 = 0_f32;
     EXPECT_EQ((int)fp1, 0);
@@ -28,7 +25,7 @@ TEST(fixed_num, construct)
 #endif
 }
 
-TEST(fixed32, operator)
+TEST(Fixed32, Operator)
 {
     auto fp1 = 0_f32;
     EXPECT_EQ(++fp1, 1_f32);
@@ -51,7 +48,7 @@ TEST(fixed32, operator)
 #endif
 }
 
-TEST(fixed32, rounding)
+TEST(Fixed32, Rounding)
 {
     EXPECT_EQ(round(114.414_f32), 114_f32);
     EXPECT_EQ(round(114.514_f32), 115_f32);
@@ -59,7 +56,7 @@ TEST(fixed32, rounding)
     EXPECT_EQ(round(-114.514_f32), -115_f32);
 }
 
-TEST(fixed32, decompression)
+TEST(Fixed32, Decompression)
 {
     EXPECT_FALSE(signbit(0_f32));
     EXPECT_FALSE(signbit(1_f32));
@@ -119,7 +116,7 @@ static testing::AssertionResult expect_fixed_eq(
 #endif
 } // namespace test_math
 
-TEST(fixed32, math)
+TEST(Fixed32, Math)
 {
     using test_math::expect_fixed_eq;
 
@@ -157,39 +154,7 @@ TEST(fixed32, math)
     EXPECT_TRUE(expect_fixed_eq(degrees(numbers::pi), 180_f32));
 }
 
-#ifdef EIRIN_HAS_LIB_FORMAT
-
-TEST(fixed32, std_format)
-{
-    EXPECT_EQ(std::format("{:?}", 0_f32), "0");
-    EXPECT_EQ(std::format("{:#?}", -1_f32), "-0x10000");
-
-    EXPECT_EQ(std::format("{:d}", 0_f32), "0");
-    EXPECT_EQ(std::format("{:d}", -1_f32), "-1");
-
-    EXPECT_EQ(std::format("{}", 0_f32), "0");
-    EXPECT_EQ(std::format("{}", 1_f32), "1");
-
-    EXPECT_EQ(std::format("{:#04x}", 15_f32), "0x0f");
-    EXPECT_EQ(std::format("{:#04X}", 15_f32), "0X0F");
-
-    {
-        auto val = 1_f32 / 2;
-        EXPECT_EQ(std::format("{}", val), "0.5");
-        EXPECT_EQ(std::format("{:g}", val), "0.5");
-        EXPECT_EQ(std::format("{:f}", val), "0.500000");
-        EXPECT_EQ(std::format("{:.2f}", val), "0.50");
-    }
-
-    EXPECT_EQ(std::format("{:d}", fixed32::pi()), "3");
-    EXPECT_EQ(std::format("{:.2g}", fixed32::pi()), "3.14");
-    EXPECT_EQ(std::format("{:.2f}", fixed32::pi()), "3.14");
-    EXPECT_EQ(std::format("{:.4f}", fixed32::pi()), "3.1415");
-}
-
-#endif
-
-TEST(fixed_num, constants)
+TEST(FixedNum, Constants)
 {
     GTEST_LOG_(INFO) << "fixed32 max value: " << max_value<fixed32>() << ", min value: " << min_value<fixed32>();
     GTEST_LOG_(INFO) << "fixed32 e value: " << fixed32::e() << ", pi value: " << fixed32::pi();
@@ -223,7 +188,7 @@ TEST(fixed_num, constants)
 #endif
 }
 
-TEST(fixed_num, random)
+TEST(FixedNum, Random)
 {
     eirin::random_device rd;
     eirin::pcg2014 pcg_32(rd());
@@ -263,7 +228,7 @@ TEST(fixed_num, random)
 }
 
 #ifdef EIRIN_FIXED_HAS_INT128
-TEST(fixed64, operator)
+TEST(Fixed64, Operator)
 {
     auto fp1 = 0_f64;
     EXPECT_EQ(++fp1, 1_f64);
@@ -284,7 +249,7 @@ TEST(fixed64, operator)
 #    endif
 }
 
-TEST(fixed64, rounding)
+TEST(Fixed64, Rounding)
 {
     EXPECT_EQ(round(114.414_f64), 114_f64);
     EXPECT_EQ(round(114.514_f64), 115_f64);
@@ -292,7 +257,7 @@ TEST(fixed64, rounding)
     EXPECT_EQ(round(-114.514_f64), -115_f64);
 }
 
-TEST(fixed64, decompression)
+TEST(Fixed64, Decompression)
 {
     EXPECT_FALSE(signbit(0_f64));
     EXPECT_FALSE(signbit(1_f64));
@@ -314,7 +279,7 @@ TEST(fixed64, decompression)
     }
 }
 
-TEST(fixed64, math)
+TEST(Fixed64, Math)
 {
     using test_math::expect_fixed_eq;
 

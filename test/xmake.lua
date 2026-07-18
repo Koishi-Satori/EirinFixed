@@ -9,7 +9,7 @@ target("eirin_fixed.test")
         add_defines("EIRIN_NO_EXCEPTIONS")
     end
     add_tests("test_eirin_fixed")
-    add_files("main.cpp")
+    add_files("**.cpp")
     add_deps("eirin_fixed")
     add_packages("gtest")
     if has_config("eirin_dev_test") and get_config("eirin_dev_test") == true then
