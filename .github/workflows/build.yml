@@ -45,7 +45,7 @@ jobs:
 
         strategy:
           matrix:
-            clang: [18]
+            clang: [15, 18]
           fail-fast: false
         name: Linux Clang ${{ matrix.clang }}
 
