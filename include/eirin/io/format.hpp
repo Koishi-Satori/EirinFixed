@@ -43,12 +43,12 @@ public:
 
     using fixed_num_type = fixed_num<T, I, F, R>;
 
-    void set_state(const state_type& st) noexcept
+    constexpr void set_state(const state_type& st) noexcept
     {
         m_state = st;
     }
 
-    const state_type& get_state() const noexcept
+    constexpr const state_type& get_state() const noexcept
     {
         return m_state;
     }
