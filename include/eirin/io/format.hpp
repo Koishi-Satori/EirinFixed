@@ -3,10 +3,14 @@
 
 #pragma once
 
-#include <format>
+#include <version>
 #include <string>
 #include <algorithm>
 #include "../fixed.hpp"
+#ifdef __cpp_lib_format
+#    define EIRIN_HAS_LIB_FORMAT __cpp_lib_format
+#    include <format>
+#endif
 
 namespace eirin::io
 {
@@ -360,16 +364,20 @@ private:
 };
 } // namespace eirin::io
 
+#ifdef EIRIN_HAS_LIB_FORMAT
+
 template <typename T, typename I, unsigned int F, bool R, typename CharT>
 struct std::formatter<eirin::fixed_num<T, I, F, R>, CharT>
 {
+    using my_base_fmt = eirin::io::fixed_num_formatter<CharT, T, I, F, R>;
+
 public:
     using fixed_num_type = eirin::fixed_num<T, I, F, R>;
 
     constexpr auto parse(std::basic_format_parse_context<CharT>& ctx)
         -> typename std::basic_format_parse_context<CharT>::iterator
     {
-        using state_type = typename eirin::io::fixed_num_formatter<CharT, T, I, F, R>::state_type;
+        using state_type = typename my_base_fmt::state_type;
         state_type st;
 
         auto it = ctx.begin();
@@ -377,7 +385,7 @@ public:
 
         if(it == end)
         {
-            m_impl.set_state(st);
+            m_fmt.set_state(st);
             return it;
         }
 
@@ -391,7 +399,7 @@ public:
 
         if(it == end)
         {
-            m_impl.set_state(st);
+            m_fmt.set_state(st);
             return it;
         }
 
@@ -482,7 +490,7 @@ public:
             }
         }
 
-        m_impl.set_state(st);
+        m_fmt.set_state(st);
         return it;
     }
 
@@ -490,11 +498,13 @@ public:
     auto format(const fixed_num_type& fp, FormatContext& ctx) const
         -> typename FormatContext::iterator
     {
-        return m_impl.format_to(ctx.out(), fp);
+        return m_fmt.format_to(ctx.out(), fp);
     }
 
 private:
-    eirin::io::fixed_num_formatter<CharT, T, I, F, R> m_impl;
+    my_base_fmt m_fmt;
 };
+
+#endif
 
 #endif

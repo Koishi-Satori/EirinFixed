@@ -153,6 +153,8 @@ TEST(fixed32, math)
     EXPECT_TRUE(expect_fixed_eq(degrees(numbers::pi), 180_f32));
 }
 
+#ifdef EIRIN_HAS_LIB_FORMAT
+
 TEST(fixed32, std_format)
 {
     EXPECT_EQ(std::format("{:?}", 0_f32), "0");
@@ -180,6 +182,8 @@ TEST(fixed32, std_format)
     EXPECT_EQ(std::format("{:.2f}", fixed32::pi()), "3.14");
     EXPECT_EQ(std::format("{:.4f}", fixed32::pi()), "3.1415");
 }
+
+#endif
 
 TEST(fixed_num, constants)
 {
@@ -352,6 +356,9 @@ int main(int argc, char* argv[])
 #endif
 #ifdef EIRIN_FIXED_DETAIL_BUILTIN__INT128
     std::cerr << "EIRIN_FIXED_DETAIL_BUILTIN__INT128 defined" << std::endl;
+#endif
+#ifdef EIRIN_HAS_LIB_FORMAT
+    std::cerr << "EIRIN_HAS_LIB_FORMAT defined" << std::endl;
 #endif
 
     std::cout << 114.5625_f32 << std::endl;
