@@ -26,26 +26,10 @@
 #include <iterator>
 #include <eirin/detail/int128.hpp>
 #include <eirin/macro.hpp>
+#include "error.hpp"
 
 namespace eirin
 {
-class divide_by_zero : public std::domain_error
-{
-public:
-    divide_by_zero()
-        : std::domain_error("Divide by zero.") {};
-};
-
-[[noreturn]]
-inline void throw_divide_by_zero()
-{
-#ifdef EIRIN_NO_EXCEPTIONS
-    std::terminate();
-#else
-    throw divide_by_zero();
-#endif
-}
-
 namespace detail
 {
     template <typename T, unsigned int F, int E>
@@ -619,7 +603,7 @@ public:
     EIRIN_ALWAYS_INLINE constexpr fixed_num divide(const std::integral auto& val) const
     {
         if(val == 0) [[unlikely]]
-            throw_divide_by_zero();
+            EIRIN_THROW_EXCEPTION(divide_by_zero);
 
         return fixed_num(m_value / val, raw_value_construct_tag{});
     }
@@ -627,7 +611,7 @@ public:
     EIRIN_ALWAYS_INLINE constexpr fixed_num divide(const fixed_num& other) const
     {
         if(other.m_value == 0) [[unlikely]]
-            throw_divide_by_zero();
+            EIRIN_THROW_EXCEPTION(divide_by_zero);
 
         if constexpr(rounding)
         {
@@ -643,7 +627,7 @@ public:
     EIRIN_ALWAYS_INLINE constexpr fixed_num& divide_by(const std::integral auto& val)
     {
         if(val == 0) [[unlikely]]
-            throw_divide_by_zero();
+            EIRIN_THROW_EXCEPTION(divide_by_zero);
 
         m_value /= val;
         return *this;
@@ -652,7 +636,7 @@ public:
     EIRIN_ALWAYS_INLINE constexpr fixed_num& divide_by(const fixed_num& other)
     {
         if(other.m_value == 0) [[unlikely]]
-            throw_divide_by_zero();
+            EIRIN_THROW_EXCEPTION(divide_by_zero);
 
         if constexpr(rounding)
         {

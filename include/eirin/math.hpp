@@ -268,11 +268,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> tan(fixed_num<T, I, f, r> fp
     if(abs(cosx).internal_value() > 1)
         return sin(fp) / cosx;
     else
-#ifdef EIRIN_NO_EXCEPTIONS
-        std::terminate();
-#else
-        throw std::domain_error("error fp domain.");
-#endif
+        EIRIN_THROW_EXCEPTION(std::domain_error, "tan() domain error");
 }
 
 /**
@@ -329,11 +325,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> asin(fixed_num<T, I, f, r> f
 {
     using fixed = fixed_num<T, I, f, r>;
     if(abs(fp) > fixed(1))
-#ifdef EIRIN_NO_EXCEPTIONS
-        std::terminate();
-#else
-        throw std::domain_error("error fp domain.");
-#endif
+        EIRIN_THROW_EXCEPTION(std::domain_error, "asin() domain error");
     if(fp == fixed(1))
         return pi / fixed(2);
     else if(fp == fixed(-1))
@@ -346,11 +338,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> acos(fixed_num<T, I, f, r> f
 {
     using fixed = fixed_num<T, I, f, r>;
     if(abs(fp) > fixed(1))
-#ifdef EIRIN_NO_EXCEPTIONS
-        std::terminate();
-#else
-        throw std::domain_error("error fp domain.");
-#endif
+        EIRIN_THROW_EXCEPTION(std::domain_error, "error fp domain.");
     if(fp == fixed(1))
         return fixed(0);
     else if(fp == fixed(-1))
@@ -430,11 +418,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> log2(fixed_num<T, I, f, r> f
     // I prefer this situation is abnormal, but I don't know why.
     T b = 1u << (f - 1), y = 0, x = fp.internal_value();
     if(fp <= fixed(0))
-#ifdef EIRIN_NO_EXCEPTIONS
-        std::terminate();
-#else
-        throw std::domain_error("error fp domain.");
-#endif
+        EIRIN_THROW_EXCEPTION(std::domain_error, "log2() domain error");
 
     while(x < (static_cast<T>(1u) << f))
     {
