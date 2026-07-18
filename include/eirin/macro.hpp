@@ -15,6 +15,14 @@
 #    define EIRIN_ALWAYS_INLINE inline
 #endif
 
+#if defined(__EXCEPTIONS) && __EXCEPTIONS != 1
+#    define EIRIN_NO_EXCEPTIONS
+#endif
+
+#if defined(_MSC_VER) && !defined(_CPPUNWIND)
+#    define EIRIN_NO_EXCEPTIONS
+#endif
+
 // operate system detection
 #if defined(_WIN32) || defined(_WIN64)
 #    define EIRIN_OS_WINDOWS

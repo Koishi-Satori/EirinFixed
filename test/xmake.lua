@@ -3,6 +3,11 @@ add_requires("gtest")
 target("eirin_fixed.test")
     set_warnings("all", "error")
     set_kind("binary")
+    if is_plat("wasm") then
+        set_extension(".js")
+        set_exceptions("no-cxx")
+        add_defines("EIRIN_NO_EXCEPTIONS")
+    end
     add_tests("test_eirin_fixed")
     add_files("main.cpp")
     add_deps("eirin_fixed")

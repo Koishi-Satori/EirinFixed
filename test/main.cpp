@@ -41,10 +41,14 @@ TEST(fixed32, operator)
     EXPECT_EQ(515_f32 % 2_f32, 1_f32);
     EXPECT_EQ(--fp1, 0.14_f32);
 
+#ifndef EIRIN_NO_EXCEPTIONS
+
     EXPECT_THROW(
         (void)(fp2.divide(0)),
         divide_by_zero
     );
+
+#endif
 }
 
 TEST(fixed32, rounding)
@@ -272,10 +276,12 @@ TEST(fixed64, operator)
     EXPECT_EQ(515_f64 % 2_f64, 1_f64);
     EXPECT_EQ(--fp1, 0.14_f64);
 
+#    ifndef EIRIN_NO_EXCEPTIONS
     EXPECT_THROW(
         (void)(fp2.divide(0)),
         divide_by_zero
     );
+#    endif
 }
 
 TEST(fixed64, rounding)
@@ -351,6 +357,9 @@ TEST(fixed64, math)
 
 int main(int argc, char* argv[])
 {
+#ifdef EIRIN_NO_EXCEPTIONS
+    std::cerr << "EIRIN_NO_EXCEPTIONS defined" << std::endl;
+#endif
 #ifdef EIRIN_FIXED_DETAIL_INT128_MSVC_STL
     std::cerr << "EIRIN_FIXED_DETAIL_INT128_MSVC_STL defined" << std::endl;
 #endif

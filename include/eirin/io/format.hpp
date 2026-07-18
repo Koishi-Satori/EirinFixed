@@ -486,7 +486,7 @@ public:
             case '}':
                 break;
             default:
-                throw std::format_error("invalid format type");
+                EIRIN_THROW_EXCEPTION(std::format_error, "invalid format type");
             }
         }
 
