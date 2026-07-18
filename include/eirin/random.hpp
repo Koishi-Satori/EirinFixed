@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_RANDOM_HPP
-#define EIRIN_FIXED_RANDOM_HPP
+#ifndef EIRIN_MATH_RANDOM_HPP
+#define EIRIN_MATH_RANDOM_HPP
 
 #pragma once
 

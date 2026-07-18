@@ -18,7 +18,7 @@ TEST(FixedNum, Construct)
     io::parse("-114.514a", "a", fp1);
     EXPECT_EQ(fp1, -114.514_f32);
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
     auto fp2 = 0_f64;
     EXPECT_EQ((int)fp2, 0);
     EXPECT_EQ("-114.514"_f64, -114.514_f64);
@@ -98,7 +98,7 @@ static testing::AssertionResult expect_fixed_eq(
         return testing::AssertionSuccess();
 }
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 static testing::AssertionResult expect_fixed_eq(
     const eirin::fixed64& lhs,
     const eirin::fixed64& rhs,
@@ -170,7 +170,7 @@ TEST(FixedNum, Constants)
     GTEST_LOG_(INFO) << "fixed32 egamma value: " << numbers::egamma_v<fixed32>();
     GTEST_LOG_(INFO) << "fixed32 phi value: " << numbers::phi_v<fixed32>();
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
     // fixed64
     GTEST_LOG_(INFO) << "fixed64 max value: " << max_value<fixed64>() << ", min value: " << min_value<fixed64>();
     GTEST_LOG_(INFO) << "fixed64 e value: " << fixed64::e() << ", pi value: " << fixed64::pi();
@@ -217,7 +217,7 @@ TEST(FixedNum, Random)
     fixed_distribution_adapter<fixed32, std::uniform_int_distribution<>> test_dist_wrapper;
     test_random(test_wrapper, test_dist_wrapper, values_32, "Fixed32 Wrapped MT19937");
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
     eirin::pcg2014_64 pcg_64(rd());
     eirin::mt19937_64 mt_64(rd());
     eirin::fixed_int_distribution_adapter<fixed64, std::uniform_int_distribution<>> dist_64;
@@ -227,7 +227,7 @@ TEST(FixedNum, Random)
 #endif
 }
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 TEST(Fixed64, Operator)
 {
     auto fp1 = 0_f64;
@@ -325,11 +325,11 @@ int main(int argc, char* argv[])
 #ifdef EIRIN_NO_EXCEPTIONS
     std::cerr << "EIRIN_NO_EXCEPTIONS defined" << std::endl;
 #endif
-#ifdef EIRIN_FIXED_DETAIL_INT128_MSVC_STL
-    std::cerr << "EIRIN_FIXED_DETAIL_INT128_MSVC_STL defined" << std::endl;
+#ifdef EIRIN_MATH_DETAIL_INT128_MSVC_STL
+    std::cerr << "EIRIN_MATH_DETAIL_INT128_MSVC_STL defined" << std::endl;
 #endif
-#ifdef EIRIN_FIXED_DETAIL_BUILTIN__INT128
-    std::cerr << "EIRIN_FIXED_DETAIL_BUILTIN__INT128 defined" << std::endl;
+#ifdef EIRIN_MATH_DETAIL_BUILTIN__INT128
+    std::cerr << "EIRIN_MATH_DETAIL_BUILTIN__INT128 defined" << std::endl;
 #endif
 #ifdef EIRIN_HAS_LIB_FORMAT
     std::cerr << "EIRIN_HAS_LIB_FORMAT defined" << std::endl;

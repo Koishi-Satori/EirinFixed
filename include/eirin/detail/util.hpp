@@ -1,12 +1,12 @@
-#ifndef EIRIN_FIXED_UTIL_HPP
-#define EIRIN_FIXED_UTIL_HPP
+#ifndef EIRIN_MATH_UTIL_HPP
+#define EIRIN_MATH_UTIL_HPP
 
 #include <cmath>
 #include <array>
 #include <cstdio>
 #include "int128.hpp"
 #include "../eirin.hpp"
-#ifndef EIRIN_FIXED_NO_SIMD
+#ifndef EIRIN_MATH_NO_SIMD
 #    include <immintrin.h>
 #endif
 
@@ -162,7 +162,7 @@ namespace pi_calc
     inline T bbp_calc_pi()
     {
 // BBP formula: pi = sum(k=0~inf){1/16^k * (4/(8k+1) - 2/(8k+4) - 1/(8k+5) - 1/(8k+6))}
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
         using intermediate_t = typename std::conditional<sizeof(T) <= 4, std::conditional<sizeof(T) <= 2, int32_t, int64_t>, detail::int128_t>::type;
 #else
         if constexpr(sizeof(T) <= 2)

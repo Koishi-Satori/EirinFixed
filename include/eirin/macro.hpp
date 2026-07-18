@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_MARCO_HPP
-#define EIRIN_FIXED_MARCO_HPP
+#ifndef EIRIN_MATH_MARCO_HPP
+#define EIRIN_MATH_MARCO_HPP
 
 #pragma once
 
@@ -66,7 +66,7 @@
 #    define EIRIN_PLATFORM_HAS_SIMD
 #    define EIRIN_PLATFORM_SIMD_SSE2
 #else
-#    define EIRIN_FIXED_NO_SIMD
+#    define EIRIN_MATH_NO_SIMD
 #endif
 
-#endif // EIRIN_FIXED_MARCO_HPP
+#endif // EIRIN_MATH_MARCO_HPP

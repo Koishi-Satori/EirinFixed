@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_NUMBERS_HPP
-#define EIRIN_FIXED_NUMBERS_HPP
+#ifndef EIRIN_MATH_NUMBERS_HPP
+#define EIRIN_MATH_NUMBERS_HPP
 
 #pragma once
 
@@ -115,7 +115,7 @@ inline constexpr auto inv_sqrt3 = inv_sqrt3_v<fixed32>();
 inline constexpr auto egamma = egamma_v<fixed32>();
 inline constexpr auto phi = phi_v<fixed32>();
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 inline constexpr auto pi_f64 = pi_v<fixed64>();
 inline constexpr auto e_f64 = e_v<fixed64>();
 inline constexpr auto log2e_f64 = log2e_v<fixed64>();

@@ -230,7 +230,7 @@ static void f32_cordic_sin(benchmark::State& state)
     }
 }
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 static void f64_create(benchmark::State& state)
 {
     for(auto _ : state)
@@ -425,7 +425,7 @@ BENCHMARK(f32_atan);
 BENCHMARK(f32_acos);
 BENCHMARK(f32_asin);
 BENCHMARK(f32_cordic_sin);
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 BENCHMARK(f64_create);
 BENCHMARK(f64_divide);
 BENCHMARK(f64_multiple);

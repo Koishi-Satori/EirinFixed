@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_ERROR_HPP
-#define EIRIN_FIXED_ERROR_HPP
+#ifndef EIRIN_MATH_ERROR_HPP
+#define EIRIN_MATH_ERROR_HPP
 
 #include <stdexcept>
 

@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_EXT_BUILTIN_INTS_HPP
-#define EIRIN_FIXED_EXT_BUILTIN_INTS_HPP
+#ifndef EIRIN_MATH_EXT_BUILTIN_INTS_HPP
+#define EIRIN_MATH_EXT_BUILTIN_INTS_HPP
 
 #pragma once
 
@@ -8,7 +8,7 @@
 #include <limits>
 #include "../macro.hpp"
 
-#define EIRIN_FIXED_HAS_INT128_EXT
+#define EIRIN_MATH_HAS_INT128_EXT
 
 namespace eirin::ext
 {

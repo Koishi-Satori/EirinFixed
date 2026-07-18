@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_IO_FORMAT_HPP
-#define EIRIN_FIXED_IO_FORMAT_HPP
+#ifndef EIRIN_MATH_IO_FORMAT_HPP
+#define EIRIN_MATH_IO_FORMAT_HPP
 
 #pragma once
 

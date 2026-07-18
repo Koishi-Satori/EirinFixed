@@ -9,7 +9,7 @@
 #include <chrono>
 #include <fstream>
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 // on windows/msvc, -Wmaybe-uninitialized is not available
 // so we can use #pragma to ignore the warning there
 #    ifdef _MSC_VER

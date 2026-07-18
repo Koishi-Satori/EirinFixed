@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_FPMATH_HPP
-#define EIRIN_FIXED_FPMATH_HPP
+#ifndef EIRIN_MATH_FPMATH_HPP
+#define EIRIN_MATH_FPMATH_HPP
 
 #pragma once
 
@@ -11,7 +11,7 @@ namespace eirin
 {
 constexpr inline fixed32 f32_max = fixed32::from_internal_value(0x7FFFFFFF);
 constexpr inline fixed32 f32_min = fixed32::from_internal_value(0x80000000);
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 constexpr inline fixed64 f64_max = fixed64::from_internal_value(0x7FFFFFFFFFFFFFFF);
 constexpr inline fixed64 f64_min = fixed64::from_internal_value(0x8000000000000000);
 #endif
@@ -629,4 +629,4 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> hypot(fixed_num<T, I, f, r> 
 }
 } // namespace eirin
 
-#endif // EIRIN_FIXED_FPMATH_HPP
+#endif // EIRIN_MATH_FPMATH_HPP

@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_PERF_HPP
-#define EIRIN_FIXED_PERF_HPP
+#ifndef EIRIN_MATH_PERF_HPP
+#define EIRIN_MATH_PERF_HPP
 
 #pragma once
 
@@ -50,4 +50,4 @@ namespace perf
 } // namespace perf
 } // namespace eirin
 
-#endif // EIRIN_FIXED_PERF_HPP
+#endif // EIRIN_MATH_PERF_HPP

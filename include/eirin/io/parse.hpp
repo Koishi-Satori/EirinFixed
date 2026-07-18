@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_IO_PARSE_HPP
-#define EIRIN_FIXED_IO_PARSE_HPP
+#ifndef EIRIN_MATH_IO_PARSE_HPP
+#define EIRIN_MATH_IO_PARSE_HPP
 
 #pragma once
 
@@ -97,4 +97,4 @@ inline const char* parse(std::string_view str, fixed32& out)
 } // namespace eirin::io
 
 
-#endif // EIRIN_FIXED_IO_PARSE_HPP
+#endif // EIRIN_MATH_IO_PARSE_HPP

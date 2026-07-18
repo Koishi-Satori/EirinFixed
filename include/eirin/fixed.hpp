@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_FIXED_HPP
-#define EIRIN_FIXED_FIXED_HPP
+#ifndef EIRIN_MATH_FIXED_HPP
+#define EIRIN_MATH_FIXED_HPP
 
 #pragma once
 
@@ -84,7 +84,7 @@ namespace detail
     struct is_signed : public std::is_signed<T>
     {};
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
     template <>
     struct is_signed<detail::int128_t> : public std::true_type
     {};
@@ -763,7 +763,7 @@ concept fixed_point = detail::is_fixed_point<std::remove_cv_t<T>>::value;
  * 
  */
 using fixed32 = fixed_num<int32_t, int64_t, 16, false>;
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 /**
  * @brief Predefined fixed64 type, with 32 bits fraction, 16 bits intergal, and 1 bit sign.
  *        This type uses int64_t as store type, and 128-bits intergal as intermediate type.
@@ -801,7 +801,7 @@ inline namespace literals
         return fp;
     }
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
     constexpr inline fixed64 operator""_f64(const char* str, size_t len)
     {
         fixed64 fp;
@@ -1204,4 +1204,4 @@ struct numeric_limits<eirin::fixed_num<T, I, f, r>>
 #    pragma warning(pop)
 #endif
 
-#endif // EIRIN_FIXED_FIXED_HPP
+#endif // EIRIN_MATH_FIXED_HPP

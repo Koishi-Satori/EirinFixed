@@ -1,5 +1,5 @@
-#ifndef EIRIN_FIXED_EXT_CORDIC_HPP
-#define EIRIN_FIXED_EXT_CORDIC_HPP
+#ifndef EIRIN_MATH_EXT_CORDIC_HPP
+#define EIRIN_MATH_EXT_CORDIC_HPP
 
 #include "../fixed.hpp"
 #include "../numbers.hpp"
@@ -140,7 +140,7 @@ namespace detail
     }
 } // namespace detail
 
-#ifdef EIRIN_FIXED_HAS_INT128
+#ifdef EIRIN_MATH_HAS_INT128
 EIRIN_ALWAYS_INLINE constexpr auto cordic_sine(fixed64 x) noexcept
 {
     return detail::cordic<int64_t, detail::int128_t, 32, false, 41, true>(x);
@@ -152,4 +152,4 @@ EIRIN_ALWAYS_INLINE constexpr auto cordic_sine(fixed32 x) noexcept
 }
 } // namespace eirin
 
-#endif // EIRIN_FIXED_EXT_CORDIC_HPP
+#endif // EIRIN_MATH_EXT_CORDIC_HPP
