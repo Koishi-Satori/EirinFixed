@@ -2,9 +2,11 @@
 #define EIRIN_FIXED_FIXED_HPP
 
 #pragma once
-#ifdef EIRIN_OS_WINDOWS
+
+#ifdef _MSC_VER
 // C4244: conversion from 'type1' to 'type2', possible loss of data
 // This is excepted, so disable it.
+#    pragma warning(push)
 #    pragma warning(disable : 4244)
 #endif
 
@@ -18,14 +20,13 @@
 #include <ios>
 #include <limits>
 #include <istream>
-#include <stdexcept>
 #include <type_traits>
 #include <concepts>
 #include <iostream>
 #include <algorithm>
 #include <iterator>
-#include "detail/int128.hpp"
 #include "macro.hpp"
+#include "detail/int128.hpp"
 #include "error.hpp"
 
 namespace eirin
@@ -1198,5 +1199,9 @@ struct numeric_limits<eirin::fixed_num<T, I, f, r>>
 #undef EIRIN_DIRECT_IMPL
 };
 } // namespace std
+
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
 
 #endif // EIRIN_FIXED_FIXED_HPP
