@@ -338,7 +338,7 @@ EIRIN_ALWAYS_INLINE constexpr fixed_num<T, I, f, r> acos(fixed_num<T, I, f, r> f
 {
     using fixed = fixed_num<T, I, f, r>;
     if(abs(fp) > fixed(1))
-        EIRIN_THROW_EXCEPTION(std::domain_error, "error fp domain.");
+        EIRIN_THROW_EXCEPTION(std::domain_error, "acos() domain error");
     if(fp == fixed(1))
         return fixed(0);
     else if(fp == fixed(-1))
